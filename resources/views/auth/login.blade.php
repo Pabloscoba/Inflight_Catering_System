@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    
+    <title>{{ config('app.name', 'Inflight Catering System') }} - Login</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700&display=swap" rel="stylesheet" />
+    
+    <!-- Scripts -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .bg-overlay {
+            background: linear-gradient(135deg, rgba(0, 31, 63, 0.5) 0%, rgba(13, 71, 161, 0.4) 50%, rgba(118, 156, 185, 0.5) 100%);
+            backdrop-filter: blur(5px);
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+        }
+        
+        .input-field {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(13, 71, 161, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .input-field:focus {
+            background: rgba(255, 255, 255, 1);
+            border-color: rgba(13, 71, 161, 0.8);
+            box-shadow: 0 0 0 3px rgba(13, 71, 161, 0.1);
+            outline: none;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #0d47a1 0%, #1976d2 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #1565c0 0%, #1e88e5 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(13, 71, 161, 0.4);
+        }
+        
+        .logo-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .aircraft-bg {
+            background-image: url('/images/images-bg.jpg.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease-out;
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <div class="min-h-screen flex items-center justify-center aircraft-bg relative">
+        <!-- Overlay -->
+        <div class="absolute inset-0 bg-overlay"></div>
+        
+        <!-- Login Container -->
+        <div class="relative z-10 w-full max-w-md px-6 fade-in-up">
+            <!-- Logo/Brand Section -->
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-20 h-20 rounded-full logo-container mb-4">
+                    <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                    </svg>
+                </div>
+                <h1 class="text-3xl font-bold text-white mb-2">Inflight Catering System</h1>
+                <p class="text-blue-100 text-sm">Welcome back! Please login to your account.</p>
+            </div>
+            
+            <!-- Login Card -->
+            <div class="glass-card rounded-2xl p-8 shadow-2xl">
+                <!-- Session Status -->
+                @if (session('status'))
+                    <div class="mb-4 p-4 rounded-lg bg-green-50 border border-green-200">
+                        <p class="text-sm text-green-800 font-medium">{{ session('status') }}</p>
+                    </div>
+                @endif
+                
+                <form method="POST" action="{{ route('login') }}">
+                    @csrf
+                    
+                    <!-- Email Address -->
+                    <div class="mb-5">
+                        <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Email Address
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"/>
+                                </svg>
+                            </div>
+                            <input 
+                                id="email" 
+                                type="email" 
+                                name="email" 
+                                value="{{ old('email') }}" 
+                                required 
+                                autofocus 
+                                autocomplete="username"
+                                class="input-field block w-full pl-10 pr-4 py-3 rounded-lg text-gray-900"
+                                placeholder="Enter your email"
+                            >
+                        </div>
+                        @error('email')
+                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    
+                    <!-- Password -->
+                    <div class="mb-5">
+                        <label for="password" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Password
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                </svg>
+                            </div>
+                            <input 
+                                id="password" 
+                                type="password" 
+                                name="password" 
+                                required 
+                                autocomplete="current-password"
+                                class="input-field block w-full pl-10 pr-4 py-3 rounded-lg text-gray-900"
+                                placeholder="Enter your password"
+                            >
+                        </div>
+                        @error('password')
+                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    
+                    <!-- Remember Me & Forgot Password -->
+                    <div class="flex items-center justify-between mb-6">
+                        <label class="flex items-center">
+                            <input 
+                                type="checkbox" 
+                                name="remember"
+                                class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                            >
+                            <span class="ml-2 text-sm text-gray-700">Remember me</span>
+                        </label>
+                        
+                        @if (Route::has('password.request'))
+                            <a href="{{ route('password.request') }}" class="text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline">
+                                Forgot password?
+                            </a>
+                        @endif
+                    </div>
+                    
+                    <!-- Login Button -->
+                    <button 
+                        type="submit" 
+                        class="btn-primary w-full py-3 px-4 rounded-lg text-white font-semibold shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                    >
+                        <span class="flex items-center justify-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+                            </svg>
+                            Sign In
+                        </span>
+                    </button>
+                </form>
+                
+                <!-- Additional Links -->
+                @if (Route::has('register'))
+                    <div class="mt-6 text-center">
+                        <p class="text-sm text-gray-600">
+                            Don't have an account? 
+                            <a href="{{ route('register') }}" class="font-medium text-blue-600 hover:text-blue-700 hover:underline">
+                                Register
+                            </a>
+                        </p>
+                    </div>
+                @endif
+            </div>
+            
+            <!-- Footer -->
+            <div class="mt-8 text-center">
+                <p class="text-sm text-blue-100">
+                    &copy; {{ date('Y') }} Inflight Catering System. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
