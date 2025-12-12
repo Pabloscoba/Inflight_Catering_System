@@ -40,14 +40,24 @@
         <div style="margin-top:16px;">
             <label style="display:block;font-weight:600;margin-bottom:8px;">Items</label>
             <div id="items-container">
-                <div class="item-row" style="display:flex;gap:8px;margin-bottom:8px;align-items:center;">
-                    <select name="items[0][product_id]" class="form-control product-select" style="flex:1;padding:10px;border-radius:8px;border:1px solid #e5e7eb;">
+                <div class="item-row" style="display:grid;grid-template-columns:2fr 180px 110px auto;gap:8px;margin-bottom:8px;align-items:center;">
+                    <select name="items[0][product_id]" class="form-control product-select" style="padding:10px;border-radius:8px;border:1px solid #e5e7eb;">
                         <option value="">-- Select product --</option>
                         @foreach($products as $p)
                         <option value="{{ $p->id }}">{{ $p->name }} ({{ $p->quantity_in_stock }} available)</option>
                         @endforeach
                     </select>
-                    <input type="number" name="items[0][quantity]" class="form-control" style="width:120px;padding:10px;border-radius:8px;border:1px solid #e5e7eb;" min="1" value="1">
+                    <select name="items[0][meal_type]" class="form-control meal-type-select" style="padding:10px;border-radius:8px;border:1px solid #e5e7eb;">
+                        <option value="">-- Meal Type --</option>
+                        <option value="breakfast">🍳 Breakfast</option>
+                        <option value="lunch">🍽️ Lunch</option>
+                        <option value="dinner">🌙 Dinner</option>
+                        <option value="snack">🍪 Snack</option>
+                        <option value="VIP_meal">👑 VIP Meal</option>
+                        <option value="special_meal">⭐ Special</option>
+                        <option value="non_meal">📦 Non-Meal</option>
+                    </select>
+                    <input type="number" name="items[0][quantity]" class="form-control" style="padding:10px;border-radius:8px;border:1px solid #e5e7eb;" min="1" value="1" placeholder="Qty">
                     <button type="button" class="btn btn-danger remove-item" style="background:#ef4444;color:white;border-radius:8px;padding:8px 10px;border:none;">Remove</button>
                 </div>
             </div>
@@ -82,10 +92,20 @@
         const container = document.getElementById('items-container');
         const div = document.createElement('div');
         div.className = 'item-row';
-        div.style = 'display:flex;gap:8px;margin-bottom:8px;align-items:center;';
+        div.style = 'display:grid;grid-template-columns:2fr 180px 110px auto;gap:8px;margin-bottom:8px;align-items:center;';
         div.innerHTML = `
-            <select name="items[${idx}][product_id]" class="form-control product-select" style="flex:1;padding:10px;border-radius:8px;border:1px solid #e5e7eb;">${productOptions}</select>
-            <input type="number" name="items[${idx}][quantity]" class="form-control" style="width:120px;padding:10px;border-radius:8px;border:1px solid #e5e7eb;" min="1" value="1">
+            <select name="items[${idx}][product_id]" class="form-control product-select" style="padding:10px;border-radius:8px;border:1px solid #e5e7eb;">${productOptions}</select>
+            <select name="items[${idx}][meal_type]" class="form-control meal-type-select" style="padding:10px;border-radius:8px;border:1px solid #e5e7eb;">
+                <option value="">-- Meal Type --</option>
+                <option value="breakfast">🍳 Breakfast</option>
+                <option value="lunch">🍽️ Lunch</option>
+                <option value="dinner">🌙 Dinner</option>
+                <option value="snack">🍪 Snack</option>
+                <option value="VIP_meal">👑 VIP Meal</option>
+                <option value="special_meal">⭐ Special</option>
+                <option value="non_meal">📦 Non-Meal</option>
+            </select>
+            <input type="number" name="items[${idx}][quantity]" class="form-control" style="padding:10px;border-radius:8px;border:1px solid #e5e7eb;" min="1" value="1" placeholder="Qty">
             <button type="button" class="btn btn-danger remove-item" style="background:#ef4444;color:white;border-radius:8px;padding:8px 10px;border:none;">Remove</button>
         `;
         container.appendChild(div);

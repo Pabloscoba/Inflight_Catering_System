@@ -113,6 +113,23 @@ class UserController extends Controller
     }
 
     /**
+     * Toggle user active status
+     */
+    public function toggleStatus(User $user)
+    {
+        // Prevent deactivating yourself
+        if ($user->id === auth()->id()) {
+            return back()->with('error', 'You cannot deactivate your own account');
+        }
+
+        $user->update(['is_active' => !$user->is_active]);
+        
+        $status = $user->is_active ? 'activated' : 'deactivated';
+        
+        return redirect()->back()->with('success', "User {$status} successfully");
+    }
+
+    /**
      * Remove the specified user
      */
     public function destroy(User $user)

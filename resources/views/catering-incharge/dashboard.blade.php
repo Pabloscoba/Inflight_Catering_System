@@ -156,17 +156,17 @@
     </div>
     @endif
 
-    <!-- Requests Authenticated by Security Staff -->
+    <!-- Pending Catering Staff Requests -->
     @if($pendingStaffRequests->count() > 0)
     <div style="background: white; border-radius: 16px; padding: 28px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 32px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
             <div>
                 <h3 style="font-size: 20px; font-weight: 600; color: #1a202c; margin: 0 0 4px 0;">
-                    🔐 Requests Authenticated by Security Staff
+                    📋 Catering Staff Requests Awaiting Approval
                 </h3>
-                <p style="font-size: 13px; color: #718096; margin: 0;">These requests have been authenticated and await your final approval</p>
+                <p style="font-size: 13px; color: #718096; margin: 0;">Review and approve requests from Catering Staff for flight preparation</p>
             </div>
-            <span style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 700; box-shadow: 0 4px 12px rgba(16,185,129,0.3);">{{ $pendingStaffRequests->count() }} Authenticated</span>
+            <span style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 700; box-shadow: 0 4px 12px rgba(240,147,251,0.3);">{{ $pendingStaffRequests->count() }} Pending</span>
         </div>
         <div style="overflow-x: auto;">
             <table style="width: 100%; border-collapse: collapse;">
@@ -176,6 +176,7 @@
                         <th style="text-align: left; padding: 14px; font-size: 14px; font-weight: 600; color: #495057;">Flight</th>
                         <th style="text-align: left; padding: 14px; font-size: 14px; font-weight: 600; color: #495057;">Requested By</th>
                         <th style="text-align: left; padding: 14px; font-size: 14px; font-weight: 600; color: #495057;">Items</th>
+                        <th style="text-align: left; padding: 14px; font-size: 14px; font-weight: 600; color: #495057;">Status</th>
                         <th style="text-align: left; padding: 14px; font-size: 14px; font-weight: 600; color: #495057;">Date</th>
                         <th style="text-align: left; padding: 14px; font-size: 14px; font-weight: 600; color: #495057;">Action</th>
                     </tr>
@@ -187,6 +188,15 @@
                         <td style="padding: 14px; font-size: 14px; color: #212529;">{{ $request->flight->flight_number }}</td>
                         <td style="padding: 14px; font-size: 14px; color: #6c757d;">{{ $request->requester->name }}</td>
                         <td style="padding: 14px; font-size: 14px; color: #6c757d;">{{ $request->items->count() }} items</td>
+                        <td style="padding: 14px;">
+                            @if($request->status == 'security_approved')
+                                <span style="background: #10b981; color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;">🔐 Security Verified</span>
+                            @elseif($request->status == 'supervisor_approved')
+                                <span style="background: #3b82f6; color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;">✓ Supervisor OK</span>
+                            @else
+                                <span style="background: #f59e0b; color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;">⏳ Forwarded</span>
+                            @endif
+                        </td>
                         <td style="padding: 14px; font-size: 14px; color: #6c757d;">{{ $request->requested_date->format('M d, Y') }}</td>
                         <td style="padding: 14px;">
                             <div style="display: flex; gap: 8px;">

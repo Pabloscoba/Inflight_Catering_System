@@ -16,7 +16,17 @@ class RequestController extends Controller
     // Display all requests
     public function index(Request $request)
     {
-        $query = RequestModel::with(['flight', 'requester', 'items'])
+        $query = RequestModel::with([
+            'flight', 
+            'requester', 
+            'items.product',
+            'approver',
+            'cateringApprover',
+            'securityDispatcher',
+            'rampAgent',
+            'flightPurser',
+            'cabinCrew'
+        ])
             ->orderBy('requested_date', 'desc')
             ->orderBy('created_at', 'desc');
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\SecurityStaff;
 
 use App\Http\Controllers\Controller;
 use App\Models\Request as RequestModel;
+use App\Models\ProductReturn;
 use App\Models\Flight;
 use Illuminate\Http\Request;
 
@@ -37,12 +38,18 @@ class DashboardController extends Controller
             ->limit(10)
             ->get();
 
+        // Returns management
+        $pendingReturns = ProductReturn::where('status', 'pending_security')->count();
+        
         // Today's flights needing security clearance
         $todayFlights = Flight::with(['requests'])
             ->whereDate('departure_time', today())
             ->orderBy('departure_time', 'asc')
             ->get();
 
+        // Returns management
+        $pendingReturns = ProductReturn::where('status', 'pending_security')->count();
+        
         // Recent stock movements authenticated by Security Staff
         $securityRoleId = \Spatie\Permission\Models\Role::where('name', 'Security Staff')->first()?->id;
         $securityUserIds = \App\Models\User::role('Security Staff')->pluck('id');
@@ -62,7 +69,8 @@ class DashboardController extends Controller
             'ordersToVerify',
             'recentVerifications',
             'todayFlights',
-            'recentStockMovements'
+            'recentStockMovements',
+            'pendingReturns'
         ));
     }
 }

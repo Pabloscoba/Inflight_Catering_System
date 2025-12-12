@@ -5,7 +5,7 @@
 @section('content')
 <div class="content-header">
     <h1>Flight Purser Dashboard</h1>
-    <p>Load catering supplies onto aircraft and coordinate with Cabin Crew</p>
+    <p>Review and load catering supplies onto aircraft for Cabin Crew service</p>
 </div>
 
 <!-- Stats Cards -->
@@ -123,12 +123,17 @@
                         {{ $request->dispatched_at ? \Carbon\Carbon::parse($request->dispatched_at)->format('M d, H:i') : 'N/A' }}
                     </td>
                     <td style="padding:16px;text-align:center;">
-                        <form action="{{ route('flight-purser.requests.load', $request) }}" method="POST" style="display:inline;">
-                            @csrf
-                            <button type="submit" style="background:linear-gradient(135deg,#43e97b 0%,#38f9d7 100%);color:white;border:none;padding:8px 20px;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 12px rgba(67,233,123,0.4)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='none'">
-                                📦 Load
-                            </button>
-                        </form>
+                        <div style="display:flex;gap:8px;justify-content:center;">
+                            <a href="{{ route('flight-purser.requests.show', $request) }}" style="background:#f3f4f6;color:#374151;border:none;padding:8px 16px;border-radius:8px;font-weight:600;font-size:13px;text-decoration:none;display:inline-block;">
+                                👁️ View Products
+                            </a>
+                            <form action="{{ route('flight-purser.requests.load', $request) }}" method="POST" style="display:inline;">
+                                @csrf
+                                <button type="submit" onclick="return confirm('Confirm loading Request #{{ $request->id }} onto aircraft?')" style="background:linear-gradient(135deg,#43e97b 0%,#38f9d7 100%);color:white;border:none;padding:8px 20px;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 12px rgba(67,233,123,0.4)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='none'">
+                                    📦 Load onto Aircraft
+                                </button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
                 @endforeach

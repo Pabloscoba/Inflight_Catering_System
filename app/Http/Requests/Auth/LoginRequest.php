@@ -43,6 +43,16 @@ class LoginRequest extends FormRequest
 
         if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
+            
+            // Log failed login attempt
+            activity('security')
+                ->withProperties([
+                    'email' => $this->input('email'),
+                    'ip' => $this->ip(),
+                    'user_agent' => $this->userAgent(),
+                    'attempts' => RateLimiter::attempts($this->throttleKey()),
+                ])
+                ->log('Failed login attempt');
 
             throw ValidationException::withMessages([
                 'email' => trans('auth.failed'),
@@ -66,6 +76,17 @@ class LoginRequest extends FormRequest
         event(new Lockout($this));
 
         $seconds = RateLimiter::availableIn($this->throttleKey());
+        
+        // Log account lockout
+        activity('security')
+            ->withProperties([
+                'email' => $this->input('email'),
+                'ip' => $this->ip(),
+                'user_agent' => $this->userAgent(),
+                'attempts' => RateLimiter::attempts($this->throttleKey()),
+                'locked_until' => now()->addSeconds($seconds),
+            ])
+            ->log('Account locked due to too many failed login attempts');
 
         throw ValidationException::withMessages([
             'email' => trans('auth.throttle', [

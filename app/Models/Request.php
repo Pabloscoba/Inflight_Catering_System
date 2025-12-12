@@ -13,10 +13,25 @@ class Request extends Model
         'flight_id',
         'requester_id',
         'status',
+        'request_type',
         'notes',
         'requested_date',
         'approved_by',
         'approved_date',
+        'loaded_by',
+        'loaded_at',
+        'catering_approved_by',
+        'catering_approved_at',
+        'security_dispatched_by',
+        'security_dispatched_at',
+        'dispatched_by',
+        'dispatched_at',
+        'handed_to_flight_by',
+        'handed_to_flight_at',
+        'flight_received_by',
+        'flight_received_at',
+        'served_by',
+        'served_at',
         'received_by',
         'received_date',
         'rejection_reason',
@@ -25,6 +40,12 @@ class Request extends Model
     protected $casts = [
         'requested_date' => 'date',
         'approved_date' => 'datetime',
+        'catering_approved_at' => 'datetime',
+        'security_dispatched_at' => 'datetime',
+        'dispatched_at' => 'datetime',
+        'handed_to_flight_at' => 'datetime',
+        'flight_received_at' => 'datetime',
+        'served_at' => 'datetime',
         'received_date' => 'datetime',
     ];
 
@@ -52,6 +73,36 @@ class Request extends Model
     public function items()
     {
         return $this->hasMany(RequestItem::class);
+    }
+
+    public function cateringApprover()
+    {
+        return $this->belongsTo(User::class, 'catering_approved_by');
+    }
+
+    public function securityDispatcher()
+    {
+        return $this->belongsTo(User::class, 'security_dispatched_by');
+    }
+
+    public function dispatcher()
+    {
+        return $this->belongsTo(User::class, 'dispatched_by');
+    }
+
+    public function rampAgent()
+    {
+        return $this->belongsTo(User::class, 'handed_to_flight_by');
+    }
+
+    public function flightPurser()
+    {
+        return $this->belongsTo(User::class, 'loaded_by'); // Changed from flight_received_by to loaded_by
+    }
+
+    public function cabinCrew()
+    {
+        return $this->belongsTo(User::class, 'served_by');
     }
 
     // Scopes

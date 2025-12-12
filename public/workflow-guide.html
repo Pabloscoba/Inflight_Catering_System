@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inflight Catering System - Complete Workflow Guide</title>
+    <style>
+        @page {
+            margin: 20mm;
+            size: A4;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 210mm;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 32px;
+            font-weight: 700;
+        }
+        
+        .header p {
+            margin: 10px 0 0 0;
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+            page-break-inside: avoid;
+        }
+        
+        .step {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .step-number {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 40px;
+            font-weight: 700;
+            font-size: 18px;
+            margin-right: 15px;
+            float: left;
+        }
+        
+        .step-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a202c;
+            margin: 0 0 10px 55px;
+        }
+        
+        .step-role {
+            background: #f7fafc;
+            color: #4a5568;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-block;
+            margin-left: 55px;
+            margin-bottom: 10px;
+        }
+        
+        .step-content {
+            margin-left: 55px;
+            color: #4a5568;
+        }
+        
+        .step-content ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        
+        .step-content li {
+            margin: 5px 0;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin: 2px;
+        }
+        
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .status-approved {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-delivered {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .flow-diagram {
+            background: #f7fafc;
+            border: 2px dashed #cbd5e0;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .arrow {
+            font-size: 24px;
+            color: #667eea;
+            margin: 10px 0;
+        }
+        
+        .summary-box {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .summary-box h3 {
+            margin: 0 0 10px 0;
+            color: #92400e;
+        }
+        
+        .feature-list {
+            background: #f0fdf4;
+            border-left: 4px solid #10b981;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .feature-list h3 {
+            margin: 0 0 10px 0;
+            color: #065f46;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #e2e8f0;
+            color: #718096;
+            font-size: 14px;
+        }
+        
+        @media print {
+            body {
+                padding: 0;
+            }
+            
+            .step {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🛫 Inflight Catering System</h1>
+        <p>Complete Workflow Guide - Dynamic System</p>
+        <p style="font-size: 14px; margin-top: 10px;">All dashboards pull real-time data from database</p>
+    </div>
+
+    <div class="summary-box">
+        <h3>📋 System Overview</h3>
+        <p>This system manages the complete lifecycle of inflight catering products, from inventory management to flight delivery and passenger service. All 8 user roles have dynamic dashboards that update in real-time based on database operations.</p>
+        <p style="margin-top: 10px;"><strong>Key Feature:</strong> Complete product usage tracking by Cabin Crew with automatic calculation of used, defect, and remaining quantities.</p>
+    </div>
+
+    <div class="feature-list">
+        <h3>✨ Recent Enhancements</h3>
+        <ul>
+            <li><strong>Inventory Supervisor Approvals:</strong> Summary cards with gradient backgrounds showing movement statistics</li>
+            <li><strong>Color-Coded Movement Types:</strong> Green (+) for incoming/returns, Blue (-) for transfers, Red (-) for issues</li>
+            <li><strong>Movement Impact Indicators:</strong> Clear descriptions (✓ Adds to main stock, → Main to Catering, etc.)</li>
+            <li><strong>Catering Incharge Multi-Stage:</strong> Shows requests from Inventory Personnel, Supervisor, and Security</li>
+            <li><strong>PDF Stock Reports:</strong> Professional layout with auto-print functionality</li>
+        </ul>
+    </div>
+
+    <h2 style="color: #667eea; border-bottom: 3px solid #667eea; padding-bottom: 10px; margin-top: 40px;">Complete Workflow (14 Steps - 8 User Roles)</h2>
+
+    <!-- STEP 1 -->
+    <div class="step">
+        <div class="step-number">1</div>
+        <h3 class="step-title">Create Products</h3>
+        <div class="step-role">👤 Inventory Personnel</div>
+        <div class="step-content">
+            <p><strong>Action:</strong> Create new products in the system</p>
+            <ul>
+                <li>Navigate: Dashboard → Products → Add New Product</li>
+                <li>Fill in: Product Name, Category, Reorder Level</li>
+                <li>Submit the form</li>
+            </ul>
+            <p><strong>Status:</strong> <span class="status-badge status-pending">pending</span> → Awaiting Inventory Supervisor approval</p>
+        </div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="step">
+        <div class="step-number">2</div>
+        <h3 class="step-title">Approve Products</h3>
+        <div class="step-role">👨‍💼 Inventory Supervisor</div>
+        <div class="step-content">
+            <p><strong>Action:</strong> Review and approve new products</p>
+            <ul>
+                <li>Navigate: Dashboard → Approve Products (purple card)</li>
+                <li>Review product details</li>
+                <li>Click "✓ Approve" button</li>
+            </ul>
+            <p><strong>Status:</strong> <span class="status-badge status-approved">approved</span> → Product is now active in system</p>
+            <p><strong>Result:</strong> Product becomes available for stock operations</p>
+        </div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="step">
+        <div class="step-number">3</div>
+        <h3 class="step-title">Add Stock (Incoming)</h3>
+        <div class="step-role">👤 Inventory Personnel</div>
+        <div class="step-content">
+            <p><strong>Action:</strong> Record incoming stock from suppliers</p>
+            <ul>
+                <li>Navigate: Dashboard → Add Stock button OR Products → Add Stock</li>
+                <li>Select approved product</li>
+                <li>Enter quantity (e.g., 100 units)</li>
+                <li>Add reference number (e.g., PO-2024-001)</li>
+                <li>Add notes if needed</li>
+            </ul>
+            <p><strong>Status:</strong> <span class="status-badge status-pending">pending</span> → Awaiting Inventory Supervisor approval</p>
+        </div>
+    </div>
+
+    <!-- STEP 4 -->
+    <div class="step">
+        <div class="step-number">4</div>
+        <h3 class="step-title">Approve Stock Movement</h3>
+        <div class="step-role">👨‍💼 Inventory Supervisor</div>
+        <div class="step-content">
+            <p><strong>Action:</strong> Approve incoming stock</p>
+            <ul>
+                <li>Navigate: Dashboard → Approve Stock Movements</li>
+                <li><strong>🎨 Enhanced View:</strong> See 5 summary cards showing:
+                    <ul>
+                        <li>Total Pending movements</li>
+                        <li>📥 Incoming movements (+units) in green</li>
+                        <li>🔄 Transfers to catering in blue-pink gradient</li>
+                        <li>↗ Issues (-units) in orange</li>
+                        <li>↩ Returns (+units) in yellow-pink gradient</li>
+                    </ul>
+                </li>
+                <li>Each movement shows:
+                    <ul>
+                        <li>Icon (📥/🔄/↗/↩)</li>
+                        <li>Color-coded badge</li>
+                        <li>Impact description ("✓ Adds to main stock", etc.)</li>
+                        <li>Large bold quantity with +/- prefix</li>
+                    </ul>
+                </li>
+                <li>Click "✓ Approve" button</li>
+            </ul>
+            <p><strong>Status:</strong> <span class="status-badge status-approved">approved</span></p>
+            <p><strong>Result:</strong> Stock increases in main warehouse (quantity_in_stock)</p>
+        </div>
+    </div>
+
+    <!-- STEP 5 -->
+    <div class="step">
+        <div class="step-number">5</div>
+        <h3 class="step-title">Transfer to Catering</h3>
+        <div class="step-role">👤 Inventory Personnel</div>
+        <div class="step-content">
+            <p><strong>Action:</strong> Transfer stock from main warehouse to catering department</p>
+            <ul>
+                <li>Navigate: Dashboard → Stock Movements → Transfer to Catering</li>
+                <li>Select product</li>
+                <li>Enter quantity to transfer (e.g., 50 units)</li>
+                <li>Add reference number</li>
+            </ul>
+            <p><strong>Status:</strong> <span class="status-badge status-pending">pending</span> → Awaiting Inventory Supervisor approval</p>
+        </div>
+    </div>
+
+    <!-- STEP 6 -->
+    <div class="step">
+        <div class="step-number">6</div>
+        <h3 class="step-title">Approve Transfer</h3>
+        <div class="step-role">👨‍💼 Inventory Supervisor</div>
+        <div class="step-content">
+            <p><strong>Action:</strong> Approve transfer to catering</p>
+            <ul>
+                <li>Navigate: Dashboard → Approve Stock Movements</li>
+                <li>See transfer in blue-colored section with "→ Main to Catering" label</li>
+                <li>Approve transfer movement</li>
+            </ul>
+            <p><strong>Status:</strong> <span class="status-badge status-approved">approved</span></p>
+            <p><strong>Result:</strong> Stock decreases in main warehouse, creates CateringStock receipt (pending)</p>
+        </div>
+    </div>
+
+    <!-- STEP 7 -->
+    <div class="step">
+        <div class="step-number">7</div>
+        <h3 class="step-title">Approve Receipt</h3>
+        <div class="step-role">👨‍🍳 Catering Incharge</div>
+        <div class="step-content">
+            <p><strong>Action:</strong> Approve product receipt from inventory</p>
+            <ul>
+                <li>Navigate: Dashboard → Approve Receipts (📦 button)</li>
+                <li>Review pending receipts table</li>
+                <li>Verify product, quantity, reference number</li>
+                <li>Click "✓ Approve" button</li>
+            </ul>
+            <p><strong>Status:</strong> <span class="status-badge status-approved">approved</span></p>
+            <p><strong>Result:</strong> Stock becomes available in catering department (quantity_available)</p>
+            <p><strong>Dashboard Update:</strong> Total Available Stock increases</p>
+        </div>
+    </div>
+
+    <!-- STEP 8 -->
+    <div class="step">
+        <div class="step-number">8</div>
+        <h3 class="step-title">Create Meal Request</h3>
+        <div class="step-role">👩‍✈️ Catering Staff</div>
+        <div class="step-content">
+            <p><strong>Action:</strong> Create request for specific flight</p>
+            <ul>
+                <li>Navigate: Dashboard → My Requests → Create New Request</li>
+                <li>Select flight (with departure time, route)</li>
+                <li>Add products (meals) from approved products list</li>
+                <li>Specify quantity for each product</li>
+                <li>Submit request</li>
+            </ul>
+            <p><strong>Status:</strong> <span class="status-badge status-pending">pending</span> → Awaiting Inventory Personnel to forward</p>
+        </div>
+    </div>
+
+    <!-- STEP 9 -->
+    <div class="step">
+        <div class="step-number">9</div>
+        <h3 class="step-title">Forward Request</h3>
+        <div class="step-role">👤 Inventory Personnel</div>
+        <div class="step-content">
+            <p><strong>Action:</strong> Review and forward request to supervisor</p>
+            <ul>
+                <li>Navigate: Dashboard → Catering Staff Requests</li>
+                <li>Review request details and items</li>
+                <li>Click "Forward to Supervisor"</li>
+            </ul>
+            <p><strong>Status:</strong> <span class="status-badge status-pending">pending_supervisor</span></p>
+            <p><strong>Result:</strong> Request appears in Catering Incharge dashboard</p>
+        </div>
+    </div>
+
+    <!-- STEP 10 -->
+    <div class="step">
+        <div class="step-number">10</div>
+        <h3 class="step-title">Authenticate Request (Optional)</h3>
+        <div class="step-role">🔐 Security Staff</div>
+        <div class="step-content">
+            <p><strong>Action:</strong> Verify and authenticate request</p>
+            <ul>
+                <li>Navigate: Dashboard → Authenticate Requests</li>
+                <li>Verify request legitimacy</li>
+                <li>Check requester authorization</li>
+                <li>Authenticate</li>
+            </ul>
+            <p><strong>Status:</strong> <span class="status-badge status-approved">security_approved</span></p>
+        </div>
+    </div>
+
+    <!-- STEP 11 -->
+    <div class="step">
+        <div class="step-number">11</div>
+        <h3 class="step-title">Final Approval</h3>
+        <div class="step-role">👨‍🍳 Catering Incharge</div>
+        <div class="step-content">
+            <p><strong>Action:</strong> Give final approval for request</p>
+            <ul>
+                <li>Navigate: Dashboard → Catering Staff Requests Awaiting Approval (📋)</li>
+                <li><strong>Enhanced View:</strong> See requests with status badges:
+                    <ul>
+                        <li>🔐 Security Verified (green) - if authenticated by Security</li>
+                        <li>✓ Supervisor OK (blue) - if approved by Inventory Supervisor</li>
+                        <li>⏳ Forwarded (orange) - if forwarded by Inventory Personnel</li>
+                    </ul>
+                </li>
+                <li>Review all request details</li>
+                <li>Verify stock availability</li>
+                <li>Click "✓ Approve" button</li>
+            </ul>
+            <p><strong>Status:</strong> <span class="status-badge status-approved">approved</span></p>
+            <p><strong>Result:</strong> Stock reserved for flight, quantity_available decreases</p>
+        </div>
+    </div>
+
+    <!-- STEP 12 -->
+    <div class="step">
+        <div class="step-number">12</div>
+        <h3 class="step-title">Load to Aircraft</h3>
+        <div class="step-role">✈️ Ramp Agent</div>
+        <div class="step-content">
+            <p><strong>Action:</strong> Load approved requests onto aircraft</p>
+            <ul>
+                <li>Navigate: Dashboard → Load Approved Requests</li>
+                <li>See list of approved requests ready for loading</li>
+                <li>Verify flight details and items</li>
+                <li>Click "Load to Aircraft" button</li>
+            </ul>
+            <p><strong>Status:</strong> <span class="status-badge status-delivered">loaded</span></p>
+            <p><strong>Result:</strong> Request marked as loaded, awaiting delivery confirmation</p>
+        </div>
+    </div>
+
+    <!-- STEP 13 -->
+    <div class="step">
+        <div class="step-number">13</div>
+        <h3 class="step-title">Load to Aircraft</h3>
+        <div class="step-role">👨‍✈️ Flight Purser</div>
+        <div class="step-content">
+            <p><strong>Action:</strong> Load catering items onto aircraft</p>
+            <ul>
+                <li>Navigate: Dashboard → Requests to Load</li>
+                <li>Click "👁️ View Products" to review items</li>
+                <li>Verify all items match dispatch documentation</li>
+                <li>Physically load items onto aircraft</li>
+                <li>Click "📦 Load onto Aircraft" button</li>
+            </ul>
+            <p><strong>Status:</strong> <span class="status-badge status-delivered">loaded</span></p>
+            <p><strong>Result:</strong> Items loaded and ready for cabin crew service</p>
+        </div>
+    </div>
+
+    <!-- STEP 14 -->
+    <div class="step">
+        <div class="step-number">14</div>
+        <h3 class="step-title">Serve to Passengers & Track Usage</h3>
+        <div class="step-role">👩‍✈️ Cabin Crew</div>
+        <div class="step-content">
+            <p><strong>Action:</strong> Serve products to passengers and track consumption</p>
+            <ul>
+                <li>Navigate: Dashboard → Loaded Supplies</li>
+                <li>Click "👁️ View Items" to see all available products</li>
+                <li><strong>During Flight Service:</strong>
+                    <ul>
+                        <li>Click "📝 Record Usage" for each product</li>
+                        <li>Enter quantity used (e.g., 80 meals served)</li>
+                        <li>Add usage notes if needed</li>
+                        <li>System auto-calculates remaining quantity</li>
+                    </ul>
+                </li>
+                <li><strong>Record Issues:</strong>
+                    <ul>
+                        <li>Click "⚠️ Record Defect" for damaged/unusable items</li>
+                        <li>Enter defect quantity and notes</li>
+                        <li>System updates remaining inventory</li>
+                    </ul>
+                </li>
+                <li><strong>Request More (if needed):</strong>
+                    <ul>
+                        <li>Click "➕ Request Additional Products"</li>
+                        <li>Select product and quantity needed</li>
+                        <li>Provide reason (e.g., "Higher passenger count")</li>
+                    </ul>
+                </li>
+                <li><strong>Complete Service:</strong>
+                    <ul>
+                        <li>Click "📊 Generate Usage Report" to review all consumption</li>
+                        <li>Verify totals: Used + Defect + Remaining = Total</li>
+                        <li>Click "🍽️ Served to Customers" to finalize</li>
+                    </ul>
+                </li>
+            </ul>
+            <p><strong>Status:</strong> <span class="status-badge status-delivered">delivered</span> ✅ COMPLETE!</p>
+            <p><strong>Result:</strong> Service complete with full usage tracking and accountability</p>
+            <p><strong>Dashboard Updates:</strong></p>
+            <ul>
+                <li>Product usage recorded per item</li>
+                <li>Defects/wastage documented</li>
+                <li>Remaining products calculated</li>
+                <li>Usage report generated for audit</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="flow-diagram">
+        <h3 style="color: #667eea; margin-top: 0;">Status Flow Diagram</h3>
+        <div style="font-size: 14px; line-height: 2;">
+            <span class="status-badge status-pending">pending</span>
+            <div class="arrow">↓</div>
+            <span class="status-badge status-pending">pending_supervisor</span>
+            <div class="arrow">↓</div>
+            <span class="status-badge status-approved">security_approved</span> (optional)
+            <div class="arrow">↓</div>
+            <span class="status-badge status-approved">approved</span>
+            <div class="arrow">↓</div>
+            <span class="status-badge status-delivered">loaded</span> (Flight Purser)
+            <div class="arrow">↓</div>
+            <span class="status-badge status-delivered">delivered</span> ✅ (Cabin Crew + Usage Tracking)
+        </div>
+    </div>
+
+    <!-- Cabin Crew Features -->
+    <div style="background: white; border: 2px solid #667eea; border-radius: 10px; padding: 20px; margin: 30px 0;">
+        <h3 style="color: #667eea; margin-top: 0;">👩‍✈️ Cabin Crew Product Usage Tracking</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+            <div style="background: #f0fdf4; padding: 15px; border-radius: 8px; border-left: 4px solid #10b981;">
+                <h4 style="margin: 0 0 10px 0; color: #065f46;">📝 Record Usage</h4>
+                <p style="margin: 0; font-size: 14px; color: #047857;">Track products served to passengers with quantities and notes</p>
+            </div>
+            <div style="background: #fef3c7; padding: 15px; border-radius: 8px; border-left: 4px solid #f59e0b;">
+                <h4 style="margin: 0 0 10px 0; color: #92400e;">⚠️ Record Defects</h4>
+                <p style="margin: 0; font-size: 14px; color: #b45309;">Document damaged or unusable items with reasons</p>
+            </div>
+            <div style="background: #dbeafe; padding: 15px; border-radius: 8px; border-left: 4px solid #3b82f6;">
+                <h4 style="margin: 0 0 10px 0; color: #1e40af;">📊 Auto-Calculate</h4>
+                <p style="margin: 0; font-size: 14px; color: #1e3a8a;">System calculates remaining = total - used - defect</p>
+            </div>
+            <div style="background: #fae8ff; padding: 15px; border-radius: 8px; border-left: 4px solid #a855f7;">
+                <h4 style="margin: 0 0 10px 0; color: #6b21a8;">➕ Request More</h4>
+                <p style="margin: 0; font-size: 14px; color: #7e22ce;">Request additional products during flight if needed</p>
+            </div>
+            <div style="background: #e0e7ff; padding: 15px; border-radius: 8px; border-left: 4px solid #6366f1;">
+                <h4 style="margin: 0 0 10px 0; color: #4338ca;">📄 Generate Report</h4>
+                <p style="margin: 0; font-size: 14px; color: #4f46e5;">Complete usage report with all statistics for audit</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="summary-box" style="background: #e0e7ff; border-left-color: #667eea;">
+        <h3 style="color: #4338ca;">💡 Key Differences</h3>
+        <p><strong>Approve Receipt (📦):</strong> Inventory → Catering transfer. Increases catering stock.</p>
+        <p><strong>Approve Request (📋):</strong> Catering Staff request for flight. Decreases catering stock when approved.</p>
+    </div>
+
+    <div class="feature-list" style="background: #fef3c7; border-left-color: #f59e0b;">
+        <h3 style="color: #92400e;">🎯 Quick Test Guide</h3>
+        <ol>
+            <li>Login as <strong>Inventory Personnel</strong> → Create product</li>
+            <li>Login as <strong>Inventory Supervisor</strong> → Approve product</li>
+            <li>Login as <strong>Inventory Personnel</strong> → Add stock (incoming)</li>
+            <li>Login as <strong>Inventory Supervisor</strong> → Approve stock movement (see enhanced cards!)</li>
+            <li>Continue through remaining steps...</li>
+        </ol>
+        <p><strong>Test Script Available:</strong> Run create-test-movements.php to generate sample data</p>
+    </div>
+
+    <div class="footer">
+        <p><strong>Inflight Catering System</strong> - Dynamic Dashboard Version with Product Usage Tracking</p>
+        <p>Generated: December 1, 2025</p>
+        <p>All 8 user roles have real-time dynamic dashboards ✅</p>
+        <p style="font-size: 12px; margin-top: 10px; color: #667eea;">
+            <strong>Complete Tracking:</strong> Inventory → Approval → Transfer → Loading → Service → Usage Recording
+        </p>
+    </div>
+
+    <!-- Print Button - Hidden when printing -->
+    <div class="print-button" style="position: fixed; top: 20px; right: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 9999; cursor: pointer;" onclick="window.print()">
+        <strong>🖨️ Click Here to Print/Save PDF</strong>
+        <div style="font-size: 12px; margin-top: 5px; opacity: 0.9;">or press Ctrl+P</div>
+    </div>
+
+    <style>
+        @media print {
+            .print-button {
+                display: none !important;
+            }
+        }
+    </style>
+
+    <script>
+        // Optional: Auto-print after 2 seconds
+        // Uncomment if you want auto-print
+        // setTimeout(function() { window.print(); }, 2000);
+    </script>
+</body>
+</html>

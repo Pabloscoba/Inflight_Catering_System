@@ -11,13 +11,24 @@ use Illuminate\Support\Facades\DB;
 class RequestApprovalController extends Controller
 {
     /**
-     * Display pending requests (security authenticated, awaiting Catering Incharge approval)
+     * Display pending requests (meal requests OR supervisor approved product requests)
      */
     public function pendingRequests()
     {
-        // Show requests authenticated by Security, awaiting Catering Incharge approval
+        // Show TWO types of requests:
+        // 1. Meal requests (request_type = 'meal', status = 'pending') - Direct from Catering Staff
+        // 2. Product requests (status = 'supervisor_approved') - From Inventory Supervisor
         $requests = RequestModel::with(['flight', 'requester', 'items.product'])
-            ->where('status', 'security_approved')
+            ->where(function($query) {
+                $query->where(function($q) {
+                    // Meal requests - direct from Catering Staff
+                    $q->where('request_type', 'meal')
+                      ->where('status', 'pending');
+                })->orWhere(function($q) {
+                    // Product requests - from Inventory Supervisor
+                    $q->where('status', 'supervisor_approved');
+                });
+            })
             ->latest()
             ->paginate(20);
 
@@ -25,42 +36,49 @@ class RequestApprovalController extends Controller
     }
 
     /**
-     * Approve request and create catering stock
+     * Approve request (handles both meal and product requests)
      */
     public function approveRequest(RequestModel $requestModel)
     {
-        if ($requestModel->status !== 'security_approved') {
+        // Check if request is awaiting Catering Incharge approval
+        $validStatuses = ['supervisor_approved', 'pending']; // pending = meal requests
+        if (!in_array($requestModel->status, $validStatuses)) {
             return back()->with('error', 'This request is not awaiting Catering Incharge approval.');
         }
 
-        // Approve and create catering stock records
+        // Different handling based on request type
         DB::transaction(function () use ($requestModel) {
-            foreach ($requestModel->items as $item) {
-                $qty = $item->quantity_approved ?? $item->quantity;
-                if ($qty <= 0) continue;
-
-                CateringStock::create([
-                    'product_id' => $item->product_id,
-                    'quantity_received' => $qty,
-                    'quantity_available' => $qty,
-                    'reference_number' => 'REQ-' . $requestModel->id,
-                    'notes' => 'Approved by Catering Incharge for Catering Staff',
-                    'received_by' => null,
-                    'catering_incharge_id' => auth()->id(),
-                    'status' => 'approved',
-                    'received_date' => now(),
-                    'approved_date' => now(),
+            if ($requestModel->request_type === 'meal') {
+                // MEAL REQUEST: Goes to Security for dispatch (no catering stock creation)
+                $requestModel->update([
+                    'status' => 'catering_approved',
+                    'catering_approved_by' => auth()->id(),
+                    'catering_approved_at' => now(),
+                ]);
+            } else {
+                // PRODUCT REQUEST: Forward to Security for authentication & stock issuance
+                $requestModel->update([
+                    'status' => 'sent_to_security',
+                    'catering_approved_by' => auth()->id(),
+                    'catering_approved_at' => now(),
                 ]);
             }
-
-            $requestModel->update([
-                'status' => 'catering_approved',
-                'approved_by' => auth()->id(),
-                'approved_date' => now(),
-            ]);
+            
+            // Notify requester
+            $requestModel->requester->notify(new RequestApprovedNotification($requestModel));
+            
+            // Notify Security Staff
+            $securityStaff = \App\Models\User::role('Security Staff')->get();
+            foreach ($securityStaff as $staff) {
+                $staff->notify(new RequestApprovedNotification($requestModel));
+            }
         });
 
-        return back()->with('success', 'Request approved. Ready for Catering Staff collection.');
+        $message = ($requestModel->request_type === 'meal') 
+            ? 'Meal request approved. Ready for Security dispatch.' 
+            : 'Product request approved and forwarded to Security Staff for authentication.';
+
+        return back()->with('success', $message);
     }
 
     /**
@@ -82,8 +100,11 @@ class RequestApprovalController extends Controller
             'approved_date' => now(),
             'rejection_reason' => $request->rejection_reason,
         ]);
+        
+        // Notify requester
+        $requestModel->requester->notify(new RequestRejectedNotification($requestModel));
 
-        return back()->with('success', 'Request rejected.');
+        return back()->with('success', 'Request has been rejected.');
     }
 
     /**

@@ -9,6 +9,7 @@ class RequestItem extends Model
     protected $fillable = [
         'request_id',
         'product_id',
+        'meal_type',
         'quantity_requested',
         'quantity_approved',
         'is_scheduled',

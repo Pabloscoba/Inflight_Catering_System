@@ -4,6 +4,7 @@ namespace App\Http\Controllers\RampDispatcher;
 
 use App\Http\Controllers\Controller;
 use App\Models\Request as RequestModel;
+use App\Models\ProductReturn;
 use App\Models\Flight;
 use Illuminate\Http\Request;
 
@@ -11,19 +12,22 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        // Get statistics
-        $approvedOrders = RequestModel::where('status', 'ready_for_dispatch')->count();
-        $dispatchedToday = RequestModel::where('status', 'dispatched')
-            ->whereDate('updated_at', today())
+        // Get statistics - include meal requests
+        $approvedOrders = RequestModel::whereIn('status', ['ready_for_dispatch', 'security_dispatched'])->count();
+        $dispatchedToday = RequestModel::where('status', 'handed_to_flight')
+            ->whereDate('handed_to_flight_at', today())
             ->count();
         
         // Flights needing dispatch today
         $todayFlights = Flight::whereDate('departure_time', today())
             ->count();
 
-        // Orders ready for dispatch (sent by Catering Staff)
+        // Orders ready for dispatch (product requests OR meal requests)
         $ordersToDispatch = RequestModel::with(['flight', 'requester', 'items.product'])
-            ->where('status', 'ready_for_dispatch')
+            ->where(function($query) {
+                $query->where('status', 'ready_for_dispatch')
+                      ->orWhere('status', 'security_dispatched'); // meal requests
+            })
             ->whereHas('flight', function($query) {
                 $query->where('departure_time', '>', now());
             })
@@ -36,6 +40,9 @@ class DashboardController extends Controller
             ->latest()
             ->limit(10)
             ->get();
+        
+        // Returns management
+        $pendingReturns = ProductReturn::where('status', 'pending_ramp')->count();
 
         // Upcoming flights (next 7 days)
         $upcomingFlights = Flight::with(['requests'])
@@ -51,7 +58,8 @@ class DashboardController extends Controller
             'todayFlights',
             'ordersToDispatch',
             'recentDispatches',
-            'upcomingFlights'
+            'upcomingFlights',
+            'pendingReturns'
         ));
     }
 }

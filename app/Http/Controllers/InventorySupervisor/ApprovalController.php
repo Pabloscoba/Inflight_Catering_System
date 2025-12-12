@@ -7,6 +7,8 @@ use App\Models\Product;
 use App\Models\StockMovement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Notifications\ProductApprovedNotification;
+use App\Notifications\StockMovementApprovedNotification;
 
 class ApprovalController extends Controller
 {
@@ -20,6 +22,11 @@ class ApprovalController extends Controller
             'approved_by' => auth()->id(),
             'approved_at' => now(),
         ]);
+        
+        // Notify the creator (Inventory Personnel)
+        if ($product->createdBy) {
+            $product->createdBy->notify(new ProductApprovedNotification($product));
+        }
 
         return back()->with('success', 'Product approved successfully!');
     }
@@ -65,6 +72,15 @@ class ApprovalController extends Controller
                 if (str_contains($movement->notes, 'Condition: good')) {
                     $product->increment('quantity_in_stock', $movement->quantity);
                 }
+            } elseif ($movement->type === 'transfer_to_catering') {
+                // Transfer from main inventory to catering mini stock
+                $product->decrement('quantity_in_stock', $movement->quantity);
+                $product->increment('catering_stock', $movement->quantity);
+            }
+            
+            // Notify the creator (Inventory Personnel)
+            if ($movement->user) {
+                $movement->user->notify(new StockMovementApprovedNotification($movement));
             }
         });
 
@@ -92,8 +108,12 @@ class ApprovalController extends Controller
      */
     public function pendingProducts()
     {
-        $products = Product::with(['category'])
-            ->where('status', 'pending')
+        // Get products with pending status OR products without approved_by (legacy products)
+        $products = Product::with(['category', 'approvedBy'])
+            ->where(function($query) {
+                $query->where('status', 'pending')
+                      ->orWhereNull('approved_by');
+            })
             ->latest()
             ->paginate(20);
 

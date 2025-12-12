@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Request as RequestModel;
 use App\Models\RequestItem;
 use App\Models\Product;
+use App\Models\User;
+use App\Notifications\NewRequestNotification;
+use App\Notifications\RequestPendingInventoryNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -36,7 +39,12 @@ class RequestController extends Controller
 
     public function create()
     {
-        $products = Product::where('status', 'approved')->get();
+        // Show only approved and active products
+        // Stock availability will be checked during request processing
+        $products = Product::where('status', 'approved')
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get();
         return view('catering-staff.requests.create', compact('products'));
     }
 
@@ -48,29 +56,70 @@ class RequestController extends Controller
             'notes' => 'nullable|string|max:1000',
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,id',
+            'items.*.meal_type' => 'nullable|in:breakfast,lunch,dinner,snack,VIP_meal,special_meal,non_meal',
             'items.*.quantity' => 'required|integer|min:1',
         ]);
 
         DB::transaction(function () use ($data) {
+            // Auto-detect request type based on items
+            $requestType = 'product'; // default
+            $hasMeals = false;
+            $hasProducts = false;
+            
+            foreach ($data['items'] as $it) {
+                $product = Product::find($it['product_id']);
+                if ($product && $product->meal_type) {
+                    $hasMeals = true;
+                } else {
+                    $hasProducts = true;
+                }
+            }
+            
+            // Determine request type
+            if ($hasMeals && !$hasProducts) {
+                $requestType = 'meal';
+            } elseif ($hasMeals && $hasProducts) {
+                $requestType = 'mixed';
+            }
+            
+            // Set initial status based on request type
+            $initialStatus = ($requestType === 'meal') ? 'pending' : 'pending_inventory';
+            
             $req = RequestModel::create([
                 'flight_id' => $data['flight_id'],
                 'requester_id' => auth()->id(),
                 'requested_date' => $data['requested_date'],
                 'notes' => $data['notes'] ?? null,
-                // New workflow: initial state pending inventory personnel review
-                'status' => 'pending_inventory',
+                'request_type' => $requestType,
+                'status' => $initialStatus,
             ]);
 
             foreach ($data['items'] as $it) {
                 RequestItem::create([
                     'request_id' => $req->id,
                     'product_id' => $it['product_id'],
+                    'meal_type' => $it['meal_type'] ?? null,
                     'quantity_requested' => $it['quantity'],
                 ]);
             }
+            
+            // Notify based on request type
+            if ($requestType === 'meal') {
+                // Meal requests go to Catering Incharge
+                $cateringIncharge = User::role('Catering Incharge')->first();
+                if ($cateringIncharge) {
+                    $cateringIncharge->notify(new NewRequestNotification($req));
+                }
+            } else {
+                // Product/Mixed requests go to Inventory Personnel first
+                $inventoryPersonnel = User::role('Inventory Personnel')->get();
+                foreach ($inventoryPersonnel as $personnel) {
+                    $personnel->notify(new RequestPendingInventoryNotification($req));
+                }
+            }
         });
 
-        return redirect()->route('catering-staff.requests.index')->with('success', 'Request submitted successfully. Awaiting Inventory Personnel review.');
+        return redirect()->route('catering-staff.requests.index')->with('success', 'Request created successfully.');
     }
 
     public function show(RequestModel $requestModel)

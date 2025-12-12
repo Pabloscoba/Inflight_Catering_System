@@ -5,7 +5,11 @@
 @section('content')
 <div class="content-header">
     <h1>Request Additional Products</h1>
-    <p>Request #{{ $requestModel->id }} | Flight: {{ $requestModel->flight->flight_number }}</p>
+    <p>Request #{{ $requestModel->id }} 
+        @if($requestModel->flight)
+            | Flight: {{ $requestModel->flight->flight_number }}
+        @endif
+    </p>
 </div>
 
 <div style="background:white;border-radius:16px;padding:32px;box-shadow:0 2px 12px rgba(0,0,0,0.08);max-width:700px;margin:0 auto;">
@@ -30,6 +34,26 @@
                 @endforeach
             </select>
             @error('product_id')
+                <div style="color:#e53e3e;font-size:13px;margin-top:6px;">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <div style="margin-bottom:24px;">
+            <label style="display:block;font-size:14px;font-weight:600;color:#4a5568;margin-bottom:10px;">
+                Meal Type (Optional)
+            </label>
+            <select name="meal_type" 
+                    style="width:100%;padding:12px 14px;border:1px solid #cbd5e0;border-radius:8px;font-size:14px;background:white;">
+                <option value="">-- Select Meal Type (if applicable) --</option>
+                <option value="breakfast" {{ old('meal_type') == 'breakfast' ? 'selected' : '' }}>🍳 Breakfast</option>
+                <option value="lunch" {{ old('meal_type') == 'lunch' ? 'selected' : '' }}>🍽️ Lunch</option>
+                <option value="dinner" {{ old('meal_type') == 'dinner' ? 'selected' : '' }}>🌙 Dinner</option>
+                <option value="snack" {{ old('meal_type') == 'snack' ? 'selected' : '' }}>🍪 Snack</option>
+                <option value="VIP_meal" {{ old('meal_type') == 'VIP_meal' ? 'selected' : '' }}>👑 VIP Meal</option>
+                <option value="special_meal" {{ old('meal_type') == 'special_meal' ? 'selected' : '' }}>⭐ Special Meal</option>
+                <option value="non_meal" {{ old('meal_type') == 'non_meal' ? 'selected' : '' }}>📦 Non-Meal Item</option>
+            </select>
+            @error('meal_type')
                 <div style="color:#e53e3e;font-size:13px;margin-top:6px;">{{ $message }}</div>
             @enderror
         </div>

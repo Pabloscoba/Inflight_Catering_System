@@ -14,6 +14,15 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->redirectGuestsTo('/login');
         
+        // Global security middleware
+        $middleware->append(\App\Http\Middleware\SetSecurityHeaders::class);
+        
+        // Web middleware group additions
+        $middleware->web(append: [
+            \App\Http\Middleware\ValidateSession::class,
+            \App\Http\Middleware\LogSecurityEvents::class,
+        ]);
+        
         $middleware->alias([
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,

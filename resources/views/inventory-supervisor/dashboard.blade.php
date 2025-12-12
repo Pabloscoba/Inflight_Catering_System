@@ -4,8 +4,7 @@
 
 @section('content')
 <div class="content-header">
-    <h1>Inventory Supervisor Dashboard</h1>
-    <p>Approve products and stock movements from Inventory Personnel</p>
+    
 </div>
 
 <!-- Stats Cards -->
@@ -49,6 +48,36 @@
         </div>
     </div>
 
+    <!-- Pending Requests -->
+    <a href="#pending-requests-section" style="text-decoration:none;color:inherit;">
+    <div style="background: white; border-radius: 16px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); display: flex; gap: 20px; align-items: center; transition: all 0.3s; cursor: pointer;" onmouseover="this.style.boxShadow='0 4px 16px rgba(0,0,0,0.12)'" onmouseout="this.style.boxShadow='0 2px 8px rgba(0,0,0,0.08)'">
+        <div style="width: 64px; height: 64px; border-radius: 12px; background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <svg style="width: 32px; height: 32px; color: white;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+            </svg>
+        </div>
+        <div style="flex: 1; min-width: 0;">
+            <div style="font-size: 32px; font-weight: 700; color: #1a1a1a; line-height: 1.2;">{{ $pendingRequests }}</div>
+            <div style="font-size: 14px; color: #666; margin-top: 4px;">Pending Requests</div>
+        </div>
+    </div>
+    </a>
+
+    <!-- Approved Requests -->
+    <a href="#approved-requests-section" style="text-decoration:none;color:inherit;">
+    <div style="background: white; border-radius: 16px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); display: flex; gap: 20px; align-items: center; transition: all 0.3s; cursor: pointer;" onmouseover="this.style.boxShadow='0 4px 16px rgba(0,0,0,0.12)'" onmouseout="this.style.boxShadow='0 2px 8px rgba(0,0,0,0.08)'">
+        <div style="width: 64px; height: 64px; border-radius: 12px; background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <svg style="width: 32px; height: 32px; color: white;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+        </div>
+        <div style="flex: 1; min-width: 0;">
+            <div style="font-size: 32px; font-weight: 700; color: #1a1a1a; line-height: 1.2;">{{ $approvedRequests }}</div>
+            <div style="font-size: 14px; color: #666; margin-top: 4px;">Approved Requests</div>
+        </div>
+    </div>
+    </a>
+
     <!-- Low Stock Alert -->
     <div style="background: white; border-radius: 16px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); display: flex; gap: 20px; align-items: center; transition: all 0.3s;">
         <div style="width: 64px; height: 64px; border-radius: 12px; background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
@@ -65,11 +94,11 @@
 
 <!-- Quick Actions -->
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 32px;">
-    <a href="{{ route('inventory-supervisor.approvals.products') }}" style="display: flex; align-items: center; gap: 12px; padding: 18px 24px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 12px; text-decoration: none; font-weight: 600; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4); transition: all 0.3s;">
+    <a href="{{ route('inventory-supervisor.products.index') }}" style="display: flex; align-items: center; gap: 12px; padding: 18px 24px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 12px; text-decoration: none; font-weight: 600; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4); transition: all 0.3s;">
         <svg style="width: 24px; height: 24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
         </svg>
-        <span>Approve Products</span>
+        <span>Approve Products ({{ $pendingProducts }})</span>
     </a>
 
     <a href="{{ route('inventory-supervisor.approvals.movements') }}" style="display: flex; align-items: center; gap: 12px; padding: 18px 24px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; border-radius: 12px; text-decoration: none; font-weight: 600; box-shadow: 0 4px 12px rgba(240, 147, 251, 0.4); transition: all 0.3s;">
@@ -86,6 +115,73 @@
         <span>View All Movements</span>
     </a>
 </div>
+
+<!-- Pending Requests Table -->
+@if($pendingRequestsList->count() > 0)
+<div style="background: white; border-radius: 16px; padding: 28px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 32px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <h3 style="font-size: 20px; font-weight: 700; color: #1a1a1a; margin: 0;">🍽️ Pending Catering Requests Approval</h3>
+        <span style="background: #fef3c7; color: #b45309; padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 700;">{{ $pendingRequestsList->count() }} Pending</span>
+    </div>
+    <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+            <tr style="border-bottom: 2px solid #e9ecef;">
+                <th style="padding: 14px 16px; text-align: left; font-size: 13px; font-weight: 600; color: #495057; text-transform: uppercase;">Request ID</th>
+                <th style="padding: 14px 16px; text-align: left; font-size: 13px; font-weight: 600; color: #495057; text-transform: uppercase;">Flight</th>
+                <th style="padding: 14px 16px; text-align: left; font-size: 13px; font-weight: 600; color: #495057; text-transform: uppercase;">Products</th>
+                <th style="padding: 14px 16px; text-align: left; font-size: 13px; font-weight: 600; color: #495057; text-transform: uppercase;">Requested By</th>
+                <th style="padding: 14px 16px; text-align: left; font-size: 13px; font-weight: 600; color: #495057; text-transform: uppercase;">Date</th>
+                <th style="padding: 14px 16px; text-align: center; font-size: 13px; font-weight: 600; color: #495057; text-transform: uppercase;">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($pendingRequestsList as $request)
+            <tr style="border-bottom: 1px solid #f3f4f6; transition: background 0.2s; background: #fffbeb;" onmouseover="this.style.background='#fef3c7'" onmouseout="this.style.background='#fffbeb'">
+                <td style="padding: 14px 16px;">
+                    <span style="font-weight: 600; color: #1e40af;">#{{ $request->id }}</span>
+                </td>
+                <td style="padding: 14px 16px;">
+                    <div style="font-weight: 600; color: #1a1a1a;">{{ $request->flight->flight_number ?? 'N/A' }}</div>
+                    <div style="font-size: 12px; color: #6b7280;">{{ $request->flight->origin ?? '' }} → {{ $request->flight->destination ?? '' }}</div>
+                </td>
+                <td style="padding: 14px 16px;">
+                    @foreach($request->items->take(2) as $item)
+                        <div style="font-size: 13px; color: #374151; margin-bottom: 4px;">
+                            <span style="font-weight: 600;">{{ $item->product->name }}</span> 
+                            <span style="color: #9ca3af;">({{ $item->quantity_requested }})</span>
+                        </div>
+                    @endforeach
+                    @if($request->items->count() > 2)
+                        <div style="font-size: 12px; color: #667eea; font-weight: 600;">+{{ $request->items->count() - 2 }} more</div>
+                    @endif
+                </td>
+                <td style="padding: 14px 16px;">
+                    <div style="font-weight: 600; color: #1a1a1a;">{{ $request->requester->name ?? 'Unknown' }}</div>
+                    <div style="font-size: 11px; color: #6b7280;">{{ $request->requester->roles->first()->name ?? '' }}</div>
+                </td>
+                <td style="padding: 14px 16px;">
+                    <div style="font-weight: 500; color: #1a1a1a;">{{ $request->created_at->format('M d, Y') }}</div>
+                    <div style="font-size: 11px; color: #9ca3af;">{{ $request->created_at->diffForHumans() }}</div>
+                </td>
+                <td style="padding: 14px 16px; text-align: center;">
+                    <form action="{{ route('inventory-supervisor.requests.approve', $request) }}" method="POST" style="display: inline-block; margin-right: 8px;">
+                        @csrf
+                        @foreach($request->items as $item)
+                            <input type="hidden" name="items[{{ $item->id }}][quantity_approved]" value="{{ $item->quantity_requested }}">
+                        @endforeach
+                        <button type="submit" style="padding: 6px 16px; background: #28a745; color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;">✓ Approve</button>
+                    </form>
+                    <a href="{{ route('inventory-supervisor.requests.show', $request) }}" 
+                       style="display: inline-block; padding: 6px 16px; background: #6c757d; color: white; border-radius: 6px; font-size: 13px; font-weight: 600; text-decoration: none;">
+                        👁️ View
+                    </a>
+                </td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+</div>
+@endif
 
 <!-- Pending Products Table -->
 @if($pendingProductsList->count() > 0)
@@ -209,6 +305,8 @@
     </table>
 </div>
 @endif
+
+
 
 <!-- Low Stock Items Alert -->
 @if($lowStockItems->count() > 0)

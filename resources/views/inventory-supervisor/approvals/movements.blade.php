@@ -21,6 +21,40 @@
 @endif
 
 @if($movements->count() > 0)
+
+<!-- Summary Cards -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 30px;">
+    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 12px; color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+        <div style="font-size: 13px; opacity: 0.9; margin-bottom: 6px;">Total Pending</div>
+        <div style="font-size: 28px; font-weight: 700;">{{ $movements->total() }}</div>
+        <div style="font-size: 11px; opacity: 0.8; margin-top: 4px;">Awaiting approval</div>
+    </div>
+    
+    <div style="background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%); padding: 20px; border-radius: 12px; color: #000; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+        <div style="font-size: 13px; opacity: 0.8; margin-bottom: 6px;">📥 Incoming</div>
+        <div style="font-size: 28px; font-weight: 700;">{{ $movements->where('type', 'incoming')->count() }}</div>
+        <div style="font-size: 11px; opacity: 0.7; margin-top: 4px;">+{{ $movements->where('type', 'incoming')->sum('quantity') }} units</div>
+    </div>
+    
+    <div style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); padding: 20px; border-radius: 12px; color: #000; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+        <div style="font-size: 13px; opacity: 0.8; margin-bottom: 6px;">🔄 Transfers</div>
+        <div style="font-size: 28px; font-weight: 700;">{{ $movements->where('type', 'transfer_to_catering')->count() }}</div>
+        <div style="font-size: 11px; opacity: 0.7; margin-top: 4px;">{{ $movements->where('type', 'transfer_to_catering')->sum('quantity') }} units to catering</div>
+    </div>
+    
+    <div style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); padding: 20px; border-radius: 12px; color: #000; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+        <div style="font-size: 13px; opacity: 0.8; margin-bottom: 6px;">↗ Issues</div>
+        <div style="font-size: 28px; font-weight: 700;">{{ $movements->where('type', 'issued')->count() }}</div>
+        <div style="font-size: 11px; opacity: 0.7; margin-top: 4px;">-{{ $movements->where('type', 'issued')->sum('quantity') }} units issued</div>
+    </div>
+    
+    <div style="background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%); padding: 20px; border-radius: 12px; color: #000; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+        <div style="font-size: 13px; opacity: 0.8; margin-bottom: 6px;">↩ Returns</div>
+        <div style="font-size: 28px; font-weight: 700;">{{ $movements->where('type', 'returned')->count() }}</div>
+        <div style="font-size: 11px; opacity: 0.7; margin-top: 4px;">+{{ $movements->where('type', 'returned')->sum('quantity') }} units returned</div>
+    </div>
+</div>
+
 <div style="background: white; border-radius: 16px; padding: 28px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
     <table style="width: 100%; border-collapse: collapse;">
         <thead>
@@ -44,13 +78,50 @@
                 </td>
                 <td style="padding: 14px 16px; font-size: 14px; font-weight: 500;">{{ $movement->product->name }}</td>
                 <td style="padding: 14px 16px; font-size: 14px;">
-                    <span style="padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;
-                        background: {{ $movement->type == 'incoming' ? '#d4edda' : ($movement->type == 'issued' ? '#fff3cd' : '#d1ecf1') }};
-                        color: {{ $movement->type == 'incoming' ? '#155724' : ($movement->type == 'issued' ? '#856404' : '#0c5460') }};">
-                        {{ ucfirst($movement->type) }}
-                    </span>
+                    @if($movement->type == 'incoming')
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; background: #d4edda; color: #155724;">
+                                📥 Incoming
+                            </span>
+                        </div>
+                        <small style="color: #28a745; font-size: 11px; display: block; margin-top: 4px;">✓ Adds to main stock</small>
+                    @elseif($movement->type == 'issued')
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; background: #fff3cd; color: #856404;">
+                                ↗ Issued
+                            </span>
+                        </div>
+                        <small style="color: #d97706; font-size: 11px; display: block; margin-top: 4px;">⚠ Removes from stock</small>
+                    @elseif($movement->type == 'transfer_to_catering')
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; background: #dbeafe; color: #1e40af;">
+                                🔄 Transfer
+                            </span>
+                        </div>
+                        <small style="color: #0891b2; font-size: 11px; display: block; margin-top: 4px;">→ Main to Catering</small>
+                    @else
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; background: #e0e7ff; color: #4338ca;">
+                                ↩ Returns
+                            </span>
+                        </div>
+                        <small style="color: #6366f1; font-size: 11px; display: block; margin-top: 4px;">✓ Adds back to stock</small>
+                    @endif
                 </td>
-                <td style="padding: 14px 16px; font-size: 14px; text-align: center; font-weight: 600;">{{ $movement->quantity }}</td>
+                <td style="padding: 14px 16px; font-size: 16px; text-align: center; font-weight: 700; 
+                    @if($movement->type == 'incoming' || $movement->type == 'returned')
+                        color: #28a745;
+                    @elseif($movement->type == 'transfer_to_catering')
+                        color: #0891b2;
+                    @else
+                        color: #dc3545;
+                    @endif">
+                    @if($movement->type == 'incoming' || $movement->type == 'returned')
+                        +{{ $movement->quantity }}
+                    @else
+                        -{{ $movement->quantity }}
+                    @endif
+                </td>
                 <td style="padding: 14px 16px; font-size: 14px; color: #666;">{{ $movement->reference_number ?? '-' }}</td>
                 <td style="padding: 14px 16px; font-size: 14px;">{{ $movement->user->name }}</td>
                 <td style="padding: 14px 16px; font-size: 14px; color: #666; max-width: 200px;">

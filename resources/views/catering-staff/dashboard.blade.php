@@ -523,7 +523,7 @@ tr:hover {
     @endif
 </div>
 
-@if($outOfStockItems->count() == 0 && $lowStockItems->count() == 0 && $nearEmptyItems->count() == 0 && $availableStock->count() > 0)
+@if($unifiedLowStockCount == 0 && $unifiedStock->count() > 0)
 <div style="background:#d1fae5;border-left:4px solid #059669;border-radius:12px;padding:18px 20px;margin-top:32px;box-shadow:0 2px 8px rgba(5,150,105,0.15);">
     <div style="display:flex;align-items:center;gap:10px;">
         <svg style="width:22px;height:22px;color:#059669;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -537,31 +537,44 @@ tr:hover {
 </div>
 @endif
 
-<!-- Available Catering Stock -->
+<!-- UNIFIED CATERING STOCK - All Sources Combined -->
+@if($unifiedStock->count() > 0)
 <div style="background:white;border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,0.08);overflow:hidden;margin-top:32px;">
-    <div style="padding:24px 28px;border-bottom:2px solid #f3f4f6;display:flex;justify-content:space-between;align-items:center;">
-        <div style="flex:1;">
-            <h3 style="font-size:20px;font-weight:700;color:#1a1a1a;margin:0;">📦 My Catering Department Stock</h3>
-            <p style="font-size:13px;color:#6b7280;margin:4px 0 0 0;">Stock approved and transferred to Catering Department (Ready for flights)</p>
-            <p style="font-size:12px;color:#9ca3af;margin:4px 0 0 0;font-style:italic;">
-                💡 This shows only products that passed through: Security → Catering Incharge → Your Department
-            </p>
-        </div>
-        <div style="display:flex;align-items:center;gap:12px;">
-            <div style="background:#eff6ff;color:#1e40af;padding:8px 14px;border-radius:8px;font-size:13px;font-weight:600;">
-                {{ $availableStock->count() }} products
+    <div style="padding:24px 28px;border-bottom:2px solid #f3f4f6;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <div style="flex:1;">
+                <h3 style="font-size:22px;font-weight:700;color:#1a1a1a;margin:0;display:flex;align-items:center;gap:10px;">
+                    📦 My Catering Department Stock
+                </h3>
+                <p style="font-size:13px;color:#6b7280;margin:8px 0 0 0;">Complete inventory from all sources - Ready for flight operations</p>
             </div>
-            <button onclick="toggleStockDetails()" style="background:#2563eb;color:white;padding:8px 16px;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background 0.2s;" onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">
-                <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                </svg>
-                View Details
-            </button>
+            <div style="display:flex;align-items:center;gap:12px;">
+                <div style="background:#eff6ff;color:#1e40af;padding:8px 14px;border-radius:8px;font-size:13px;font-weight:600;">
+                    {{ $unifiedStock->count() }} products
+                </div>
+                @if($unifiedLowStockCount > 0)
+                <div style="background:#fef3c7;color:#92400e;padding:8px 14px;border-radius:8px;font-size:13px;font-weight:600;">
+                    {{ $unifiedLowStockCount }} low stock
+                </div>
+                @endif
+            </div>
+        </div>
+        
+        <!-- Stock Source Legend -->
+        <div style="display:flex;gap:24px;padding:12px 16px;background:#f9fafb;border-radius:10px;border:1px solid #e5e7eb;">
+            <div style="display:flex;align-items:center;gap:8px;">
+                <div style="width:10px;height:10px;border-radius:50%;background:linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);"></div>
+                <span style="font-size:12px;color:#374151;font-weight:600;">Mini Stock</span>
+                <span style="font-size:11px;color:#6b7280;">(From Inventory)</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+                <div style="width:10px;height:10px;border-radius:50%;background:linear-gradient(135deg, #10b981 0%, #059669 100%);"></div>
+                <span style="font-size:12px;color:#374151;font-weight:600;">Workflow Stock</span>
+                <span style="font-size:11px;color:#6b7280;">(Security → Catering Incharge)</span>
+            </div>
         </div>
     </div>
     
-    @if($availableStock->count() > 0)
     <div style="overflow-x:auto;">
         <table style="width:100%;border-collapse:collapse;">
             <thead>
@@ -569,79 +582,63 @@ tr:hover {
                     <th style="padding:14px 20px;text-align:left;font-weight:600;color:#374151;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;">Product</th>
                     <th style="padding:14px 20px;text-align:left;font-weight:600;color:#374151;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;">SKU</th>
                     <th style="padding:14px 20px;text-align:left;font-weight:600;color:#374151;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;">Category</th>
-                    <th style="padding:14px 20px;text-align:center;font-weight:600;color:#374151;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;">Received</th>
-                    <th style="padding:14px 20px;text-align:center;font-weight:600;color:#374151;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;">Available</th>
-                    <th style="padding:14px 20px;text-align:center;font-weight:600;color:#374151;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;">Min Stock</th>
+                    <th style="padding:14px 20px;text-align:center;font-weight:600;color:#374151;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;">Mini Stock</th>
+                    <th style="padding:14px 20px;text-align:center;font-weight:600;color:#374151;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;">Workflow Stock</th>
+                    <th style="padding:14px 20px;text-align:center;font-weight:600;color:#374151;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;">Total Available</th>
+                    <th style="padding:14px 20px;text-align:center;font-weight:600;color:#374151;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;">Reorder Level</th>
                     <th style="padding:14px 20px;text-align:center;font-weight:600;color:#374151;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;">Status</th>
-                    <th style="padding:14px 20px;text-align:left;font-weight:600;color:#374151;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;">Last Restocked</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach($availableStock as $stock)
-                @php
-                    $isOutOfStock = $stock->total_available == 0;
-                    $isLow = $stock->total_available > 0 && $stock->total_available < $stock->min_stock;
-                    $percentage = ($stock->total_available / max($stock->min_stock, 1)) * 100;
-                    $used = $stock->total_received - $stock->total_available;
-                @endphp
-                <tr style="border-bottom:1px solid #f3f4f6;transition:background 0.2s;{{ $isOutOfStock ? 'opacity:0.6;' : '' }}" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='white'">
+                @foreach($unifiedStock as $stock)
+                <tr style="border-bottom:1px solid #f3f4f6;transition:background 0.2s;" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='white'">
                     <td style="padding:16px 20px;">
                         <div style="font-weight:600;color:#1f2937;font-size:14px;">{{ $stock->name }}</div>
-                        @if($used > 0)
-                        <div style="font-size:11px;color:#9ca3af;margin-top:2px;">Used: {{ $used }} units</div>
-                        @endif
                     </td>
                     <td style="padding:16px 20px;">
                         <code style="background:#f3f4f6;padding:4px 8px;border-radius:4px;font-size:12px;color:#4b5563;">{{ $stock->sku }}</code>
                     </td>
                     <td style="padding:16px 20px;">
-                        <span style="color:#6b7280;font-size:13px;">{{ $stock->category }}</span>
+                        <span style="background:#f3f4f6;color:#374151;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:600;">{{ $stock->category }}</span>
                     </td>
                     <td style="padding:16px 20px;text-align:center;">
-                        <div style="font-weight:600;font-size:16px;color:#4b5563;">{{ $stock->total_received }}</div>
-                    </td>
-                    <td style="padding:16px 20px;text-align:center;">
-                        <div style="font-weight:700;font-size:18px;color:{{ $isOutOfStock ? '#dc2626' : ($isLow ? '#f59e0b' : '#059669') }};">
-                            {{ $stock->total_available }}
-                        </div>
-                    </td>
-                    <td style="padding:16px 20px;text-align:center;">
-                        <div style="color:#6b7280;font-size:14px;font-weight:500;">{{ $stock->min_stock }}</div>
-                    </td>
-                    <td style="padding:16px 20px;text-align:center;">
-                        @if($isOutOfStock)
-                        <div style="display:inline-flex;flex-direction:column;align-items:center;gap:4px;">
-                            <span style="background:#fee2e2;color:#991b1b;padding:4px 10px;border-radius:12px;font-size:11px;font-weight:600;">
-                                ❌ OUT OF STOCK
-                            </span>
-                            <div style="width:80px;height:6px;background:#fee2e2;border-radius:3px;"></div>
-                        </div>
-                        @elseif($isLow)
-                        <div style="display:inline-flex;flex-direction:column;align-items:center;gap:4px;">
-                            <span style="background:#fef3c7;color:#92400e;padding:4px 10px;border-radius:12px;font-size:11px;font-weight:600;">
-                                ⚠️ LOW STOCK
-                            </span>
-                            <div style="width:80px;height:6px;background:#fef3c7;border-radius:3px;overflow:hidden;">
-                                <div style="width:{{ min($percentage, 100) }}%;height:100%;background:#f59e0b;"></div>
-                            </div>
+                        @if($stock->mini_stock > 0)
+                        <div style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg, #eff6ff, #dbeafe);padding:8px 12px;border-radius:8px;border:1px solid #bfdbfe;">
+                            <div style="width:8px;height:8px;border-radius:50%;background:#3b82f6;"></div>
+                            <span style="font-weight:700;color:#1e40af;font-size:15px;">{{ $stock->mini_stock }}</span>
                         </div>
                         @else
-                        <div style="display:inline-flex;flex-direction:column;align-items:center;gap:4px;">
-                            <span style="background:#d1fae5;color:#065f46;padding:4px 10px;border-radius:12px;font-size:11px;font-weight:600;">
-                                ✓ SUFFICIENT
-                            </span>
-                            <div style="width:80px;height:6px;background:#d1fae5;border-radius:3px;overflow:hidden;">
-                                <div style="width:{{ min($percentage, 100) }}%;height:100%;background:#059669;"></div>
-                            </div>
-                        </div>
+                        <span style="color:#d1d5db;font-size:14px;">—</span>
                         @endif
                     </td>
-                    <td style="padding:16px 20px;">
-                        @if($stock->last_restocked)
-                        <div style="color:#4b5563;font-size:13px;">{{ \Carbon\Carbon::parse($stock->last_restocked)->format('M d, Y') }}</div>
-                        <div style="color:#9ca3af;font-size:11px;margin-top:2px;">{{ \Carbon\Carbon::parse($stock->last_restocked)->diffForHumans() }}</div>
+                    <td style="padding:16px 20px;text-align:center;">
+                        @if($stock->workflow_stock > 0)
+                        <div style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg, #d1fae5, #a7f3d0);padding:8px 12px;border-radius:8px;border:1px solid #6ee7b7;">
+                            <div style="width:8px;height:8px;border-radius:50%;background:#10b981;"></div>
+                            <span style="font-weight:700;color:#065f46;font-size:15px;">{{ $stock->workflow_stock }}</span>
+                        </div>
                         @else
-                        <span style="color:#9ca3af;font-size:12px;">N/A</span>
+                        <span style="color:#d1d5db;font-size:14px;">—</span>
+                        @endif
+                    </td>
+                    <td style="padding:16px 20px;text-align:center;">
+                        <div style="background:#f9fafb;padding:10px 16px;border-radius:10px;border:2px solid #e5e7eb;">
+                            <div style="font-weight:700;color:#1f2937;font-size:20px;">{{ $stock->total_available }}</div>
+                            <div style="font-size:10px;color:#6b7280;margin-top:2px;text-transform:uppercase;letter-spacing:0.5px;">units</div>
+                        </div>
+                    </td>
+                    <td style="padding:16px 20px;text-align:center;">
+                        <div style="color:#6b7280;font-size:14px;">{{ $stock->reorder_level }}</div>
+                    </td>
+                    <td style="padding:16px 20px;text-align:center;">
+                        @if($stock->is_low_stock)
+                        <span style="background:#fef3c7;color:#92400e;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:6px;">
+                            ⚠️ Low Stock
+                        </span>
+                        @else
+                        <span style="background:#d1fae5;color:#065f46;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:6px;">
+                            ✓ In Stock
+                        </span>
                         @endif
                     </td>
                 </tr>

@@ -41,22 +41,46 @@ class DashboardController extends Controller
         ];
         
         // Latest requests (5 most recent)
-        $latestRequests = CateringRequest::with(['requester', 'flight'])
+        $latestRequests = CateringRequest::with([
+            'requester', 
+            'flight',
+            'items.product',
+            'approver',
+            'cateringApprover',
+            'securityDispatcher',
+            'rampAgent',
+            'flightPurser',
+            'cabinCrew'
+        ])
             ->orderBy('created_at', 'desc')
             ->take(5)
             ->get();
         
         // Latest approvals (requests that changed status recently)
-        $latestApprovals = CateringRequest::with(['requester', 'flight'])
-            ->whereIn('status', ['supervisor_approved', 'security_approved', 'catering_approved'])
+        $latestApprovals = CateringRequest::with([
+            'requester', 
+            'flight',
+            'approver', // Inventory Supervisor
+            'cateringApprover', // Catering Incharge
+            'securityDispatcher', // Security Staff
+            'items.product'
+        ])
+            ->whereIn('status', ['supervisor_approved', 'security_approved', 'catering_approved', 'sent_to_ramp', 'dispatched', 'loaded', 'delivered'])
             ->orderBy('updated_at', 'desc')
             ->take(5)
             ->get();
         
-        // Recent stock movements
-        $recentStock = \App\Models\StockMovement::with(['product', 'user'])
+        // Pending stock movements awaiting approval
+        $pendingStockMovements = \App\Models\StockMovement::with(['product', 'user'])
+            ->where('status', 'pending')
+            ->orderBy('created_at', 'asc')
+            ->take(10)
+            ->get();
+        
+        // Recent stock movements with full details
+        $recentStock = \App\Models\StockMovement::with(['product', 'user', 'approvedBy'])
             ->orderBy('created_at', 'desc')
-            ->take(5)
+            ->take(10)
             ->get();
         
         return view('dashboard.index', compact(
@@ -71,6 +95,7 @@ class DashboardController extends Controller
             'requestsByDepartment',
             'latestRequests',
             'latestApprovals',
+            'pendingStockMovements',
             'recentStock'
         ));
     }

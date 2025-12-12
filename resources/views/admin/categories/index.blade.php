@@ -62,8 +62,23 @@
                     <span class="category-badge">{{ $category->products_count }} Products</span>
                 </div>
                 <p class="category-description">{{ $category->description ?? 'No description available' }}</p>
+                
+                @if(!$category->is_active)
+                <div style="background: #fff3cd; border: 1px solid #ffc107; padding: 8px 12px; border-radius: 6px; margin-bottom: 12px; font-size: 13px; color: #856404;">
+                    ⚠️ This category is currently inactive
+                </div>
+                @endif
+                
                 <div class="category-actions">
                     <a href="{{ route('admin.products.index', ['category' => $category->id]) }}" class="btn btn-primary btn-sm">View Products</a>
+                    
+                    <form method="POST" action="{{ route('admin.categories.toggle-status', $category) }}" style="display: inline;">
+                        @csrf
+                        @method('PATCH')
+                        <button type="submit" class="btn btn-sm {{ $category->is_active ? 'btn-secondary' : 'btn-primary' }}">
+                            {{ $category->is_active ? '🚫 Deactivate' : '✅ Activate' }}
+                        </button>
+                    </form>
                 </div>
             </div>
             @endforeach

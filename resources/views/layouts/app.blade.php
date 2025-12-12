@@ -223,6 +223,27 @@
                 </div>
                 @endif
 
+                @role('Catering Staff')
+                <!-- Meal Management (Catering Staff Only) -->
+                <div>
+                    <button class="sidebar-link w-full btn-ghost" onclick="toggleSubmenu('meals')">
+                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12h4l3 9 4-18 3 9h4"/></svg>
+                        <span class="flex-1">Meal Management</span>
+                        <svg class="chevron w-4 h-4 transform transition-transform duration-200" id="meals-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <div class="sidebar-submenu" id="meals-submenu" style="max-height: 0px;">
+                        <a href="{{ route('catering-staff.meals.index') }}" class="{{ request()->routeIs('catering-staff.meals.index') || request()->routeIs('catering-staff.meals.show') ? 'active' : '' }}">All Meals</a>
+                        <a href="{{ route('catering-staff.meals.create') }}" class="{{ request()->routeIs('catering-staff.meals.create') ? 'active' : '' }}">Add New Meal</a>
+                        <a href="{{ route('catering-staff.meals.index', ['meal_type' => 'breakfast']) }}">Breakfast</a>
+                        <a href="{{ route('catering-staff.meals.index', ['meal_type' => 'lunch']) }}">Lunch</a>
+                        <a href="{{ route('catering-staff.meals.index', ['meal_type' => 'dinner']) }}">Dinner</a>
+                        <a href="{{ route('catering-staff.meals.index', ['meal_type' => 'VIP_meal']) }}">VIP Meals</a>
+                        <a href="{{ route('catering-staff.meals.index', ['special' => '1']) }}">Special Meals</a>
+                        <a href="{{ route('catering-staff.meals.index', ['active_menu' => '1']) }}">Active Menus</a>
+                    </div>
+                </div>
+                @endrole
+
                 @if(auth()->user()->can('manage flights') || auth()->user()->hasRole('Admin'))
                 <!-- Flights Management (Admin Only) -->
                 <div>
@@ -258,40 +279,41 @@
                     <div id="settings-submenu" class="sidebar-submenu" style="max-height: 0px;">
                         @role('Admin')
                         <a href="{{ route('admin.settings.general') }}" class="{{ request()->routeIs('admin.settings.general') ? 'active' : '' }}">General Settings</a>
+                        <a href="{{ route('admin.activity-logs.index') }}" class="{{ request()->routeIs('admin.activity-logs.*') ? 'active' : '' }}">Activity Logs</a>
                         <a href="{{ route('admin.logs.index') }}" class="{{ request()->routeIs('admin.logs.*') ? 'active' : '' }}">Audit Logs</a>
                         <a href="{{ route('admin.backup.index') }}" class="{{ request()->routeIs('admin.backup.*') ? 'active' : '' }}">Backup</a>
                         @endrole
                         
                         @role('Catering Staff')
-                        <a href="{{ route('catering-staff.settings') }}" class="{{ request()->routeIs('catering-staff.settings*') ? 'active' : '' }}">My Settings</a>
+                        <a href="{{ route('catering-staff.settings') }}" class="{{ request()->routeIs('catering-staff.settings*') ? 'active' : '' }}"> Settings</a>
                         @endrole
                         
                         @role('Inventory Personnel')
-                        <a href="{{ route('inventory-personnel.settings') }}" class="{{ request()->routeIs('inventory-personnel.settings*') ? 'active' : '' }}">My Settings</a>
+                        <a href="{{ route('inventory-personnel.settings') }}" class="{{ request()->routeIs('inventory-personnel.settings*') ? 'active' : '' }}"> Settings</a>
                         @endrole
                         
                         @role('Inventory Supervisor')
-                        <a href="{{ route('inventory-supervisor.settings') }}" class="{{ request()->routeIs('inventory-supervisor.settings*') ? 'active' : '' }}">My Settings</a>
+                        <a href="{{ route('inventory-supervisor.settings') }}" class="{{ request()->routeIs('inventory-supervisor.settings*') ? 'active' : '' }}"> Settings</a>
                         @endrole
                         
                         @role('Security Staff')
-                        <a href="{{ route('security-staff.settings') }}" class="{{ request()->routeIs('security-staff.settings*') ? 'active' : '' }}">My Settings</a>
+                        <a href="{{ route('security-staff.settings') }}" class="{{ request()->routeIs('security-staff.settings*') ? 'active' : '' }}"> Settings</a>
                         @endrole
                         
                         @role('Catering Incharge')
-                        <a href="{{ route('catering-incharge.settings') }}" class="{{ request()->routeIs('catering-incharge.settings*') ? 'active' : '' }}">My Settings</a>
+                        <a href="{{ route('catering-incharge.settings') }}" class="{{ request()->routeIs('catering-incharge.settings*') ? 'active' : '' }}"> Settings</a>
                         @endrole
                         
                         @role('Ramp Dispatcher')
-                        <a href="{{ route('ramp-dispatcher.settings') }}" class="{{ request()->routeIs('ramp-dispatcher.settings*') ? 'active' : '' }}">My Settings</a>
+                        <a href="{{ route('ramp-dispatcher.settings') }}" class="{{ request()->routeIs('ramp-dispatcher.settings*') ? 'active' : '' }}"> Settings</a>
                         @endrole
                         
                         @role('Flight Purser')
-                        <a href="{{ route('flight-purser.settings') }}" class="{{ request()->routeIs('flight-purser.settings*') ? 'active' : '' }}">My Settings</a>
+                        <a href="{{ route('flight-purser.settings') }}" class="{{ request()->routeIs('flight-purser.settings*') ? 'active' : '' }}"> Settings</a>
                         @endrole
                         
                         @role('Cabin Crew')
-                        <a href="{{ route('cabin-crew.settings') }}" class="{{ request()->routeIs('cabin-crew.settings*') ? 'active' : '' }}">My Settings</a>
+                        <a href="{{ route('cabin-crew.settings') }}" class="{{ request()->routeIs('cabin-crew.settings*') ? 'active' : '' }}"> Settings</a>
                         @endrole
                     </div>
                 </div>
@@ -321,10 +343,37 @@
 
                 <div class="flex items-center space-x-4">
                     <!-- Notifications -->
-                    <button class="relative p-2" style="color: #6c757d; background:transparent; border:none;">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
-                        <span class="absolute top-1 right-1 w-2 h-2 rounded-full" style="background-color: #dc3545;"></span>
-                    </button>
+                    <div class="relative" id="notifications-container">
+                        <button onclick="toggleNotifications()" class="relative p-2 hover:bg-gray-100 rounded-lg transition" style="color: #6c757d; background:transparent; border:none; cursor:pointer;">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                            <span id="notification-badge" class="absolute top-1 right-1 w-5 h-5 rounded-full text-xs flex items-center justify-center text-white font-semibold" style="background-color: #dc3545; display: none;">0</span>
+                        </button>
+                        
+                        <!-- Notifications Dropdown -->
+                        <div id="notifications-dropdown" style="display:none; position: absolute; right: 0; top: 100%; margin-top: 8px; width: 380px; background: white; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; max-height: 500px; overflow-y: auto;">
+                            <!-- Header -->
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid #e9ecef;">
+                                <h3 style="font-size: 16px; font-weight: 600; margin: 0;">Notifications</h3>
+                                <button onclick="markAllAsRead()" style="font-size: 13px; color: #0066cc; background: none; border: none; cursor: pointer;">Mark all read</button>
+                            </div>
+                            
+                            <!-- Notifications List -->
+                            <div id="notifications-list" style="max-height: 400px; overflow-y: auto;">
+                                <!-- Loading state -->
+                                <div class="text-center py-8" style="color: #6c757d;">
+                                    <svg class="animate-spin h-8 w-8 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            
+                            <!-- Footer -->
+                            <div style="padding: 12px 16px; border-top: 1px solid #e9ecef; text-align: center;">
+                                <a href="{{ route('notifications.index') }}" style="font-size: 13px; color: #0066cc; text-decoration: none;">View all notifications</a>
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- User Menu -->
                     <div class="flex items-center space-x-2">
@@ -393,7 +442,160 @@
                     if (icon) icon.classList.add('rotate-180');
                 }
             });
+            
+            // Load notifications on page load
+            loadNotifications();
+            
+            // Refresh notifications every 30 seconds
+            setInterval(loadNotifications, 30000);
         });
+        
+        // NOTIFICATIONS SYSTEM
+        let notificationsDropdownOpen = false;
+        
+        function toggleNotifications() {
+            const dropdown = document.getElementById('notifications-dropdown');
+            notificationsDropdownOpen = !notificationsDropdownOpen;
+            
+            if (notificationsDropdownOpen) {
+                dropdown.style.display = 'block';
+                loadRecentNotifications();
+            } else {
+                dropdown.style.display = 'none';
+            }
+        }
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const container = document.getElementById('notifications-container');
+            if (container && !container.contains(event.target) && notificationsDropdownOpen) {
+                document.getElementById('notifications-dropdown').style.display = 'none';
+                notificationsDropdownOpen = false;
+            }
+        });
+        
+        function loadNotifications() {
+            fetch('{{ route("notifications.unread-count") }}')
+                .then(response => response.json())
+                .then(data => {
+                    updateNotificationBadge(data.count);
+                })
+                .catch(error => console.error('Error loading notifications:', error));
+        }
+        
+        function loadRecentNotifications() {
+            const list = document.getElementById('notifications-list');
+            list.innerHTML = '<div class="text-center py-4" style="color: #6c757d;">Loading...</div>';
+            
+            fetch('{{ route("notifications.recent") }}')
+                .then(response => response.json())
+                .then(data => {
+                    updateNotificationBadge(data.unread_count);
+                    renderNotifications(data.notifications);
+                })
+                .catch(error => {
+                    console.error('Error loading notifications:', error);
+                    list.innerHTML = '<div class="text-center py-4" style="color: #dc3545;">Error loading notifications</div>';
+                });
+        }
+        
+        function renderNotifications(notifications) {
+            const list = document.getElementById('notifications-list');
+            
+            if (notifications.length === 0) {
+                list.innerHTML = '<div class="text-center py-8" style="color: #6c757d;">No notifications</div>';
+                return;
+            }
+            
+            list.innerHTML = notifications.map(notification => {
+                const data = notification.data;
+                const isUnread = !notification.read_at;
+                const timeAgo = formatTimeAgo(notification.created_at);
+                
+                const iconColors = {
+                    blue: '#0066cc',
+                    green: '#28a745',
+                    red: '#dc3545',
+                    orange: '#fd7e14',
+                    purple: '#6f42c1'
+                };
+                
+                const iconColor = iconColors[data.color] || '#6c757d';
+                
+                return `
+                    <div onclick="handleNotificationClick('${notification.id}', '${data.action_url || '#'}')" 
+                         style="padding: 16px; border-bottom: 1px solid #e9ecef; cursor: pointer; background: ${isUnread ? '#f8f9fa' : 'white'}; transition: background 0.2s;"
+                         onmouseover="this.style.background='#f1f3f5'" 
+                         onmouseout="this.style.background='${isUnread ? '#f8f9fa' : 'white'}'">
+                        <div style="display: flex; gap: 12px;">
+                            <div style="width: 40px; height: 40px; border-radius: 8px; background: ${iconColor}15; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                <svg style="width: 20px; height: 20px; color: ${iconColor};" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6z"/>
+                                </svg>
+                            </div>
+                            <div style="flex: 1; min-width: 0;">
+                                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 4px;">
+                                    <h4 style="font-size: 14px; font-weight: 600; margin: 0; color: #212529;">${data.title}</h4>
+                                    ${isUnread ? '<span style="width: 8px; height: 8px; background: #0066cc; border-radius: 50%; display: inline-block;"></span>' : ''}
+                                </div>
+                                <p style="font-size: 13px; color: #6c757d; margin: 0; line-height: 1.4;">${data.message}</p>
+                                <span style="font-size: 12px; color: #adb5bd; margin-top: 4px; display: block;">${timeAgo}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function handleNotificationClick(notificationId, actionUrl) {
+            // Mark as read
+            fetch(`/notifications/${notificationId}/read`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json'
+                }
+            }).then(() => {
+                loadNotifications();
+                if (actionUrl && actionUrl !== '#') {
+                    window.location.href = actionUrl;
+                }
+            });
+        }
+        
+        function markAllAsRead() {
+            fetch('{{ route("notifications.mark-all-read") }}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json'
+                }
+            }).then(() => {
+                loadRecentNotifications();
+            });
+        }
+        
+        function updateNotificationBadge(count) {
+            const badge = document.getElementById('notification-badge');
+            if (count > 0) {
+                badge.textContent = count > 99 ? '99+' : count;
+                badge.style.display = 'flex';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+        
+        function formatTimeAgo(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const seconds = Math.floor((now - date) / 1000);
+            
+            if (seconds < 60) return 'Just now';
+            if (seconds < 3600) return Math.floor(seconds / 60) + ' min ago';
+            if (seconds < 86400) return Math.floor(seconds / 3600) + ' hours ago';
+            if (seconds < 604800) return Math.floor(seconds / 86400) + ' days ago';
+            return date.toLocaleDateString();
+        }
     </script>
 </body>
 </html>

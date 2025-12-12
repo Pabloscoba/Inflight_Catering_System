@@ -38,6 +38,42 @@ class StockMovementController extends Controller
         return view('inventory-personnel.stock-movements.index', compact('movements', 'products'));
     }
 
+    // Export stock movements to PDF
+    public function exportPDF(Request $request)
+    {
+        $query = StockMovement::with(['product', 'user'])
+            ->orderBy('movement_date', 'desc')
+            ->orderBy('created_at', 'desc');
+
+        // Apply same filters as index
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
+        }
+        if ($request->filled('product_id')) {
+            $query->where('product_id', $request->product_id);
+        }
+        if ($request->filled('search')) {
+            $query->where('reference_number', 'like', '%' . $request->search . '%');
+        }
+
+        $movements = $query->get();
+        $products = Product::all();
+        
+        $data = [
+            'movements' => $movements,
+            'filters' => [
+                'type' => $request->type,
+                'product_id' => $request->product_id,
+                'search' => $request->search,
+            ],
+            'products' => $products,
+            'generated_at' => now()->format('F d, Y h:i A'),
+            'generated_by' => auth()->user()->name,
+        ];
+
+        return view('inventory-personnel.stock-movements.pdf', $data);
+    }
+
     // Show incoming stock form
     public function incomingForm()
     {
@@ -57,7 +93,7 @@ class StockMovementController extends Controller
         ]);
 
         // Create stock movement record with pending status
-        StockMovement::create([
+        $movement = StockMovement::create([
             'type' => 'incoming',
             'product_id' => $request->product_id,
             'quantity' => $request->quantity,
@@ -69,9 +105,60 @@ class StockMovementController extends Controller
         ]);
 
         // DO NOT update product stock yet - wait for approval
+        
+        // Notify Inventory Supervisor
+        $supervisors = User::role('Inventory Supervisor')->get();
+        foreach ($supervisors as $supervisor) {
+            $supervisor->notify(new StockMovementCreatedNotification($movement));
+        }
 
         return redirect()->route('inventory-personnel.stock-movements.index')
             ->with('success', 'Incoming stock recorded and pending approval.');
+    }
+
+    // Show transfer to catering form
+    public function transferToCateringForm()
+    {
+        $products = Product::where('quantity_in_stock', '>', 0)->orderBy('name')->get();
+        return view('inventory-personnel.stock-movements.transfer-to-catering', compact('products'));
+    }
+
+    // Store transfer to catering
+    public function storeTransferToCatering(Request $request)
+    {
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'quantity' => 'required|integer|min:1',
+            'reference_number' => 'required|string|max:255',
+            'notes' => 'nullable|string',
+            'movement_date' => 'required|date',
+        ]);
+
+        $product = Product::findOrFail($request->product_id);
+
+        // Check if enough stock available in main inventory
+        if ($product->quantity_in_stock < $request->quantity) {
+            return back()->withErrors([
+                'quantity' => 'Insufficient stock in main inventory. Available: ' . $product->quantity_in_stock
+            ])->withInput();
+        }
+
+        // Create stock movement record - transfer to catering
+        StockMovement::create([
+            'type' => 'transfer_to_catering',
+            'product_id' => $request->product_id,
+            'quantity' => $request->quantity,
+            'reference_number' => $request->reference_number,
+            'notes' => $request->notes,
+            'user_id' => auth()->id(),
+            'movement_date' => $request->movement_date,
+            'status' => 'pending', // Needs supervisor approval
+        ]);
+
+        // DO NOT transfer stock yet - wait for supervisor approval
+
+        return redirect()->route('inventory-personnel.stock-movements.index')
+            ->with('success', 'Transfer to catering recorded and pending supervisor approval.');
     }
 
     // Show issue stock form

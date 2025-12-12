@@ -18,8 +18,14 @@ class DashboardController extends Controller
         // Pending product receipts from inventory (need approval)
         $pendingReceipts = CateringStock::where('status', 'pending')->count();
         
-        // Requests awaiting Catering Incharge approval (from Security Staff)
-        $pendingRequests = RequestModel::where('status', 'security_approved')->count();
+        // Requests awaiting Catering Incharge approval (supervisor_approved products OR pending meals)
+        $pendingRequests = RequestModel::where(function($q) {
+            $q->where('status', 'supervisor_approved') // Product requests
+              ->orWhere(function($query) {
+                  $query->where('status', 'pending')
+                        ->where('request_type', 'meal'); // Meal requests
+              });
+        })->count();
         
         // Approved product receipts
         $approvedReceipts = CateringStock::where('status', 'approved')->count();
@@ -45,9 +51,15 @@ class DashboardController extends Controller
             ->limit(10)
             ->get();
         
-        // Requests awaiting Catering Incharge approval (authenticated by Security Staff)
+        // Requests awaiting Catering Incharge approval (supervisor_approved products OR pending meals)
         $pendingStaffRequests = RequestModel::with(['flight', 'requester', 'items.product'])
-            ->where('status', 'security_approved')
+            ->where(function($q) {
+                $q->where('status', 'supervisor_approved') // Product requests from Supervisor
+                  ->orWhere(function($query) {
+                      $query->where('status', 'pending')
+                            ->where('request_type', 'meal'); // Meal requests from Staff
+                  });
+            })
             ->latest()
             ->limit(10)
             ->get();

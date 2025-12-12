@@ -16,11 +16,12 @@ class DashboardController extends Controller
         // Get pending approvals count
         $pendingProducts = Product::where('status', 'pending')->count();
         $pendingMovements = StockMovement::where('status', 'pending')->count();
-        $pendingRequests = RequestModel::where('status', 'pending')->count();
+        $pendingRequests = RequestModel::where('status', 'pending_supervisor')->count();
         
         // Get total approved items
         $approvedProducts = Product::where('status', 'approved')->count();
         $approvedMovements = StockMovement::where('status', 'approved')->count();
+        $approvedRequests = RequestModel::where('status', 'supervisor_approved')->count();
         
         // Get recent pending products (need approval)
         $pendingProductsList = Product::with(['category'])
@@ -43,13 +44,6 @@ class DashboardController extends Controller
             ->limit(10)
             ->get();
 
-        // Pending requests from catering staff
-        $pendingCateringRequests = RequestModel::with(['flight', 'requester'])
-            ->where('status', 'pending')
-            ->latest()
-            ->limit(10)
-            ->get();
-
         // Inventory alerts (only approved products)
         $lowStockProducts = Product::where('status', 'approved')
             ->where('quantity_in_stock', '<', DB::raw('reorder_level'))
@@ -57,6 +51,13 @@ class DashboardController extends Controller
         $outOfStockProducts = Product::where('status', 'approved')
             ->where('quantity_in_stock', '=', 0)
             ->count();
+        
+        // Get pending requests list (need supervisor approval)
+        $pendingRequestsList = RequestModel::with(['flight', 'requester', 'items.product'])
+            ->where('status', 'pending_supervisor')
+            ->latest()
+            ->limit(10)
+            ->get();
         
         // Low stock items list for display
         $lowStockItems = Product::with('category')
@@ -72,10 +73,11 @@ class DashboardController extends Controller
             'pendingRequests',
             'approvedProducts',
             'approvedMovements',
+            'approvedRequests',
             'pendingProductsList',
+            'pendingRequestsList',
             'movementsToVerify',
             'recentlyApproved',
-            'pendingCateringRequests',
             'lowStockProducts',
             'outOfStockProducts',
             'lowStockItems'

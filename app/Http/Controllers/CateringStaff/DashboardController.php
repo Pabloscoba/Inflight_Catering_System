@@ -85,6 +85,43 @@ class DashboardController extends Controller
             return $item->total_available == 0;
         });
 
+        // UNIFIED STOCK VIEW - Combine Mini Stock + Workflow Stock per product
+        $allProducts = \App\Models\Product::with('category')
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get();
+
+        $unifiedStock = $allProducts->map(function($product) use ($availableStock) {
+            // Get mini stock (from direct transfers)
+            $miniStock = $product->catering_stock ?? 0;
+            
+            // Get workflow stock (from catering_stock table)
+            $workflowStockItem = $availableStock->firstWhere('id', $product->id);
+            $workflowStock = $workflowStockItem ? $workflowStockItem->total_available : 0;
+            
+            // Calculate total
+            $totalAvailable = $miniStock + $workflowStock;
+            
+            // Only include products that have stock from either source
+            if ($totalAvailable > 0) {
+                return (object)[
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'sku' => $product->sku,
+                    'category' => $product->category->name,
+                    'mini_stock' => $miniStock,
+                    'workflow_stock' => $workflowStock,
+                    'total_available' => $totalAvailable,
+                    'reorder_level' => $product->catering_reorder_level ?? 10,
+                    'is_low_stock' => $totalAvailable <= ($product->catering_reorder_level ?? 10),
+                ];
+            }
+            return null;
+        })->filter(); // Remove null entries
+
+        // Count low stock items in unified view
+        $unifiedLowStockCount = $unifiedStock->where('is_low_stock', true)->count();
+
         return view('catering-staff.dashboard', compact(
             'totalRequests',
             'pendingRequests',
@@ -96,7 +133,9 @@ class DashboardController extends Controller
             'availableStock',
             'lowStockItems',
             'nearEmptyItems',
-            'outOfStockItems'
+            'outOfStockItems',
+            'unifiedStock',
+            'unifiedLowStockCount'
         ));
     }
 }

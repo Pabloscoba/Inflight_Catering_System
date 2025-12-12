@@ -125,6 +125,18 @@ class ProductController extends Controller
     }
 
     /**
+     * Toggle product active status
+     */
+    public function toggleStatus(Product $product)
+    {
+        $product->update(['is_active' => !$product->is_active]);
+        
+        $status = $product->is_active ? 'activated' : 'deactivated';
+        
+        return redirect()->back()->with('success', "Product {$status} successfully");
+    }
+
+    /**
      * Remove the specified product
      */
     public function destroy(Product $product)

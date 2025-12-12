@@ -47,6 +47,17 @@
         </div>
         
         <div class="card">
+            <!-- Info Notice -->
+            <div style="background: #fff3cd; border: 1px solid #ffc107; border-radius: 6px; padding: 16px; margin-bottom: 24px; display: flex; gap: 12px; align-items: start;">
+                <svg style="width: 24px; height: 24px; color: #856404; flex-shrink: 0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <div>
+                    <div style="font-weight: 600; color: #856404; margin-bottom: 4px;">Approval Required</div>
+                    <div style="font-size: 14px; color: #856404;">New products need to be approved by the Inventory Supervisor before they can be used in the system.</div>
+                </div>
+            </div>
+
             <form method="POST" action="{{ route('inventory-personnel.products.store') }}">
                 @csrf
                 

@@ -104,6 +104,7 @@
                         <tr>
                             <th>User</th>
                             <th>Role</th>
+                            <th>Status</th>
                             <th>Created</th>
                             <th>Actions</th>
                         </tr>
@@ -131,15 +132,29 @@
                                 <span class="role-badge role-other">No Role</span>
                                 @endforelse
                             </td>
+                            <td>
+                                <span class="role-badge {{ $user->is_active ? 'role-admin' : 'role-other' }}">
+                                    {{ $user->is_active ? '✅ Active' : '🚫 Inactive' }}
+                                </span>
+                            </td>
                             <td>{{ $user->created_at->format('M d, Y') }}</td>
                             <td>
                                 <div class="actions">
                                     <a href="{{ route('admin.users.edit', $user) }}" class="btn btn-primary btn-sm">Edit</a>
+                                    
                                     @if($user->id !== auth()->id())
-                                    <form method="POST" action="{{ route('admin.users.destroy', $user) }}" onsubmit="return confirm('Are you sure you want to delete this user?');" style="display: inline;">
+                                    <form method="POST" action="{{ route('admin.users.toggle-status', $user) }}" style="display: inline;">
+                                        @csrf
+                                        @method('PATCH')
+                                        <button type="submit" class="btn btn-sm {{ $user->is_active ? 'btn-secondary' : 'btn-primary' }}">
+                                            {{ $user->is_active ? '🚫 Deactivate' : '✅ Activate' }}
+                                        </button>
+                                    </form>
+                                    
+                                    <form method="POST" action="{{ route('admin.users.destroy', $user) }}" onsubmit="return confirm('Delete this user permanently?');" style="display: inline;">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                        <button type="submit" class="btn btn-danger btn-sm">🗑️ Delete</button>
                                     </form>
                                     @endif
                                 </div>

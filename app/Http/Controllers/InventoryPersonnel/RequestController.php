@@ -4,7 +4,9 @@ namespace App\Http\Controllers\InventoryPersonnel;
 
 use App\Http\Controllers\Controller;
 use App\Models\Request as RequestModel;
+use App\Models\User;
 use Illuminate\Http\Request;
+use App\Notifications\RequestPendingSupervisorNotification;
 
 class RequestController extends Controller
 {
@@ -33,6 +35,12 @@ class RequestController extends Controller
         $request->update([
             'status' => 'pending_supervisor',
         ]);
+        
+        // Notify Inventory Supervisor
+        $supervisors = User::role('Inventory Supervisor')->get();
+        foreach ($supervisors as $supervisor) {
+            $supervisor->notify(new RequestPendingSupervisorNotification($request));
+        }
 
         return back()->with('success', 'Request forwarded to Inventory Supervisor for approval.');
     }

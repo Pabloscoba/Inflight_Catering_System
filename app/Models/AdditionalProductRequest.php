@@ -13,6 +13,7 @@ class AdditionalProductRequest extends Model
         'original_request_id',
         'requested_by',
         'product_id',
+        'meal_type',
         'quantity_requested',
         'quantity_approved',
         'reason',

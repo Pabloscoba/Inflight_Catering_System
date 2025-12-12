@@ -81,6 +81,29 @@
         <div class="alert alert-error">{{ session('error') }}</div>
         @endif
         
+        <!-- Stock Summary Cards -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 30px;">
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 24px; border-radius: 12px; color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                <div style="font-size: 14px; opacity: 0.9; margin-bottom: 8px;">Total Products</div>
+                <div style="font-size: 32px; font-weight: 700;">{{ $products->total() }}</div>
+            </div>
+            <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 24px; border-radius: 12px; color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                <div style="font-size: 14px; opacity: 0.9; margin-bottom: 8px;">In Stock</div>
+                <div style="font-size: 32px; font-weight: 700;">{{ $products->filter(fn($p) => $p->quantity_in_stock > $p->reorder_level)->count() }}</div>
+                <div style="font-size: 12px; opacity: 0.8; margin-top: 4px;">✓ Ready to use</div>
+            </div>
+            <div style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); padding: 24px; border-radius: 12px; color: #000; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                <div style="font-size: 14px; opacity: 0.8; margin-bottom: 8px;">Low Stock</div>
+                <div style="font-size: 32px; font-weight: 700;">{{ $products->filter(fn($p) => $p->quantity_in_stock <= $p->reorder_level && $p->quantity_in_stock > 0)->count() }}</div>
+                <div style="font-size: 12px; opacity: 0.7; margin-top: 4px;">⚠️ Need restocking</div>
+            </div>
+            <div style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); padding: 24px; border-radius: 12px; color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                <div style="font-size: 14px; opacity: 0.9; margin-bottom: 8px;">Out of Stock</div>
+                <div style="font-size: 32px; font-weight: 700;">{{ $products->filter(fn($p) => $p->quantity_in_stock == 0)->count() }}</div>
+                <div style="font-size: 12px; opacity: 0.8; margin-top: 4px;">❌ Urgent action needed</div>
+            </div>
+        </div>
+        
         <form method="GET" action="{{ route('inventory-personnel.products.index') }}" class="filters">
             <div class="filter-group">
                 <label>Search</label>
@@ -156,21 +179,43 @@
                             <td>{{ $product->sku }}</td>
                             <td>${{ number_format($product->unit_price, 2) }} / {{ $product->unit_of_measure }}</td>
                             <td>
-                                <div class="stock-indicator">
-                                    <span class="stock-dot {{ $product->isOutOfStock() ? 'stock-out' : ($product->isLowStock() ? 'stock-low' : 'stock-good') }}"></span>
-                                    <span>{{ $product->quantity_in_stock }} {{ $product->unit_of_measure }}</span>
+                                <div style="display: flex; flex-direction: column; gap: 4px;">
+                                    <div class="stock-indicator">
+                                        <span class="stock-dot {{ $product->isOutOfStock() ? 'stock-out' : ($product->isLowStock() ? 'stock-low' : 'stock-good') }}"></span>
+                                        <strong style="font-size: 16px; {{ $product->isOutOfStock() ? 'color: #dc3545;' : ($product->isLowStock() ? 'color: #ffc107;' : 'color: #28a745;') }}">
+                                            {{ $product->quantity_in_stock }}
+                                        </strong>
+                                        <span style="color: #6c757d;">{{ $product->unit_of_measure }}</span>
+                                    </div>
+                                    @if($product->isOutOfStock())
+                                        <span class="badge badge-danger" style="width: fit-content;">OUT OF STOCK</span>
+                                    @elseif($product->isLowStock())
+                                        <span class="badge badge-warning" style="width: fit-content;">LOW STOCK (Reorder: {{ $product->reorder_level }})</span>
+                                    @else
+                                        <span class="badge badge-success" style="width: fit-content;">IN STOCK</span>
+                                    @endif
+                                    <small style="color: #6c757d;">Catering: {{ $product->catering_quantity }}</small>
                                 </div>
-                                @if($product->isLowStock() && !$product->isOutOfStock())
-                                <small style="color: #856404;">Low (≤{{ $product->reorder_level }})</small>
-                                @endif
                             </td>
                             <td>
-                                <span class="badge {{ $product->is_active ? 'badge-success' : 'badge-danger' }}">
-                                    {{ $product->is_active ? 'Active' : 'Inactive' }}
-                                </span>
+                                <div style="display: flex; flex-direction: column; gap: 6px;">
+                                    <span class="badge {{ $product->is_active ? 'badge-success' : 'badge-danger' }}">
+                                        {{ $product->is_active ? 'Active' : 'Inactive' }}
+                                    </span>
+                                    @if($product->status === 'pending')
+                                        <span class="badge badge-warning">⏳ Pending Approval</span>
+                                    @elseif($product->status === 'approved')
+                                        <span class="badge badge-success">✓ Approved</span>
+                                    @elseif($product->status === 'rejected')
+                                        <span class="badge badge-danger">✗ Rejected</span>
+                                    @endif
+                                </div>
                             </td>
                             <td>
                                 <div class="actions">
+                                    @if($product->status === 'approved')
+                                        <a href="{{ route('inventory-personnel.stock-movements.incoming') }}?product_id={{ $product->id }}" class="btn btn-sm" style="background: #059669; color: white;">📥 Add Stock</a>
+                                    @endif
                                     <a href="{{ route('inventory-personnel.products.edit', $product) }}" class="btn btn-primary btn-sm">Edit</a>
                                     <form method="POST" action="{{ route('inventory-personnel.products.destroy', $product) }}" onsubmit="return confirm('Delete this product?');" style="display: inline;">
                                         @csrf

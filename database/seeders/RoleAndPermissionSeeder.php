@@ -26,6 +26,7 @@ class RoleAndPermissionSeeder extends Seeder
             'manage categories',
             'manage stock',
             'view all requests',
+            'create catering request', // Admins can also create requests
             'manage flights',
             'system settings',
             'assign roles',

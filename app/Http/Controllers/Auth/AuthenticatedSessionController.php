@@ -28,8 +28,25 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        // Redirect based on user role
+        // Get authenticated user
         $user = Auth::user();
+        
+        // Log successful login
+        activity('authentication')
+            ->causedBy($user)
+            ->withProperties([
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+                'role' => $user->role?->name,
+            ])
+            ->log('User logged in successfully');
+        
+        // Store session security data
+        session([
+            'user_ip' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'last_regenerated' => now()->timestamp,
+        ]);
         
         if ($user->hasRole('Admin')) {
             return redirect()->intended(route('admin.dashboard'));
@@ -60,6 +77,17 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
+        // Log logout before destroying session
+        if (Auth::check()) {
+            activity('authentication')
+                ->causedBy(Auth::user())
+                ->withProperties([
+                    'ip' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ])
+                ->log('User logged out');
+        }
+        
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();

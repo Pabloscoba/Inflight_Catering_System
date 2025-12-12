@@ -5,7 +5,9 @@ namespace App\Http\Controllers\InventoryPersonnel;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\User;
 use Illuminate\Http\Request;
+use App\Notifications\ProductCreatedNotification;
 
 class ProductController extends Controller
 {
@@ -14,7 +16,7 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Product::with('category');
+        $query = Product::with('category'); // Show all products with status
 
         // Search functionality
         if ($request->filled('search')) {
@@ -88,7 +90,13 @@ class ProductController extends Controller
         $validated['is_active'] = $request->has('is_active');
         $validated['status'] = 'pending'; // All new products need approval
 
-        Product::create($validated);
+        $product = Product::create($validated);
+        
+        // Notify Inventory Supervisor
+        $supervisors = User::role('Inventory Supervisor')->get();
+        foreach ($supervisors as $supervisor) {
+            $supervisor->notify(new ProductCreatedNotification($product));
+        }
 
         return redirect()->route('inventory-personnel.products.index')->with('success', 'Product created successfully and pending approval');
     }

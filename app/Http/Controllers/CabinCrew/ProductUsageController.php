@@ -11,13 +11,39 @@ use Illuminate\Http\Request;
 
 class ProductUsageController extends Controller
 {
+    /**
+     * Display usage tracking index
+     */
+    public function index()
+    {
+        $requests = RequestModel::with(['flight', 'items.product'])
+            ->whereIn('status', ['loaded', 'flight_received', 'delivered', 'served'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+        
+        return view('cabin-crew.usage.index', compact('requests'));
+    }
+    
+    /**
+     * Display returns management index
+     */
+    public function returnsIndex()
+    {
+        $requests = RequestModel::with(['flight', 'items.product'])
+            ->whereIn('status', ['loaded', 'flight_received'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+        
+        return view('cabin-crew.returns.index', compact('requests'));
+    }
+    
     // View detailed product list for a request
     public function viewProducts(RequestModel $request)
     {
-        // Verify request is loaded (ready for cabin crew)
-        if (!in_array($request->status, ['loaded', 'delivered'])) {
+        // Verify request is loaded/received (ready for cabin crew) - includes meal requests
+        if (!in_array($request->status, ['loaded', 'flight_received', 'delivered', 'served'])) {
             return redirect()->route('cabin-crew.dashboard')
-                ->with('error', 'This request is not available for product management.');
+                ->with('error', 'This request is not available for product management. Current status: ' . $request->status);
         }
 
         $request->load(['flight', 'items.product', 'requester']);
@@ -87,7 +113,10 @@ class ProductUsageController extends Controller
     // Request additional products
     public function requestAdditional(RequestModel $requestModel)
     {
-        $products = Product::where('is_active', true)
+        $requestModel->load('flight');
+        
+        $products = Product::with('category')
+            ->where('is_active', true)
             ->where('status', 'approved')
             ->orderBy('name')->get();
         
@@ -98,6 +127,7 @@ class ProductUsageController extends Controller
     {
         $request->validate([
             'product_id' => 'required|exists:products,id',
+            'meal_type' => 'nullable|in:breakfast,lunch,dinner,snack,VIP_meal,special_meal,non_meal',
             'quantity_requested' => 'required|integer|min:1',
             'reason' => 'required|string|max:500',
         ]);
@@ -106,6 +136,7 @@ class ProductUsageController extends Controller
             'original_request_id' => $requestModel->id,
             'requested_by' => auth()->id(),
             'product_id' => $request->product_id,
+            'meal_type' => $request->meal_type,
             'quantity_requested' => $request->quantity_requested,
             'reason' => $request->reason,
             'status' => 'pending',

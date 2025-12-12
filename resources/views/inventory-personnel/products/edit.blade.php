@@ -169,17 +169,22 @@
                 </div>
                 
                 <div class="form-actions">
-                    <form method="POST" action="{{ route('inventory-personnel.products.destroy', $product) }}" onsubmit="return confirm('Delete this product? This action cannot be undone.');">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-danger">Delete Product</button>
-                    </form>
+                    <div>
+                        <!-- Delete button will be outside this form -->
+                    </div>
                     
                     <div class="form-actions-right">
                         <a href="{{ route('inventory-personnel.products.index') }}" class="btn btn-secondary">Cancel</a>
                         <button type="submit" class="btn btn-primary">Update Product</button>
                     </div>
                 </div>
+            </form>
+            
+            <!-- Separate Delete Form Outside Main Form -->
+            <form method="POST" action="{{ route('inventory-personnel.products.destroy', $product) }}" onsubmit="return confirm('Delete this product? This action cannot be undone.');" style="margin-top: 20px;">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn btn-danger">Delete Product</button>
             </form>
         </div>
     </div>

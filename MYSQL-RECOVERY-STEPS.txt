@@ -1,0 +1,20 @@
+﻿=== MYSQL INNODB RECOVERY INSTRUCTIONS ===
+
+STEP 1: Stop MySQL in XAMPP Control Panel
+
+STEP 2: Edit C:\xampp\mysql\bin\my.ini (or my.cnf)
+
+STEP 3: Find the [mysqld] section and add this line:
+innodb_force_recovery = 1
+
+STEP 4: Save the file
+
+STEP 5: Start MySQL in XAMPP Control Panel
+
+STEP 6: Run: php test-connection.php
+
+STEP 7: If it works, REMOVE the line 'innodb_force_recovery = 1'
+
+STEP 8: Restart MySQL again
+
+Your data will be recovered!

@@ -172,10 +172,20 @@
                             <td>
                                 <div class="actions">
                                     <a href="{{ route('admin.products.edit', $product) }}" class="btn btn-primary btn-sm">Edit</a>
-                                    <form method="POST" action="{{ route('admin.products.destroy', $product) }}" onsubmit="return confirm('Delete this product?');" style="display: inline;">
+                                    
+                                    <form method="POST" action="{{ route('admin.products.toggle-status', $product) }}" style="display: inline;">
+                                        @csrf
+                                        @method('PATCH')
+                                        <button type="submit" class="btn btn-sm {{ $product->is_active ? 'btn-warning' : 'btn-success' }}" 
+                                                onclick="return confirm('{{ $product->is_active ? 'Deactivate' : 'Activate' }} this product?');">
+                                            {{ $product->is_active ? '🚫 Deactivate' : '✅ Activate' }}
+                                        </button>
+                                    </form>
+                                    
+                                    <form method="POST" action="{{ route('admin.products.destroy', $product) }}" onsubmit="return confirm('Delete this product permanently?');" style="display: inline;">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                        <button type="submit" class="btn btn-danger btn-sm">🗑️ Delete</button>
                                     </form>
                                 </div>
                             </td>

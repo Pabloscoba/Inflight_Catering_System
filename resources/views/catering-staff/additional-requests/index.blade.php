@@ -43,6 +43,7 @@
                     <th style="padding:14px 16px;text-align:left;font-size:13px;font-weight:600;color:#4a5568;border-bottom:2px solid #e2e8f0;">Original Request</th>
                     <th style="padding:14px 16px;text-align:left;font-size:13px;font-weight:600;color:#4a5568;border-bottom:2px solid #e2e8f0;">Flight</th>
                     <th style="padding:14px 16px;text-align:left;font-size:13px;font-weight:600;color:#4a5568;border-bottom:2px solid #e2e8f0;">Product</th>
+                    <th style="padding:14px 16px;text-align:center;font-size:13px;font-weight:600;color:#4a5568;border-bottom:2px solid #e2e8f0;">Meal Type</th>
                     <th style="padding:14px 16px;text-align:center;font-size:13px;font-weight:600;color:#4a5568;border-bottom:2px solid #e2e8f0;">Qty Requested</th>
                     <th style="padding:14px 16px;text-align:left;font-size:13px;font-weight:600;color:#4a5568;border-bottom:2px solid #e2e8f0;">Reason</th>
                     <th style="padding:14px 16px;text-align:left;font-size:13px;font-weight:600;color:#4a5568;border-bottom:2px solid #e2e8f0;">Requested By</th>
@@ -65,6 +66,27 @@
                     <td style="padding:16px;">
                         <div style="font-weight:600;color:#2d3748;">{{ $addRequest->product->name }}</div>
                         <div style="font-size:12px;color:#718096;">{{ $addRequest->product->category->name ?? 'N/A' }}</div>
+                    </td>
+                    <td style="padding:16px;text-align:center;">
+                        @if($addRequest->meal_type)
+                            @php
+                                $mealBadges = [
+                                    'breakfast' => ['bg' => '#fef3c7', 'color' => '#92400e', 'icon' => '🍳', 'label' => 'Breakfast'],
+                                    'lunch' => ['bg' => '#dbeafe', 'color' => '#1e40af', 'icon' => '🍽️', 'label' => 'Lunch'],
+                                    'dinner' => ['bg' => '#e0e7ff', 'color' => '#3730a3', 'icon' => '🌙', 'label' => 'Dinner'],
+                                    'snack' => ['bg' => '#fce7f3', 'color' => '#9f1239', 'icon' => '🍪', 'label' => 'Snack'],
+                                    'VIP_meal' => ['bg' => '#f3e8ff', 'color' => '#6b21a8', 'icon' => '👑', 'label' => 'VIP'],
+                                    'special_meal' => ['bg' => '#d1fae5', 'color' => '#065f46', 'icon' => '⭐', 'label' => 'Special'],
+                                    'non_meal' => ['bg' => '#f3f4f6', 'color' => '#374151', 'icon' => '📦', 'label' => 'Non-Meal']
+                                ];
+                                $badge = $mealBadges[$addRequest->meal_type] ?? ['bg' => '#f3f4f6', 'color' => '#374151', 'icon' => '📦', 'label' => 'N/A'];
+                            @endphp
+                            <span style="background:{{ $badge['bg'] }};color:{{ $badge['color'] }};padding:6px 10px;border-radius:8px;font-size:11px;font-weight:600;display:inline-block;white-space:nowrap;">
+                                {{ $badge['icon'] }} {{ $badge['label'] }}
+                            </span>
+                        @else
+                            <span style="color:#9ca3af;font-size:12px;">—</span>
+                        @endif
                     </td>
                     <td style="padding:16px;text-align:center;font-weight:600;color:#2d3748;">{{ $addRequest->quantity_requested }}</td>
                     <td style="padding:16px;font-size:13px;color:#4a5568;">
@@ -118,6 +140,7 @@
                     <th style="padding:14px 16px;text-align:left;font-size:13px;font-weight:600;color:#4a5568;border-bottom:2px solid #e2e8f0;">Request ID</th>
                     <th style="padding:14px 16px;text-align:left;font-size:13px;font-weight:600;color:#4a5568;border-bottom:2px solid #e2e8f0;">Flight</th>
                     <th style="padding:14px 16px;text-align:left;font-size:13px;font-weight:600;color:#4a5568;border-bottom:2px solid #e2e8f0;">Product</th>
+                    <th style="padding:14px 16px;text-align:center;font-size:13px;font-weight:600;color:#4a5568;border-bottom:2px solid #e2e8f0;">Meal Type</th>
                     <th style="padding:14px 16px;text-align:center;font-size:13px;font-weight:600;color:#4a5568;border-bottom:2px solid #e2e8f0;">Requested</th>
                     <th style="padding:14px 16px;text-align:center;font-size:13px;font-weight:600;color:#4a5568;border-bottom:2px solid #e2e8f0;">Approved</th>
                     <th style="padding:14px 16px;text-align:center;font-size:13px;font-weight:600;color:#4a5568;border-bottom:2px solid #e2e8f0;">Status</th>
@@ -134,6 +157,27 @@
                         <div style="font-size:12px;color:#718096;">{{ $addRequest->originalRequest->flight->origin }} → {{ $addRequest->originalRequest->flight->destination }}</div>
                     </td>
                     <td style="padding:16px;font-weight:600;color:#2d3748;">{{ $addRequest->product->name }}</td>
+                    <td style="padding:16px;text-align:center;">
+                        @if($addRequest->meal_type)
+                            @php
+                                $mealBadges = [
+                                    'breakfast' => ['bg' => '#fef3c7', 'color' => '#92400e', 'icon' => '🍳', 'label' => 'Breakfast'],
+                                    'lunch' => ['bg' => '#dbeafe', 'color' => '#1e40af', 'icon' => '🍽️', 'label' => 'Lunch'],
+                                    'dinner' => ['bg' => '#e0e7ff', 'color' => '#3730a3', 'icon' => '🌙', 'label' => 'Dinner'],
+                                    'snack' => ['bg' => '#fce7f3', 'color' => '#9f1239', 'icon' => '🍪', 'label' => 'Snack'],
+                                    'VIP_meal' => ['bg' => '#f3e8ff', 'color' => '#6b21a8', 'icon' => '👑', 'label' => 'VIP'],
+                                    'special_meal' => ['bg' => '#d1fae5', 'color' => '#065f46', 'icon' => '⭐', 'label' => 'Special'],
+                                    'non_meal' => ['bg' => '#f3f4f6', 'color' => '#374151', 'icon' => '📦', 'label' => 'Non-Meal']
+                                ];
+                                $badge = $mealBadges[$addRequest->meal_type] ?? ['bg' => '#f3f4f6', 'color' => '#374151', 'icon' => '📦', 'label' => 'N/A'];
+                            @endphp
+                            <span style="background:{{ $badge['bg'] }};color:{{ $badge['color'] }};padding:6px 10px;border-radius:8px;font-size:11px;font-weight:600;display:inline-block;white-space:nowrap;">
+                                {{ $badge['icon'] }} {{ $badge['label'] }}
+                            </span>
+                        @else
+                            <span style="color:#9ca3af;font-size:12px;">—</span>
+                        @endif
+                    </td>
                     <td style="padding:16px;text-align:center;color:#718096;">{{ $addRequest->quantity_requested }}</td>
                     <td style="padding:16px;text-align:center;font-weight:600;color:#38a169;">{{ $addRequest->quantity_approved }}</td>
                     <td style="padding:16px;text-align:center;">
