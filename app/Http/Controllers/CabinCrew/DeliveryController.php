@@ -92,7 +92,7 @@ class DeliveryController extends Controller
     public function markDelivered(RequestModel $request)
     {
         // Accept both meal and product requests
-        $validStatuses = ['loaded', 'flight_received'];
+        $validStatuses = ['loaded'];
         
         if (!in_array($request->status, $validStatuses)) {
             return back()->with('error', 'This request cannot be marked as delivered/served. Current status: ' . $request->status);

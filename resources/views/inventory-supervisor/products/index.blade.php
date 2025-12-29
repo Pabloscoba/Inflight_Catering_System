@@ -121,7 +121,7 @@
                                 <form action="{{ route('inventory-supervisor.products.approve', $product) }}" method="POST">
                                     @csrf
                                     @method('PATCH')
-                                    <button type="submit" class="btn-approve" onclick="return confirm('Approve this product?\n\nProduct: {{ $product->name }}\nSKU: {{ $product->sku }}')">
+                                    <button type="submit" class="btn-approve">
                                         <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                         </svg>
@@ -131,7 +131,7 @@
                                 <form action="{{ route('inventory-supervisor.products.reject', $product) }}" method="POST">
                                     @csrf
                                     @method('PATCH')
-                                    <button type="submit" class="btn-reject" onclick="return confirm('Reject this product?\n\nProduct: {{ $product->name }}\nSKU: {{ $product->sku }}\n\nThis action can be reversed later.')">
+                                    <button type="submit" class="btn-reject">
                                         <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                         </svg>

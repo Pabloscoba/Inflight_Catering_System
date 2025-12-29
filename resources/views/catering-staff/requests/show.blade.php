@@ -112,6 +112,14 @@
                 <label style="display:block;font-size:11px;color:#9ca3af;font-weight:600;text-transform:uppercase;margin-bottom:4px;">Total Items</label>
                 <div style="font-size:18px;font-weight:700;color:#1f2937;">{{ $requestModel->items->count() }} Products</div>
             </div>
+            @if($requestModel->receipt_notes)
+            <div style="margin-bottom:16px;">
+                <label style="display:block;font-size:11px;color:#9ca3af;font-weight:600;text-transform:uppercase;margin-bottom:4px;">📝 Receipt Notes</label>
+                <div style="background:#fef3c7;border-left:4px solid #f59e0b;padding:12px;border-radius:8px;font-size:14px;color:#92400e;margin-top:8px;">
+                    {{ $requestModel->receipt_notes }}
+                </div>
+            </div>
+            @endif
         </div>
     </div>
 </div>
@@ -123,6 +131,23 @@
         <p style="font-size:13px;color:#6b7280;margin:4px 0 0 0;">Products requested for this flight</p>
     </div>
 
+    @if($requestModel->status == 'items_issued')
+    <div style="background:#fef3c7;padding:16px 24px;border-bottom:2px solid #f59e0b;">
+        <div style="display:flex;align-items:center;gap:12px;">
+            <svg style="width:24px;height:24px;color:#92400e;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <div>
+                <div style="font-weight:700;color:#92400e;font-size:14px;">Items Ready to Receive</div>
+                <div style="font-size:13px;color:#92400e;">Review and confirm the actual quantities received. You can edit if needed.</div>
+            </div>
+        </div>
+    </div>
+
+    <form action="{{ route('catering-staff.requests.receive-items', $requestModel) }}" method="POST">
+        @csrf
+    @endif
+
     <div style="overflow-x:auto;">
         <table style="width:100%;border-collapse:collapse;">
             <thead>
@@ -130,8 +155,13 @@
                     <th style="padding:14px 20px;text-align:left;font-weight:600;color:#374151;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;">Product</th>
                     <th style="padding:14px 20px;text-align:center;font-weight:600;color:#374151;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;">Meal Type</th>
                     <th style="padding:14px 20px;text-align:center;font-weight:600;color:#374151;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;">Requested</th>
+                    @if($requestModel->status == 'items_issued')
+                    <th style="padding:14px 20px;text-align:center;font-weight:600;color:#374151;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;">Issued Qty</th>
+                    <th style="padding:14px 20px;text-align:center;font-weight:600;color:#374151;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;">Actually Received</th>
+                    @else
                     <th style="padding:14px 20px;text-align:center;font-weight:600;color:#374151;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;">Approved</th>
                     <th style="padding:14px 20px;text-align:center;font-weight:600;color:#374151;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;">Available Stock</th>
+                    @endif
                     @if($requestModel->status == 'catering_approved')
                     <th style="padding:14px 20px;text-align:center;font-weight:600;color:#374151;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;">Action</th>
                     @endif
@@ -173,6 +203,22 @@
                         <div style="font-size:20px;font-weight:700;color:#2563eb;">{{ $item->quantity_requested }}</div>
                         <div style="font-size:11px;color:#9ca3af;margin-top:2px;">units</div>
                     </td>
+                    @if($requestModel->status == 'items_issued')
+                    <td style="padding:16px 20px;text-align:center;">
+                        <div style="font-size:20px;font-weight:700;color:#10b981;">{{ $approvedQty }}</div>
+                        <div style="font-size:11px;color:#9ca3af;margin-top:2px;">units issued</div>
+                    </td>
+                    <td style="padding:16px 20px;text-align:center;">
+                        <input type="number" 
+                               name="received_quantities[{{ $item->id }}]" 
+                               value="{{ $approvedQty }}" 
+                               min="0" 
+                               max="{{ $approvedQty }}"
+                               required
+                               style="width:100px;padding:8px 12px;border:2px solid #d1d5db;border-radius:8px;font-size:16px;font-weight:600;text-align:center;color:#1f2937;">
+                        <div style="font-size:11px;color:#6b7280;margin-top:4px;">max: {{ $approvedQty }}</div>
+                    </td>
+                    @else
                     <td style="padding:16px 20px;text-align:center;">
                         <div style="font-size:20px;font-weight:700;color:#10b981;">{{ $approvedQty }}</div>
                         <div style="font-size:11px;color:#9ca3af;margin-top:2px;">units</div>
@@ -181,6 +227,7 @@
                         <div style="font-size:18px;font-weight:700;color:{{ $cateringAvailable > 0 ? '#059669' : '#dc2626' }};">{{ $cateringAvailable }}</div>
                         <div style="font-size:11px;color:#9ca3af;margin-top:2px;">in catering</div>
                     </td>
+                    @endif
                     @if($requestModel->status == 'catering_approved')
                     <td style="padding:16px 20px;text-align:center;">
                         <span style="background:#d1fae5;color:#065f46;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;">
@@ -193,6 +240,37 @@
             </tbody>
         </table>
     </div>
+
+    @if($requestModel->status == 'items_issued')
+    <div style="padding:24px;background:#f9fafb;border-top:2px solid #e5e7eb;">
+        <div style="margin-bottom:20px;">
+            <label style="display:block;font-size:14px;font-weight:600;color:#374151;margin-bottom:8px;">
+                Notes / Comments (Optional)
+            </label>
+            <textarea name="receipt_notes" 
+                      rows="3" 
+                      placeholder="E.g., 5 bottles damaged, 2 boxes wet, quality issues noted, etc."
+                      style="width:100%;padding:12px;border:2px solid #d1d5db;border-radius:8px;font-size:14px;color:#1f2937;resize:vertical;font-family:inherit;"></textarea>
+            <div style="font-size:12px;color:#6b7280;margin-top:4px;">
+                Provide details if there are any damaged, missing, or poor quality items
+            </div>
+        </div>
+        
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div>
+                <div style="font-size:14px;font-weight:600;color:#374151;margin-bottom:4px;">Ready to confirm receipt?</div>
+                <div style="font-size:13px;color:#6b7280;">Verify the quantities above match what you actually received</div>
+            </div>
+            <button type="submit" 
+                    style="background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:white;padding:14px 32px;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(16,185,129,0.4);transition:all 0.2s;"
+                    onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 16px rgba(16,185,129,0.5)'"
+                    onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 12px rgba(16,185,129,0.4)'">
+                ✓ Confirm Receipt & Send for Final Approval
+            </button>
+        </div>
+    </div>
+    </form>
+    @endif
 </div>
 
 <!-- Notes & Audit History -->

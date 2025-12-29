@@ -49,13 +49,13 @@
                     <div style="display: flex; gap: 8px; justify-content: center;">
                         <form action="{{ route('inventory-supervisor.approvals.products.approve', $product) }}" method="POST">
                             @csrf
-                            <button type="submit" onclick="return confirm('Approve this product?')" style="padding: 8px 16px; background: #28a745; color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                            <button type="submit" style="padding: 8px 16px; background: #28a745; color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
                                 ✓ Approve
                             </button>
                         </form>
                         <form action="{{ route('inventory-supervisor.approvals.products.reject', $product) }}" method="POST">
                             @csrf
-                            <button type="submit" onclick="return confirm('Reject this product?')" style="padding: 8px 16px; background: #dc3545; color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                            <button type="submit" style="padding: 8px 16px; background: #dc3545; color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
                                 ✗ Reject
                             </button>
                         </form>

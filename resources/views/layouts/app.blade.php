@@ -107,7 +107,7 @@
                     <span class="font-medium">Dashboard</span>
                 </a>
 
-                @role('Admin')
+                @can('manage users')
                 <!-- Users Management -->
                 <div>
                     <button class="sidebar-link w-full btn-ghost" onclick="toggleSubmenu('users')">
@@ -120,37 +120,36 @@
                         <a href="{{ route('admin.users.index') }}" class="{{ request()->routeIs('admin.users.index') ? 'active' : '' }}">Manage Users</a>
                     </div>
                 </div>
+                @endcan
 
+                @can('manage roles')
                 <!-- Roles & Permissions -->
                 <a href="{{ route('admin.roles.index') }}" class="sidebar-link {{ request()->routeIs('admin.roles.*') ? 'active' : '' }}">
                     <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                     <span class="font-medium">Roles & Permissions</span>
                 </a>
-                @endrole
+                @endcan
 
                 @can('view products')
                 <!-- Products Management -->
-                <div>
-                    <button class="sidebar-link w-full btn-ghost" onclick="toggleSubmenu('products')">
-                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
-                        <span class="font-medium flex-1 text-left">Products</span>
-                        <svg id="products-icon" class="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                    </button>
-                    <div id="products-submenu" class="sidebar-submenu" style="max-height: 0px;">
-                        @role('Admin')
-                        <a href="{{ route('admin.products.index') }}" class="{{ request()->routeIs('admin.products.index') ? 'active' : '' }}">View Products</a>
-                        @can('manage categories')
-                        <a href="{{ route('admin.categories.index') }}" class="{{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">Categories</a>
-                        @endcan
-                        @endrole
-                        @role('Inventory Personnel')
-                        <a href="{{ route('inventory-personnel.products.index') }}" class="{{ request()->routeIs('inventory-personnel.products.index') ? 'active' : '' }}">View Products</a>
-                        @endrole
-                        @role('Inventory Supervisor')
-                        <a href="{{ route('inventory-supervisor.approvals.products') }}" class="{{ request()->routeIs('inventory-supervisor.approvals.products') ? 'active' : '' }}">Approve Products</a>
-                        @endrole
-                    </div>
-                </div>
+                @php
+                    $rolePrefix = 'admin';
+                    if (auth()->user()->hasRole('Cabin Crew')) $rolePrefix = 'cabin-crew';
+                    elseif (auth()->user()->hasRole('Catering Staff')) $rolePrefix = 'catering-staff';
+                    elseif (auth()->user()->hasRole('Inventory Personnel')) $rolePrefix = 'inventory-personnel';
+                    elseif (auth()->user()->hasRole('Inventory Supervisor')) $rolePrefix = 'inventory-supervisor';
+                    elseif (auth()->user()->hasRole('Catering Incharge')) $rolePrefix = 'catering-incharge';
+                    elseif (auth()->user()->hasRole('Security Staff')) $rolePrefix = 'security-staff';
+                    elseif (auth()->user()->hasRole('Ramp Dispatcher')) $rolePrefix = 'ramp-dispatcher';
+                    elseif (auth()->user()->hasRole('Flight Purser')) $rolePrefix = 'flight-purser';
+                    
+                    $productsIndexRoute = $rolePrefix . '.products.index';
+                @endphp
+                
+                <a href="{{ route($productsIndexRoute) }}" class="sidebar-link {{ request()->routeIs($rolePrefix . '.products.*') ? 'active' : '' }}">
+                    <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                    <span class="font-medium">Products</span>
+                </a>
                 @endcan
 
                 @can('view stock levels')
@@ -162,32 +161,31 @@
                         <svg id="stock-icon" class="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </button>
                     <div id="stock-submenu" class="sidebar-submenu" style="max-height: 0px;">
-                        @role('Admin')
-                        @can('add stock')
-                        <a href="{{ route('admin.stock-movements.incoming') }}" class="{{ request()->routeIs('admin.stock-movements.incoming') ? 'active' : '' }}">Incoming</a>
-                        <a href="{{ route('admin.stock-movements.issue') }}" class="{{ request()->routeIs('admin.stock-movements.issue') ? 'active' : '' }}">Issue</a>
-                        <a href="{{ route('admin.stock-movements.returns') }}" class="{{ request()->routeIs('admin.stock-movements.returns') ? 'active' : '' }}">Returns</a>
-                        @endcan
-                        <a href="{{ route('admin.stock-movements.index') }}" class="{{ request()->routeIs('admin.stock-movements.index') ? 'active' : '' }}">History</a>
-                        @endrole
+                        @php
+                            $stockPrefix = 'admin';
+                            if (auth()->user()->hasRole('Inventory Personnel')) $stockPrefix = 'inventory-personnel';
+                            elseif (auth()->user()->hasRole('Inventory Supervisor')) $stockPrefix = 'inventory-supervisor';
+                        @endphp
                         
-                        @role('Inventory Personnel')
-                        @can('add stock')
-                        <a href="{{ route('inventory-personnel.stock-movements.incoming') }}" class="{{ request()->routeIs('inventory-personnel.stock-movements.incoming') ? 'active' : '' }}">Incoming</a>
-                        @endcan
-                        @can('issue stock')
-                        <a href="{{ route('inventory-personnel.stock-movements.issue') }}" class="{{ request()->routeIs('inventory-personnel.stock-movements.issue') ? 'active' : '' }}">Issue</a>
-                        @endcan
-                        @can('process returns')
-                        <a href="{{ route('inventory-personnel.stock-movements.returns') }}" class="{{ request()->routeIs('inventory-personnel.stock-movements.returns') ? 'active' : '' }}">Returns</a>
-                        @endcan
-                        <a href="{{ route('inventory-personnel.stock-movements.index') }}" class="{{ request()->routeIs('inventory-personnel.stock-movements.index') ? 'active' : '' }}">History</a>
-                        @endrole
+                        @if($stockPrefix === 'admin' || $stockPrefix === 'inventory-personnel')
+                            @can('add stock')
+                            <a href="{{ route($stockPrefix . '.stock-movements.incoming') }}" class="{{ request()->routeIs($stockPrefix . '.stock-movements.incoming') ? 'active' : '' }}">Incoming</a>
+                            @endcan
+                            @can('issue stock')
+                            <a href="{{ route($stockPrefix . '.stock-movements.issue') }}" class="{{ request()->routeIs($stockPrefix . '.stock-movements.issue') ? 'active' : '' }}">Issue</a>
+                            @endcan
+                            @can('process returns')
+                            <a href="{{ route($stockPrefix . '.stock-movements.returns') }}" class="{{ request()->routeIs($stockPrefix . '.stock-movements.returns') ? 'active' : '' }}">Returns</a>
+                            @endcan
+                        @endif
                         
-                        @role('Inventory Supervisor')
-                        <a href="{{ route('inventory-supervisor.approvals.movements') }}" class="{{ request()->routeIs('inventory-supervisor.approvals.movements') ? 'active' : '' }}">Approve Movements</a>
-                        <a href="{{ route('inventory-supervisor.stock-movements.index') }}" class="{{ request()->routeIs('inventory-supervisor.stock-movements.index') ? 'active' : '' }}">History</a>
-                        @endrole
+                        @if($stockPrefix === 'inventory-supervisor')
+                            @can('approve stock movements')
+                            <a href="{{ route('inventory-supervisor.approvals.movements') }}" class="{{ request()->routeIs('inventory-supervisor.approvals.movements') ? 'active' : '' }}">Approve Movements</a>
+                            @endcan
+                        @endif
+                        
+                        <a href="{{ route($stockPrefix . '.stock-movements.index') }}" class="{{ request()->routeIs($stockPrefix . '.stock-movements.index') ? 'active' : '' }}">History</a>
                     </div>
                 </div>
                 @endcan
@@ -223,7 +221,7 @@
                 </div>
                 @endif
 
-                @role('Catering Staff')
+                @can('manage meals')
                 <!-- Meal Management (Catering Staff Only) -->
                 <div>
                     <button class="sidebar-link w-full btn-ghost" onclick="toggleSubmenu('meals')">
@@ -242,7 +240,7 @@
                         <a href="{{ route('catering-staff.meals.index', ['active_menu' => '1']) }}">Active Menus</a>
                     </div>
                 </div>
-                @endrole
+                @endcan
 
                 @if(auth()->user()->can('manage flights') || auth()->user()->hasRole('Admin'))
                 <!-- Flights Management (Admin Only) -->
@@ -261,13 +259,37 @@
                 </div>
                 @endif
                 
-                @role('Flight Purser|Cabin Crew|Ramp Dispatcher')
+                @can('view flight schedule')
                 <!-- Flight Schedule (View Only) -->
                 <a href="{{ route('flights.schedule') }}" class="sidebar-link {{ request()->routeIs('flights.schedule') ? 'active' : '' }}">
                     <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                     <span class="font-medium">Flight Schedule</span>
                 </a>
-                @endrole
+                @endcan
+
+                @can('dispatch flights')
+                <!-- Flight Dispatcher Operations -->
+                <div>
+                    <button class="sidebar-link w-full btn-ghost" onclick="toggleSubmenu('dispatcher-flights')">
+                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                        <span class="font-medium flex-1 text-left">Flight Operations</span>
+                        <svg id="dispatcher-flights-icon" class="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <div id="dispatcher-flights-submenu" class="sidebar-submenu" style="max-height: 0px;">
+                        <a href="{{ route('flight-dispatcher.flights.schedule') }}" class="{{ request()->routeIs('flight-dispatcher.flights.schedule') ? 'active' : '' }}">Flight Schedule</a>
+                        <a href="{{ route('flight-dispatcher.dispatches.index') }}" class="{{ request()->routeIs('flight-dispatcher.dispatches.*') ? 'active' : '' }}">Dispatch Records</a>
+                        <a href="{{ route('flight-dispatcher.dispatches.create') }}" class="{{ request()->routeIs('flight-dispatcher.dispatches.create') ? 'active' : '' }}">New Dispatch</a>
+                    </div>
+                </div>
+                @endcan
+
+                @can('manage messages')
+                <!-- Messages & Communication -->
+                <a href="{{ route('flight-dispatcher.messages.index') }}" class="sidebar-link {{ request()->routeIs('flight-dispatcher.messages.*') ? 'active' : '' }}">
+                    <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+                    <span class="font-medium">Messages</span>
+                </a>
+                @endcan
 
                 <!-- System Settings -->
                 <div>
@@ -277,44 +299,36 @@
                         <svg id="settings-icon" class="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </button>
                     <div id="settings-submenu" class="sidebar-submenu" style="max-height: 0px;">
-                        @role('Admin')
-                        <a href="{{ route('admin.settings.general') }}" class="{{ request()->routeIs('admin.settings.general') ? 'active' : '' }}">General Settings</a>
-                        <a href="{{ route('admin.activity-logs.index') }}" class="{{ request()->routeIs('admin.activity-logs.*') ? 'active' : '' }}">Activity Logs</a>
-                        <a href="{{ route('admin.logs.index') }}" class="{{ request()->routeIs('admin.logs.*') ? 'active' : '' }}">Audit Logs</a>
-                        <a href="{{ route('admin.backup.index') }}" class="{{ request()->routeIs('admin.backup.*') ? 'active' : '' }}">Backup</a>
-                        @endrole
+                        @php
+                            $settingsPrefix = '';
+                            if (auth()->user()->hasRole('Admin')) $settingsPrefix = 'admin';
+                            elseif (auth()->user()->hasRole('Catering Staff')) $settingsPrefix = 'catering-staff';
+                            elseif (auth()->user()->hasRole('Inventory Personnel')) $settingsPrefix = 'inventory-personnel';
+                            elseif (auth()->user()->hasRole('Inventory Supervisor')) $settingsPrefix = 'inventory-supervisor';
+                            elseif (auth()->user()->hasRole('Security Staff')) $settingsPrefix = 'security-staff';
+                            elseif (auth()->user()->hasRole('Catering Incharge')) $settingsPrefix = 'catering-incharge';
+                            elseif (auth()->user()->hasRole('Ramp Dispatcher')) $settingsPrefix = 'ramp-dispatcher';
+                            elseif (auth()->user()->hasRole('Flight Dispatcher')) $settingsPrefix = 'flight-dispatcher';
+                            elseif (auth()->user()->hasRole('Flight Purser')) $settingsPrefix = 'flight-purser';
+                            elseif (auth()->user()->hasRole('Cabin Crew')) $settingsPrefix = 'cabin-crew';
+                        @endphp
                         
-                        @role('Catering Staff')
-                        <a href="{{ route('catering-staff.settings') }}" class="{{ request()->routeIs('catering-staff.settings*') ? 'active' : '' }}"> Settings</a>
-                        @endrole
-                        
-                        @role('Inventory Personnel')
-                        <a href="{{ route('inventory-personnel.settings') }}" class="{{ request()->routeIs('inventory-personnel.settings*') ? 'active' : '' }}"> Settings</a>
-                        @endrole
-                        
-                        @role('Inventory Supervisor')
-                        <a href="{{ route('inventory-supervisor.settings') }}" class="{{ request()->routeIs('inventory-supervisor.settings*') ? 'active' : '' }}"> Settings</a>
-                        @endrole
-                        
-                        @role('Security Staff')
-                        <a href="{{ route('security-staff.settings') }}" class="{{ request()->routeIs('security-staff.settings*') ? 'active' : '' }}"> Settings</a>
-                        @endrole
-                        
-                        @role('Catering Incharge')
-                        <a href="{{ route('catering-incharge.settings') }}" class="{{ request()->routeIs('catering-incharge.settings*') ? 'active' : '' }}"> Settings</a>
-                        @endrole
-                        
-                        @role('Ramp Dispatcher')
-                        <a href="{{ route('ramp-dispatcher.settings') }}" class="{{ request()->routeIs('ramp-dispatcher.settings*') ? 'active' : '' }}"> Settings</a>
-                        @endrole
-                        
-                        @role('Flight Purser')
-                        <a href="{{ route('flight-purser.settings') }}" class="{{ request()->routeIs('flight-purser.settings*') ? 'active' : '' }}"> Settings</a>
-                        @endrole
-                        
-                        @role('Cabin Crew')
-                        <a href="{{ route('cabin-crew.settings') }}" class="{{ request()->routeIs('cabin-crew.settings*') ? 'active' : '' }}"> Settings</a>
-                        @endrole
+                        @if($settingsPrefix === 'admin')
+                            @can('manage system settings')
+                            <a href="{{ route('admin.settings.general') }}" class="{{ request()->routeIs('admin.settings.general') ? 'active' : '' }}">General Settings</a>
+                            @endcan
+                            @can('view activity logs')
+                            <a href="{{ route('admin.activity-logs.index') }}" class="{{ request()->routeIs('admin.activity-logs.*') ? 'active' : '' }}">Activity Logs</a>
+                            @endcan
+                            @can('view audit logs')
+                            <a href="{{ route('admin.logs.index') }}" class="{{ request()->routeIs('admin.logs.*') ? 'active' : '' }}">Audit Logs</a>
+                            @endcan
+                            @can('manage backups')
+                            <a href="{{ route('admin.backup.index') }}" class="{{ request()->routeIs('admin.backup.*') ? 'active' : '' }}">Backup</a>
+                            @endcan
+                        @elseif($settingsPrefix)
+                            <a href="{{ route($settingsPrefix . '.settings') }}" class="{{ request()->routeIs($settingsPrefix . '.settings*') ? 'active' : '' }}">Settings</a>
+                        @endif
                     </div>
                 </div>
 
@@ -597,5 +611,11 @@
             return date.toLocaleDateString();
         }
     </script>
+
+    <!-- Toast Notifications -->
+    @include('components.toast-notifications')
+    
+    <!-- Page specific scripts -->
+    @yield('scripts')
 </body>
 </html>

@@ -11,12 +11,12 @@ use App\Notifications\RequestPendingSupervisorNotification;
 class RequestController extends Controller
 {
     /**
-     * Show pending requests awaiting Inventory Personnel review (from Catering Staff)
+     * Show pending requests awaiting Inventory Personnel to issue items (NEW WORKFLOW)
      */
     public function pendingRequests()
     {
         $requests = RequestModel::with(['flight', 'requester', 'items.product'])
-            ->where('status', 'pending_inventory')
+            ->where('status', 'supervisor_approved')
             ->latest()
             ->paginate(20);
 
@@ -24,35 +24,69 @@ class RequestController extends Controller
     }
 
     /**
-     * Forward request to Supervisor for approval
+     * Issue items to catering staff (CORRECTED WORKFLOW - send to Catering Staff)
      */
-    public function forwardToSupervisor(RequestModel $request)
+    public function issueItems(RequestModel $request)
     {
-        if ($request->status !== 'pending_inventory') {
-            return back()->with('error', 'Only pending inventory requests can be forwarded.');
+        if ($request->status !== 'supervisor_approved') {
+            return back()->with('error', 'This request is not ready for issuing.');
         }
 
-        $request->update([
-            'status' => 'pending_supervisor',
-        ]);
-        
-        // Notify Inventory Supervisor
-        $supervisors = User::role('Inventory Supervisor')->get();
-        foreach ($supervisors as $supervisor) {
-            $supervisor->notify(new RequestPendingSupervisorNotification($request));
-        }
+        \DB::transaction(function () use ($request) {
+            // Create stock movements for each item (but don't decrease main stock yet)
+            foreach ($request->items as $item) {
+                \App\Models\StockMovement::create([
+                    'type' => 'issued',
+                    'product_id' => $item->product_id,
+                    'quantity' => $item->quantity_requested,
+                    'reference_number' => 'REQ-' . $request->id . ' / ' . $request->flight->flight_number,
+                    'notes' => 'Issued to Catering Staff for Request #' . $request->id,
+                    'user_id' => auth()->id(),
+                    'status' => 'approved',
+                    'approved_by' => auth()->id(),
+                    'approved_at' => now(),
+                    'movement_date' => now(),
+                ]);
+                
+                // NOTE: Main stock (quantity_in_stock) will be decreased when Catering Staff
+                // confirms receipt with actual received quantities
+            }
+            
+            // Update request status - items issued, send to Catering Staff
+            $request->update([
+                'status' => 'items_issued',
+                'dispatched_by' => auth()->id(),
+                'dispatched_at' => now(),
+            ]);
+            
+            // Notify Catering Staff (requester)
+            $request->requester->notify(new \App\Notifications\RequestApprovedNotification($request));
+        });
 
-        return back()->with('success', 'Request forwarded to Inventory Supervisor for approval.');
+        return back()->with('success', 'Items issued successfully and sent to Catering Staff.');
     }
 
-    // Show requests that were approved by supervisor and awaiting forwarding
+    /**
+     * Show supervisor-approved requests ready for issuing (NEW WORKFLOW)
+     */
     public function supervisorApproved()
     {
-        $requests = RequestModel::with(['flight','requester','items.product'])
+        $requests = RequestModel::with(['flight', 'requester', 'items.product'])
             ->where('status', 'supervisor_approved')
-            ->orderBy('requested_date', 'asc')
+            ->latest()
             ->paginate(20);
 
         return view('inventory-personnel.requests.supervisor-approved', compact('requests'));
+    }
+
+    // Show requests that were issued
+    public function issuedRequests()
+    {
+        $requests = RequestModel::with(['flight','requester','items.product'])
+            ->whereIn('status', ['items_issued', 'catering_received', 'security_authenticated', 'ramp_dispatched', 'loaded'])
+            ->orderBy('dispatched_at', 'desc')
+            ->paginate(20);
+
+        return view('inventory-personnel.requests.issued', compact('requests'));
     }
 }

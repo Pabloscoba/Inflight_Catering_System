@@ -63,12 +63,17 @@
     </div>
 </div>
 
+<!-- Quick Actions - DYNAMIC PERMISSION-BASED -->
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:32px;">
+    <x-permission-actions :exclude="['view dispatch reports', 'view approved orders', 'mark items as dispatched', 'handover to flight crew']" />
+</div>
+
 <!-- Orders Ready for Dispatch -->
 <div style="background:white;border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,0.08);overflow:hidden;margin-top:32px;">
     <div style="padding:24px 28px;border-bottom:2px solid #f3f4f6;display:flex;justify-content:space-between;align-items:center;">
         <div>
             <h3 style="font-size:20px;font-weight:700;color:#1a1a1a;margin:0;">📦 Orders Ready for Dispatch</h3>
-            <p style="font-size:13px;color:#6b7280;margin:4px 0 0 0;">Approved requests sent by Catering Staff - Ready to dispatch to Flight Purser</p>
+            <p style="font-size:13px;color:#6b7280;margin:4px 0 0 0;">Approved requests sent by Catering Staff - Send to Flight Dispatcher for assessment</p>
         </div>
         <div style="background:#dbeafe;color:#1e40af;padding:6px 12px;border-radius:8px;font-size:13px;font-weight:600;">
             {{ $ordersToDispatch->count() }} orders
@@ -155,12 +160,12 @@
                     <td style="padding:16px 20px;text-align:center;">
                         <form method="POST" action="{{ route('ramp-dispatcher.requests.dispatch', $request) }}" style="display:inline;">
                             @csrf
-                            <button type="submit" onclick="return confirm('Dispatch Request #{{ $request->id }} to Flight Purser?\n\nFlight: {{ $request->flight->flight_number }}\nItems: {{ $request->items->count() }}')" 
+                                     <button type="submit" onclick="return confirm('Send Request #{{ $request->id }} to Flight Dispatcher for assessment?\n\nFlight: {{ $request->flight->flight_number }}\nItems: {{ $request->items->count() }}')" 
                                style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:white;padding:10px 18px;border-radius:8px;border:none;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;">
                                 <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                 </svg>
-                                Dispatch
+                                Send
                             </button>
                         </form>
                     </td>

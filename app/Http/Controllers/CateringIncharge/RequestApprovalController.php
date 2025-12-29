@@ -11,24 +11,13 @@ use Illuminate\Support\Facades\DB;
 class RequestApprovalController extends Controller
 {
     /**
-     * Display pending requests (meal requests OR supervisor approved product requests)
+     * Display pending requests (NEW WORKFLOW - first approval)
      */
     public function pendingRequests()
     {
-        // Show TWO types of requests:
-        // 1. Meal requests (request_type = 'meal', status = 'pending') - Direct from Catering Staff
-        // 2. Product requests (status = 'supervisor_approved') - From Inventory Supervisor
+        // Show requests pending first Catering Incharge approval
         $requests = RequestModel::with(['flight', 'requester', 'items.product'])
-            ->where(function($query) {
-                $query->where(function($q) {
-                    // Meal requests - direct from Catering Staff
-                    $q->where('request_type', 'meal')
-                      ->where('status', 'pending');
-                })->orWhere(function($q) {
-                    // Product requests - from Inventory Supervisor
-                    $q->where('status', 'supervisor_approved');
-                });
-            })
+            ->where('status', 'pending_catering_incharge')
             ->latest()
             ->paginate(20);
 
@@ -36,57 +25,89 @@ class RequestApprovalController extends Controller
     }
 
     /**
-     * Approve request (handles both meal and product requests)
+     * Show individual request details
+     */
+    public function showRequest(RequestModel $requestModel)
+    {
+        $requestModel->load(['flight', 'requester', 'approver', 'items.product']);
+        return view('catering-incharge.requests.show', compact('requestModel'));
+    }
+
+    /**
+     * Approve request (NEW WORKFLOW - first approval, send to Inventory Supervisor)
      */
     public function approveRequest(RequestModel $requestModel)
     {
-        // Check if request is awaiting Catering Incharge approval
-        $validStatuses = ['supervisor_approved', 'pending']; // pending = meal requests
-        if (!in_array($requestModel->status, $validStatuses)) {
+        // Check if request is awaiting first Catering Incharge approval
+        if ($requestModel->status !== 'pending_catering_incharge') {
             return back()->with('error', 'This request is not awaiting Catering Incharge approval.');
         }
 
-        // Different handling based on request type
         DB::transaction(function () use ($requestModel) {
-            if ($requestModel->request_type === 'meal') {
-                // MEAL REQUEST: Goes to Security for dispatch (no catering stock creation)
-                $requestModel->update([
-                    'status' => 'catering_approved',
-                    'catering_approved_by' => auth()->id(),
-                    'catering_approved_at' => now(),
-                ]);
-            } else {
-                // PRODUCT REQUEST: Forward to Security for authentication & stock issuance
-                $requestModel->update([
-                    'status' => 'sent_to_security',
-                    'catering_approved_by' => auth()->id(),
-                    'catering_approved_at' => now(),
-                ]);
-            }
+            // Approve and send to Inventory Supervisor
+            $requestModel->update([
+                'status' => 'catering_approved',
+                'catering_approved_by' => auth()->id(),
+                'catering_approved_at' => now(),
+            ]);
             
-            // Notify requester
-            $requestModel->requester->notify(new RequestApprovedNotification($requestModel));
+            // Notify Inventory Supervisor
+            $inventorySupervisor = \App\Models\User::role('Inventory Supervisor')->first();
+            if ($inventorySupervisor) {
+                $inventorySupervisor->notify(new \App\Notifications\RequestApprovedNotification($requestModel));
+            }
+        });
+
+        return back()->with('success', 'Request approved and forwarded to Inventory Supervisor.');
+    }
+
+    /**
+     * Display requests awaiting final approval (CORRECTED WORKFLOW)
+     * After Catering Staff receives items from Inventory
+     */
+    public function pendingFinalApproval()
+    {
+        // Show requests where catering staff received items and sent for final approval
+        $requests = RequestModel::with(['flight', 'requester', 'items.product'])
+            ->where('status', 'pending_final_approval')
+            ->latest()
+            ->paginate(20);
+
+        return view('catering-incharge.requests.pending-final', compact('requests'));
+    }
+
+    /**
+     * Final approval (CORRECTED WORKFLOW - approve and send to Security)
+     */
+    public function giveFinalApproval(RequestModel $requestModel)
+    {
+        // Check if request is awaiting final approval
+        if ($requestModel->status !== 'pending_final_approval') {
+            return back()->with('error', 'This request is not awaiting final approval.');
+        }
+
+        DB::transaction(function () use ($requestModel) {
+            // Give final approval and send to Security
+            $requestModel->update([
+                'status' => 'catering_final_approved',
+            ]);
             
             // Notify Security Staff
             $securityStaff = \App\Models\User::role('Security Staff')->get();
             foreach ($securityStaff as $staff) {
-                $staff->notify(new RequestApprovedNotification($requestModel));
+                $staff->notify(new \App\Notifications\RequestApprovedNotification($requestModel));
             }
         });
 
-        $message = ($requestModel->request_type === 'meal') 
-            ? 'Meal request approved. Ready for Security dispatch.' 
-            : 'Product request approved and forwarded to Security Staff for authentication.';
-
-        return back()->with('success', $message);
+        return back()->with('success', 'Final approval given. Request forwarded to Security for authentication.');
     }
-
+    
     /**
      * Reject catering staff request
      */
     public function rejectRequest(Request $request, RequestModel $requestModel)
     {
-        if ($requestModel->status !== 'pending') {
+        if ($requestModel->status !== 'pending_catering_incharge') {
             return back()->with('error', 'This request has already been processed.');
         }
 
@@ -96,13 +117,13 @@ class RequestApprovalController extends Controller
 
         $requestModel->update([
             'status' => 'rejected',
-            'approved_by' => auth()->id(),
-            'approved_date' => now(),
+            'catering_approved_by' => auth()->id(),
+            'catering_approved_at' => now(),
             'rejection_reason' => $request->rejection_reason,
         ]);
-        
+
         // Notify requester
-        $requestModel->requester->notify(new RequestRejectedNotification($requestModel));
+        $requestModel->requester->notify(new \App\Notifications\RequestRejectedNotification($requestModel));
 
         return back()->with('success', 'Request has been rejected.');
     }
@@ -113,8 +134,8 @@ class RequestApprovalController extends Controller
     public function approvedRequests()
     {
         $requests = RequestModel::with(['flight', 'requester', 'approver', 'items.product.category'])
-            ->where('status', 'catering_approved')
-            ->latest('approved_date')
+            ->whereIn('status', ['catering_approved', 'catering_received', 'security_authenticated', 'ramp_dispatched', 'loaded', 'delivered'])
+            ->latest('catering_approved_at')
             ->paginate(20);
 
         return view('catering-incharge.requests.approved', compact('requests'));

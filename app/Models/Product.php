@@ -15,6 +15,7 @@ class Product extends Model
         'name',
         'sku',
         'category_id',
+        'type',
         'description',
         'currency',
         'unit_price',
@@ -103,6 +104,14 @@ class Product extends Model
     public function deliveredBy()
     {
         return $this->belongsTo(User::class, 'delivered_by');
+    }
+
+    /**
+     * Get all stock movements for this product
+     */
+    public function stockMovements()
+    {
+        return $this->hasMany(StockMovement::class, 'product_id');
     }
 
     /**

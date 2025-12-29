@@ -20,16 +20,20 @@
     <!-- Stock Summary Cards -->
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; margin-bottom: 32px;">
         <div style="background: white; border-radius: 16px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-            <div style="font-size: 14px; color: #718096; margin-bottom: 8px;">Total Products</div>
+            <div style="font-size: 14px; color: #718096; margin-bottom: 8px;">Total Products in Stock</div>
             <div style="font-size: 36px; font-weight: 700; color: #1a202c;">{{ $stockSummary->count() }}</div>
         </div>
         <div style="background: white; border-radius: 16px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
             <div style="font-size: 14px; color: #718096; margin-bottom: 8px;">Total Available Units</div>
-            <div style="font-size: 36px; font-weight: 700; color: #28a745;">{{ $stockSummary->sum('total_available') }}</div>
+            <div style="font-size: 36px; font-weight: 700; color: #28a745;">{{ $stockSummary->sum('catering_stock') }}</div>
         </div>
         <div style="background: white; border-radius: 16px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-            <div style="font-size: 14px; color: #718096; margin-bottom: 8px;">Total Received</div>
-            <div style="font-size: 36px; font-weight: 700; color: #667eea;">{{ $stockSummary->sum('total_received') }}</div>
+            <div style="font-size: 14px; color: #718096; margin-bottom: 8px;">⚠️ Low Stock Items</div>
+            <div style="font-size: 36px; font-weight: 700; color: #ffc107;">{{ $lowStockCount }}</div>
+        </div>
+        <div style="background: white; border-radius: 16px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+            <div style="font-size: 14px; color: #718096; margin-bottom: 8px;">🚨 Out of Stock Items</div>
+            <div style="font-size: 36px; font-weight: 700; color: #dc3545;">{{ $outOfStockCount }}</div>
         </div>
     </div>
 
@@ -43,33 +47,35 @@
                     <tr style="border-bottom: 2px solid #e9ecef;">
                         <th style="text-align: left; padding: 14px; font-size: 14px; font-weight: 600; color: #495057;">Product</th>
                         <th style="text-align: left; padding: 14px; font-size: 14px; font-weight: 600; color: #495057;">Category</th>
-                        <th style="text-align: right; padding: 14px; font-size: 14px; font-weight: 600; color: #495057;">Total Received</th>
-                        <th style="text-align: right; padding: 14px; font-size: 14px; font-weight: 600; color: #495057;">Available</th>
-                        <th style="text-align: right; padding: 14px; font-size: 14px; font-weight: 600; color: #495057;">Used (%)</th>
+                        <th style="text-align: center; padding: 14px; font-size: 14px; font-weight: 600; color: #495057;">Current Stock</th>
+                        <th style="text-align: center; padding: 14px; font-size: 14px; font-weight: 600; color: #495057;">Reorder Level</th>
                         <th style="text-align: left; padding: 14px; font-size: 14px; font-weight: 600; color: #495057;">Status</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($stockSummary as $summary)
+                    @foreach($stockSummary as $product)
                     @php
-                        $usedPercentage = $summary->total_received > 0 ? (($summary->total_received - $summary->total_available) / $summary->total_received) * 100 : 0;
-                        $availablePercentage = $summary->total_received > 0 ? ($summary->total_available / $summary->total_received) * 100 : 0;
+                        $isLowStock = $product->catering_stock <= $product->catering_reorder_level;
+                        $isOutOfStock = $product->catering_stock == 0;
+                        $stockPercentage = $product->catering_reorder_level > 0 ? ($product->catering_stock / $product->catering_reorder_level) * 100 : 100;
                     @endphp
                     <tr style="border-bottom: 1px solid #f1f3f5;">
-                        <td style="padding: 14px; font-size: 14px; color: #212529; font-weight: 600;">{{ $summary->product->name }}</td>
-                        <td style="padding: 14px; font-size: 14px; color: #6c757d;">{{ $summary->product->category->name }}</td>
-                        <td style="padding: 14px; font-size: 14px; color: #6c757d; text-align: right;">{{ $summary->total_received }}</td>
-                        <td style="padding: 14px; font-size: 16px; color: #212529; font-weight: 700; text-align: right;">{{ $summary->total_available }}</td>
-                        <td style="padding: 14px; text-align: right;">
-                            <span style="font-size: 14px; color: #6c757d;">{{ number_format($usedPercentage, 1) }}%</span>
+                        <td style="padding: 14px; font-size: 14px; color: #212529; font-weight: 600;">{{ $product->name }}</td>
+                        <td style="padding: 14px; font-size: 14px; color: #6c757d;">{{ $product->category->name }}</td>
+                        <td style="padding: 14px; text-align: center;">
+                            <span style="font-size: 18px; font-weight: 700; color: {{ $isOutOfStock ? '#dc3545' : ($isLowStock ? '#ffc107' : '#28a745') }};">{{ $product->catering_stock }}</span>
+                            <span style="font-size: 12px; color: #6c757d; margin-left: 4px;">{{ $product->unit_of_measure ?? 'units' }}</span>
                         </td>
+                        <td style="padding: 14px; font-size: 14px; color: #6c757d; text-align: center;">{{ $product->catering_reorder_level }} {{ $product->unit_of_measure ?? 'units' }}</td>
                         <td style="padding: 14px;">
-                            @if($availablePercentage > 50)
-                            <span style="background: #d4edda; color: #155724; padding: 4px 12px; border-radius: 12px; font-size: 13px; font-weight: 600;">Good Stock</span>
-                            @elseif($availablePercentage > 20)
-                            <span style="background: #fff3cd; color: #856404; padding: 4px 12px; border-radius: 12px; font-size: 13px; font-weight: 600;">Moderate</span>
+                            @if($isOutOfStock)
+                            <span style="background: #f8d7da; color: #721c24; padding: 6px 14px; border-radius: 12px; font-size: 13px; font-weight: 600;">🚨 Out of Stock</span>
+                            @elseif($isLowStock)
+                            <span style="background: #fff3cd; color: #856404; padding: 6px 14px; border-radius: 12px; font-size: 13px; font-weight: 600;">⚠️ Low Stock</span>
+                            @elseif($stockPercentage < 200)
+                            <span style="background: #d1ecf1; color: #0c5460; padding: 6px 14px; border-radius: 12px; font-size: 13px; font-weight: 600;">Moderate</span>
                             @else
-                            <span style="background: #f8d7da; color: #721c24; padding: 4px 12px; border-radius: 12px; font-size: 13px; font-weight: 600;">Low Stock</span>
+                            <span style="background: #d4edda; color: #155724; padding: 6px 14px; border-radius: 12px; font-size: 13px; font-weight: 600;">✅ Good Stock</span>
                             @endif
                         </td>
                     </tr>
@@ -90,35 +96,44 @@
 
     <!-- Detailed Stock Records -->
     <div style="background: white; border-radius: 16px; padding: 28px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-        <h3 style="font-size: 20px; font-weight: 600; color: #1a202c; margin: 0 0 24px 0;">Detailed Stock Records</h3>
+        <h3 style="font-size: 20px; font-weight: 600; color: #1a202c; margin: 0 0 24px 0;">Real-Time Stock Levels</h3>
         @if($stocks->count() > 0)
         <div style="overflow-x: auto;">
             <table style="width: 100%; border-collapse: collapse;">
                 <thead>
                     <tr style="border-bottom: 2px solid #e9ecef;">
                         <th style="text-align: left; padding: 14px; font-size: 14px; font-weight: 600; color: #495057;">Product</th>
-                        <th style="text-align: left; padding: 14px; font-size: 14px; font-weight: 600; color: #495057;">Reference</th>
-                        <th style="text-align: right; padding: 14px; font-size: 14px; font-weight: 600; color: #495057;">Received</th>
-                        <th style="text-align: right; padding: 14px; font-size: 14px; font-weight: 600; color: #495057;">Available</th>
-                        <th style="text-align: left; padding: 14px; font-size: 14px; font-weight: 600; color: #495057;">Approved By</th>
-                        <th style="text-align: left; padding: 14px; font-size: 14px; font-weight: 600; color: #495057;">Approved Date</th>
+                        <th style="text-align: left; padding: 14px; font-size: 14px; font-weight: 600; color: #495057;">Category</th>
+                        <th style="text-align: left; padding: 14px; font-size: 14px; font-weight: 600; color: #495057;">SKU</th>
+                        <th style="text-align: center; padding: 14px; font-size: 14px; font-weight: 600; color: #495057;">Current Stock</th>
+                        <th style="text-align: center; padding: 14px; font-size: 14px; font-weight: 600; color: #495057;">Reorder Level</th>
+                        <th style="text-align: left; padding: 14px; font-size: 14px; font-weight: 600; color: #495057;">Status</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($stocks as $stock)
+                    @foreach($stocks as $product)
+                    @php
+                        $isLowStock = $product->catering_stock <= $product->catering_reorder_level;
+                        $isOutOfStock = $product->catering_stock == 0;
+                    @endphp
                     <tr style="border-bottom: 1px solid #f1f3f5;">
-                        <td style="padding: 14px; font-size: 14px; color: #212529; font-weight: 600;">{{ $stock->product->name }}</td>
-                        <td style="padding: 14px; font-size: 14px; color: #6c757d;">{{ $stock->reference_number ?? 'N/A' }}</td>
-                        <td style="padding: 14px; font-size: 14px; color: #6c757d; text-align: right;">{{ $stock->quantity_received }}</td>
-                        <td style="padding: 14px; font-size: 16px; color: #212529; font-weight: 700; text-align: right;">
-                            @if($stock->quantity_available == 0)
-                            <span style="color: #dc3545;">0</span>
+                        <td style="padding: 14px; font-size: 14px; color: #212529; font-weight: 600;">{{ $product->name }}</td>
+                        <td style="padding: 14px; font-size: 14px; color: #6c757d;">{{ $product->category->name }}</td>
+                        <td style="padding: 14px; font-size: 14px; color: #6c757d;">{{ $product->sku ?? 'N/A' }}</td>
+                        <td style="padding: 14px; text-align: center;">
+                            <span style="font-size: 18px; font-weight: 700; color: {{ $isOutOfStock ? '#dc3545' : ($isLowStock ? '#ffc107' : '#28a745') }};">{{ $product->catering_stock }}</span>
+                            <span style="font-size: 12px; color: #6c757d; margin-left: 4px;">{{ $product->unit_of_measure ?? 'units' }}</span>
+                        </td>
+                        <td style="padding: 14px; font-size: 14px; color: #6c757d; text-align: center;">{{ $product->catering_reorder_level }} {{ $product->unit_of_measure ?? 'units' }}</td>
+                        <td style="padding: 14px;">
+                            @if($isOutOfStock)
+                            <span style="background: #f8d7da; color: #721c24; padding: 6px 14px; border-radius: 12px; font-size: 13px; font-weight: 600;">🚨 Out of Stock</span>
+                            @elseif($isLowStock)
+                            <span style="background: #fff3cd; color: #856404; padding: 6px 14px; border-radius: 12px; font-size: 13px; font-weight: 600;">⚠️ Low Stock</span>
                             @else
-                            {{ $stock->quantity_available }}
+                            <span style="background: #d4edda; color: #155724; padding: 6px 14px; border-radius: 12px; font-size: 13px; font-weight: 600;">✅ Good Stock</span>
                             @endif
                         </td>
-                        <td style="padding: 14px; font-size: 14px; color: #6c757d;">{{ $stock->cateringIncharge->name ?? 'N/A' }}</td>
-                        <td style="padding: 14px; font-size: 14px; color: #6c757d;">{{ $stock->approved_date ? $stock->approved_date->format('M d, Y H:i') : 'N/A' }}</td>
                     </tr>
                     @endforeach
                 </tbody>
@@ -131,7 +146,7 @@
         </div>
         @else
         <div style="text-align: center; padding: 60px 20px;">
-            <p style="color: #718096; margin: 0;">No detailed stock records available.</p>
+            <p style="color: #718096; margin: 0;">No products in stock currently.</p>
         </div>
         @endif
     </div>

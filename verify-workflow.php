@@ -26,7 +26,7 @@ echo "   Requests at 'delivered' (to cabin crew): $delivered\n\n";
 
 // Check user roles exist
 echo "2. USER ROLES:\n";
-$roles = ['Catering Staff', 'Ramp Dispatcher', 'Flight Purser', 'Cabin Crew'];
+$roles = ['Catering Staff', 'Ramp Dispatcher', 'Flight Dispatcher', 'Flight Purser', 'Cabin Crew'];
 foreach ($roles as $role) {
     $user = App\Models\User::role($role)->first();
     if ($user) {

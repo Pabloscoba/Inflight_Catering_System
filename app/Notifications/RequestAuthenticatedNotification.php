@@ -24,13 +24,24 @@ class RequestAuthenticatedNotification extends Notification
 
     public function toArray($notifiable)
     {
+        // Determine action URL based on user role
+        $actionUrl = url('/dashboard');
+        
+        if ($notifiable->hasRole('Ramp Dispatcher')) {
+            $actionUrl = route('ramp-dispatcher.dashboard');
+        } elseif ($notifiable->hasRole('Catering Incharge')) {
+            $actionUrl = route('catering-incharge.dashboard');
+        } elseif ($notifiable->hasRole('Catering Staff')) {
+            $actionUrl = route('catering-staff.requests.show', $this->request->id);
+        }
+        
         return [
             'title' => 'Request Authenticated by Security',
             'message' => "Request #{$this->request->id} for flight {$this->request->flight->flight_number} passed security authentication",
             'request_id' => $this->request->id,
             'flight_number' => $this->request->flight->flight_number,
             'authenticated_by' => $this->request->authenticatedBy->name ?? 'Security',
-            'action_url' => route('catering-incharge.requests.show', $this->request->id),
+            'action_url' => $actionUrl,
             'icon' => 'shield',
             'color' => 'green'
         ];

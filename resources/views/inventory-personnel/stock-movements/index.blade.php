@@ -107,7 +107,7 @@
                                 <option value="incoming" {{ request('type') == 'incoming' ? 'selected' : '' }}>Incoming</option>
                                 <option value="issued" {{ request('type') == 'issued' ? 'selected' : '' }}>Issued</option>
                                 <option value="returned" {{ request('type') == 'returned' ? 'selected' : '' }}>Returned</option>
-                                <option value="transfer_to_catering" {{ request('type') == 'transfer_to_catering' ? 'selected' : '' }}>Transfer to Catering</option>
+
                             </select>
                         </div>
                         <div class="filter-group">
@@ -155,8 +155,7 @@
                                             <span class="badge badge-incoming">Incoming</span>
                                         @elseif($movement->type == 'issued')
                                             <span class="badge badge-issued">Issued</span>
-                                        @elseif($movement->type == 'transfer_to_catering')
-                                            <span class="badge" style="background: #3b82f6; color: white;">Transfer to Catering</span>
+
                                         @else
                                             <span class="badge badge-returned">Returned</span>
                                         @endif

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Supervisor Approved Requests')
+@section('title', 'Issue Items to Catering Staff')
 
 @section('content')
 <div style="padding: 24px; max-width: 1400px; margin: 0 auto;">
@@ -8,10 +8,10 @@
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
         <div>
             <h1 style="font-size: 28px; font-weight: 700; color: #1a1a1a; margin: 0 0 8px 0;">
-                ✅ Supervisor Approved Requests
+                📦 Issue Items to Catering Staff
             </h1>
             <p style="color: #6b7280; margin: 0; font-size: 14px;">
-                These requests have been approved by Inventory Supervisor and are ready to be issued and forwarded to Security
+                These requests have been approved by Inventory Supervisor - issue items to Catering Staff
             </p>
         </div>
         <a href="{{ route('inventory-personnel.dashboard') }}" 
@@ -155,14 +155,14 @@
                         <!-- Actions -->
                         <td style="padding: 18px 20px; text-align: center;">
                             <div style="display: flex; flex-direction: column; gap: 8px; align-items: center;">
-                                <form method="POST" action="{{ route('inventory-personnel.requests.forward-to-security', $req) }}" style="width: 100%;">
+                                <form method="POST" action="{{ route('inventory-personnel.requests.issue-items', $req) }}" style="width: 100%;">
                                     @csrf
                                     <button type="submit" 
-                                            onclick="return confirm('⚠️ Forward Request #{{ $req->id }} to Security?\n\nThis action will:\n✓ Issue stock for {{ $req->items->count() }} item(s)\n✓ Send request to Security for authentication\n✓ Update request status to Ready for Dispatch\n\nContinue?')" 
-                                            style="width: 100%; padding: 10px 16px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3); transition: transform 0.2s;"
-                                            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(16, 185, 129, 0.4)'" 
-                                            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(16, 185, 129, 0.3)'">
-                                        🔒 Forward to Security
+                                            onclick="return confirm('📦 Issue Items for Request #{{ $req->id }}?\n\nThis action will:\n✓ Deduct stock for {{ $req->items->count() }} item(s)\n✓ Mark items as issued\n✓ Notify Catering Staff to collect items\n\nContinue?')" 
+                                            style="width: 100%; padding: 10px 16px; background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; box-shadow: 0 2px 8px rgba(14, 165, 233, 0.3); transition: transform 0.2s;"
+                                            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(14, 165, 233, 0.4)'" 
+                                            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(14, 165, 233, 0.3)'">
+                                        📦 Issue Items
                                     </button>
                                 </form>
                                 <a href="{{ route('admin.requests.show', $req) }}" 

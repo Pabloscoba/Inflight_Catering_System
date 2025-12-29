@@ -101,6 +101,13 @@
         <span>Approve Products ({{ $pendingProducts }})</span>
     </a>
 
+    <a href="{{ route('inventory-supervisor.products.all') }}" style="display: flex; align-items: center; gap: 12px; padding: 18px 24px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border-radius: 12px; text-decoration: none; font-weight: 600; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4); transition: all 0.3s;">
+        <svg style="width: 24px; height: 24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+        </svg>
+        <span>All Products & Trends</span>
+    </a>
+
     <a href="{{ route('inventory-supervisor.approvals.movements') }}" style="display: flex; align-items: center; gap: 12px; padding: 18px 24px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; border-radius: 12px; text-decoration: none; font-weight: 600; box-shadow: 0 4px 12px rgba(240, 147, 251, 0.4); transition: all 0.3s;">
         <svg style="width: 24px; height: 24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
@@ -114,6 +121,9 @@
         </svg>
         <span>View All Movements</span>
     </a>
+    
+    <!-- DYNAMIC PERMISSION-BASED ACTIONS (Auto-appear when permissions added) -->
+    <x-permission-actions :exclude="['approve products', 'approve stock movements', 'view stock levels', 'generate stock movement reports']" />
 </div>
 
 <!-- Pending Requests Table -->

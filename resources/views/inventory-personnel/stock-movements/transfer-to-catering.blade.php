@@ -1,12 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transfer Stock to Catering - {{ config('app.name') }}</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background: #f3f4f6; min-height: 100vh; padding: 40px 20px; }
+@extends('layouts.app')
+
+@section('title', 'Transfer Stock to Catering')
+
+@section('content')
+<style>
+    body { background: #f3f4f6; min-height: 100vh; padding: 40px 20px; }
         
         .container { max-width: 900px; margin: 0 auto; }
         
@@ -374,5 +372,4 @@
             document.getElementById('product_id').dispatchEvent(new Event('change'));
         }
     </script>
-</body>
-</html>
+@endsection

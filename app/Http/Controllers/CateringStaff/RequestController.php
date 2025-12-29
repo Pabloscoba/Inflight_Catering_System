@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Request as RequestModel;
 use App\Models\RequestItem;
 use App\Models\Product;
+use App\Models\Flight;
 use App\Models\User;
 use App\Notifications\NewRequestNotification;
 use App\Notifications\RequestPendingInventoryNotification;
@@ -39,10 +40,11 @@ class RequestController extends Controller
 
     public function create()
     {
-        // Show only approved and active products
-        // Stock availability will be checked during request processing
+        // Show all approved and active products from MAIN STOCK (inventory)
+        // Catering Staff requests from main inventory, not catering stock
         $products = Product::where('status', 'approved')
             ->where('is_active', true)
+            ->orderBy('quantity_in_stock', 'desc') // Show in-stock items first
             ->orderBy('name')
             ->get();
         return view('catering-staff.requests.create', compact('products'));
@@ -52,15 +54,36 @@ class RequestController extends Controller
     {
         $data = $request->validate([
             'flight_id' => 'required|exists:flights,id',
-            'requested_date' => 'required|date',
+            'flight_datetime' => 'required|date|after_or_equal:now',
+            'requested_date' => 'required|date|after_or_equal:now',
             'notes' => 'nullable|string|max:1000',
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.meal_type' => 'nullable|in:breakfast,lunch,dinner,snack,VIP_meal,special_meal,non_meal',
             'items.*.quantity' => 'required|integer|min:1',
         ]);
-
+        // Validate product availability from MAIN STOCK (inventory)
+        // Catering Staff requests from main inventory, not catering stock
+        foreach ($data['items'] as $item) {
+            $product = Product::find($item['product_id']);
+            if (!$product || $product->quantity_in_stock <= 0) {
+                return back()->withErrors([
+                    'items' => "Product '{$product->name}' is out of stock in main inventory. Please select products that are available."
+                ])->withInput();
+            }
+            if ($product->quantity_in_stock < $item['quantity']) {
+                return back()->withErrors([
+                    'items' => "Insufficient stock for '{$product->name}'. Available in inventory: {$product->quantity_in_stock}, Requested: {$item['quantity']}"
+                ])->withInput();
+            }
+        }
         DB::transaction(function () use ($data) {
+            // Update flight departure time with user-selected datetime
+            $flight = Flight::find($data['flight_id']);
+            $flight->departure_time = $data['flight_datetime'];
+            $flight->arrival_time = \Carbon\Carbon::parse($data['flight_datetime'])->addHours(2); // Estimate 2 hours
+            $flight->save();
+            
             // Auto-detect request type based on items
             $requestType = 'product'; // default
             $hasMeals = false;
@@ -82,8 +105,8 @@ class RequestController extends Controller
                 $requestType = 'mixed';
             }
             
-            // Set initial status based on request type
-            $initialStatus = ($requestType === 'meal') ? 'pending' : 'pending_inventory';
+            // All requests start at pending_catering_incharge (NEW WORKFLOW)
+            $initialStatus = 'pending_catering_incharge';
             
             $req = RequestModel::create([
                 'flight_id' => $data['flight_id'],
@@ -103,19 +126,10 @@ class RequestController extends Controller
                 ]);
             }
             
-            // Notify based on request type
-            if ($requestType === 'meal') {
-                // Meal requests go to Catering Incharge
-                $cateringIncharge = User::role('Catering Incharge')->first();
-                if ($cateringIncharge) {
-                    $cateringIncharge->notify(new NewRequestNotification($req));
-                }
-            } else {
-                // Product/Mixed requests go to Inventory Personnel first
-                $inventoryPersonnel = User::role('Inventory Personnel')->get();
-                foreach ($inventoryPersonnel as $personnel) {
-                    $personnel->notify(new RequestPendingInventoryNotification($req));
-                }
+            // Notify Catering Incharge (NEW WORKFLOW - all requests go to Catering Incharge first)
+            $cateringIncharge = User::role('Catering Incharge')->first();
+            if ($cateringIncharge) {
+                $cateringIncharge->notify(new NewRequestNotification($req));
             }
         });
 
@@ -130,6 +144,94 @@ class RequestController extends Controller
         }
 
         return view('catering-staff.requests.show', compact('requestModel'));
+    }
+
+    /**
+     * Show requests with items ready to receive from Inventory
+     */
+    public function itemsToReceive()
+    {
+        $requests = RequestModel::with(['flight', 'items.product'])
+            ->where('requester_id', auth()->id())
+            ->where('status', 'items_issued')
+            ->latest()
+            ->paginate(20);
+
+        return view('catering-staff.requests.items-to-receive', compact('requests'));
+    }
+
+    /**
+     * Receive items from Inventory and send to ramp (CORRECTED WORKFLOW)
+     * This action sends to Catering Incharge for final approval before ramp
+     */
+    public function receiveAndSendToRamp(Request $request, RequestModel $requestModel)
+    {
+        if ($requestModel->status !== 'items_issued') {
+            return back()->with('error', 'Items have not been issued yet.');
+        }
+
+        // Validate received quantities
+        $request->validate([
+            'received_quantities' => 'required|array',
+            'received_quantities.*' => 'required|integer|min:0',
+            'receipt_notes' => 'nullable|string|max:1000'
+        ]);
+
+        // Update each item with the actually received quantity
+        foreach ($request->received_quantities as $itemId => $receivedQty) {
+            $item = $requestModel->items()->find($itemId);
+            if ($item) {
+                $issuedQty = $item->quantity_approved ?? $item->quantity_requested;
+                
+                // Validate that received quantity doesn't exceed issued quantity
+                if ($receivedQty > $issuedQty) {
+                    return back()->with('error', "Received quantity for {$item->product->name} cannot exceed issued quantity ({$issuedQty}).");
+                }
+                
+                // Update the item with actually received quantity
+                $item->update([
+                    'quantity_received' => $receivedQty
+                ]);
+
+                // Create stock movement for received items and update stocks
+                if ($receivedQty > 0) {
+                    \App\Models\StockMovement::create([
+                        'type' => 'issued',
+                        'product_id' => $item->product_id,
+                        'quantity' => $receivedQty,
+                        'reference_number' => 'REQ-' . $requestModel->id . ' / ' . $requestModel->flight->flight_number,
+                        'notes' => 'Received by Catering Staff for Request #' . $requestModel->id,
+                        'user_id' => auth()->id(),
+                        'status' => 'approved',
+                        'approved_by' => auth()->id(),
+                        'approved_at' => now(),
+                        'movement_date' => now(),
+                    ]);
+
+                    // Update stocks: decrease main stock and increase catering stock
+                    $product = $item->product;
+                    $product->decrement('quantity_in_stock', $receivedQty);
+                    $product->increment('catering_stock', $receivedQty);
+                }
+            }
+        }
+
+        // Catering Staff receives items and sends to Catering Incharge for final approval
+        $requestModel->update([
+            'status' => 'pending_final_approval',
+            'received_by' => auth()->id(),
+            'received_date' => now(),
+            'receipt_notes' => $request->receipt_notes,
+        ]);
+
+        // Notify Catering Incharge for final approval
+        $cateringIncharge = \App\Models\User::role('Catering Incharge')->first();
+        if ($cateringIncharge) {
+            $cateringIncharge->notify(new \App\Notifications\RequestApprovedNotification($requestModel));
+        }
+
+        return redirect()->route('catering-staff.requests.index')
+            ->with('success', 'Items received successfully and sent to Catering Incharge for final approval.');
     }
 
     // Mark request as received by Catering Staff after Catering Incharge approves

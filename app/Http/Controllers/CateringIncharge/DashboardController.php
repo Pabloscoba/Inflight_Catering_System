@@ -18,29 +18,31 @@ class DashboardController extends Controller
         // Pending product receipts from inventory (need approval)
         $pendingReceipts = CateringStock::where('status', 'pending')->count();
         
-        // Requests awaiting Catering Incharge approval (supervisor_approved products OR pending meals)
-        $pendingRequests = RequestModel::where(function($q) {
-            $q->where('status', 'supervisor_approved') // Product requests
-              ->orWhere(function($query) {
-                  $query->where('status', 'pending')
-                        ->where('request_type', 'meal'); // Meal requests
-              });
-        })->count();
+        // CORRECTED WORKFLOW: Pending requests awaiting first approval
+        $pendingRequests = RequestModel::where('status', 'pending_catering_incharge')->count();
+        
+        // CORRECTED WORKFLOW: Pending final approvals (from catering staff after receiving items)
+        $pendingItemReceipts = RequestModel::where('status', 'pending_final_approval')->count();
         
         // Approved product receipts
         $approvedReceipts = CateringStock::where('status', 'approved')->count();
         
         // Approved staff requests
-        $approvedRequests = RequestModel::where('status', 'approved')->count();
+        $approvedRequests = RequestModel::whereIn('status', [
+            'catering_approved', 'supervisor_approved', 'items_issued', 
+            'pending_final_approval', 'catering_final_approved', 'security_authenticated', 
+            'ramp_dispatched', 'loaded', 'delivered'
+        ])->count();
         
-        // Total available catering stock (approved)
-        $totalCateringStock = CateringStock::where('status', 'approved')->sum('quantity_available');
+        // Total available catering stock - REAL-TIME from Product table
+        $totalCateringStock = Product::where('is_active', true)->sum('quantity_in_stock');
         
-        // Low stock items in catering (below 20% of received quantity)
-        $lowStockItems = CateringStock::with(['product', 'product.category'])
-            ->where('status', 'approved')
-            ->whereRaw('quantity_available < (quantity_received * 0.2)')
-            ->orderBy('quantity_available', 'asc')
+        // Low stock items in main inventory - REAL-TIME from Product table
+        $lowStockItems = Product::with(['category'])
+            ->where('is_active', true)
+            ->whereColumn('quantity_in_stock', '<=', 'reorder_level')
+            ->where('quantity_in_stock', '>=', 0)
+            ->orderBy('quantity_in_stock', 'asc')
             ->limit(10)
             ->get();
         
@@ -51,15 +53,10 @@ class DashboardController extends Controller
             ->limit(10)
             ->get();
         
-        // Requests awaiting Catering Incharge approval (supervisor_approved products OR pending meals)
+        // Requests awaiting Catering Incharge INITIAL approval (NEW WORKFLOW)
+        // Catering Incharge is the FIRST approver, not after supervisor
         $pendingStaffRequests = RequestModel::with(['flight', 'requester', 'items.product'])
-            ->where(function($q) {
-                $q->where('status', 'supervisor_approved') // Product requests from Supervisor
-                  ->orWhere(function($query) {
-                      $query->where('status', 'pending')
-                            ->where('request_type', 'meal'); // Meal requests from Staff
-                  });
-            })
+            ->where('status', 'pending_catering_incharge')
             ->latest()
             ->limit(10)
             ->get();
@@ -71,13 +68,12 @@ class DashboardController extends Controller
             ->limit(10)
             ->get();
         
-        // Stock overview by product
-        $stockOverview = CateringStock::with(['product'])
-            ->where('status', 'approved')
-            ->select('product_id', DB::raw('SUM(quantity_available) as total_available'))
-            ->groupBy('product_id')
-            ->having('total_available', '>', 0)
-            ->orderBy('total_available', 'desc')
+        // Stock overview by product - REAL-TIME from Product table (main inventory)
+        $stockOverview = Product::with(['category'])
+            ->where('is_active', true)
+            ->where('quantity_in_stock', '>', 0)
+            ->select('id', 'name', 'category_id', 'quantity_in_stock', 'reorder_level', 'unit_of_measure')
+            ->orderBy('quantity_in_stock', 'desc')
             ->limit(10)
             ->get();
 
@@ -89,9 +85,34 @@ class DashboardController extends Controller
             ->limit(10)
             ->get();
 
+        // Catering Staff Activity Overview (for oversight)
+        $cateringStaffActivity = [
+            'total_staff' => User::role('Catering Staff')->count(),
+            'active_requests' => RequestModel::where('requester_id', '!=', null)
+                ->whereIn('status', ['pending_catering_incharge', 'catering_approved', 'supervisor_approved', 'items_issued', 'catering_staff_received', 'pending_final_approval'])
+                ->count(),
+            'pending_staff_receipt' => RequestModel::where('status', 'items_issued')->count(),
+            'pending_final_approval' => RequestModel::where('status', 'pending_final_approval')->count(),
+            'recent_staff_requests' => RequestModel::with(['flight', 'requester', 'items.product'])
+                ->whereHas('requester', function($q) {
+                    $q->role('Catering Staff');
+                })
+                ->latest()
+                ->limit(5)
+                ->get(),
+        ];
+
+        // Recent authenticated stock movements (for tracking)
+        $recentAuthenticatedRequests = RequestModel::with(['flight', 'requester', 'items.product'])
+            ->whereIn('status', ['security_authenticated', 'ramp_dispatched', 'loaded', 'delivered'])
+            ->latest('updated_at')
+            ->limit(10)
+            ->get();
+
         return view('catering-incharge.dashboard', compact(
             'pendingReceipts',
             'pendingRequests',
+            'pendingItemReceipts',
             'approvedReceipts',
             'approvedRequests',
             'totalCateringStock',
@@ -100,7 +121,9 @@ class DashboardController extends Controller
             'pendingStaffRequests',
             'recentlyApproved',
             'stockOverview',
-            'upcomingFlights'
+            'upcomingFlights',
+            'cateringStaffActivity',
+            'recentAuthenticatedRequests'
         ));
     }
 }

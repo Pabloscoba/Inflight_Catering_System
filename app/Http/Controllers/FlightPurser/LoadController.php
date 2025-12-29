@@ -9,49 +9,38 @@ use Illuminate\Http\Request;
 class LoadController extends Controller
 {
     /**
-     * Receive handover from Ramp and mark as loaded onto aircraft
+     * Receive handover from Ramp and load onto aircraft (NEW WORKFLOW)
      */
     public function markLoaded(RequestModel $request)
     {
-        // Accept both meal and product requests
-        $validStatuses = ['dispatched', 'handed_to_flight'];
-        
-        if (!in_array($request->status, $validStatuses)) {
-            return back()->with('error', 'This request is not ready for receiving.');
+        // Check if awaiting loading
+        if ($request->status !== 'ramp_dispatched') {
+            return back()->with('error', 'This request is not ready for loading.');
         }
 
-        // Different status transitions based on request type
-        if ($request->request_type === 'meal') {
-            // Meal requests: flight_received -> in_service (ready for cabin crew)
-            $request->update([
-                'status' => 'flight_received',
-                'flight_received_by' => auth()->id(),
-                'flight_received_at' => now(),
-            ]);
-            
-            return back()->with('success', "Meal request #{$request->id} received. Ready for Cabin Crew service.");
-        } else {
-            // Product requests: loaded (original flow)
-            $request->update([
-                'status' => 'loaded',
-                'loaded_by' => auth()->id(),
-                'loaded_at' => now(),
-            ]);
+        // Mark as loaded and ready for Cabin Crew
+        $request->update([
+            'status' => 'loaded',
+            'loaded_by' => auth()->id(),
+            'loaded_at' => now(),
+        ]);
 
-            return back()->with('success', "Request #{$request->id} marked as loaded onto aircraft. Ready for Cabin Crew.");
+        // Notify Cabin Crew
+        $cabinCrew = \App\Models\User::role('Cabin Crew')->get();
+        foreach ($cabinCrew as $crew) {
+            $crew->notify(new \App\Notifications\RequestLoadedNotification($request));
         }
+
+        return back()->with('success', "Request #{$request->id} loaded onto aircraft and ready for Cabin Crew.");
     }
 
     /**
-     * View all loaded requests (includes meal requests received)
+     * View all loaded requests
      */
     public function loaded()
     {
         $requests = RequestModel::with(['flight', 'requester', 'items.product'])
-            ->where(function($query) {
-                $query->where('status', 'loaded')
-                      ->orWhere('status', 'flight_received'); // meal requests
-            })
+            ->whereIn('status', ['loaded', 'delivered', 'served'])
             ->latest('loaded_at')
             ->paginate(20);
 

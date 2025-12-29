@@ -26,6 +26,11 @@ class Request extends Model
         'security_dispatched_at',
         'dispatched_by',
         'dispatched_at',
+        'flight_dispatcher_assessed_by',
+        'flight_dispatcher_assessed_at',
+        'flight_cleared_for_departure_at',
+        'flight_clearance_notes',
+        'flight_cleared',
         'handed_to_flight_by',
         'handed_to_flight_at',
         'flight_received_by',
@@ -34,6 +39,7 @@ class Request extends Model
         'served_at',
         'received_by',
         'received_date',
+        'receipt_notes',
         'rejection_reason',
     ];
 
@@ -43,6 +49,9 @@ class Request extends Model
         'catering_approved_at' => 'datetime',
         'security_dispatched_at' => 'datetime',
         'dispatched_at' => 'datetime',
+        'flight_dispatcher_assessed_at' => 'datetime',
+        'flight_cleared_for_departure_at' => 'datetime',
+        'flight_cleared' => 'boolean',
         'handed_to_flight_at' => 'datetime',
         'flight_received_at' => 'datetime',
         'served_at' => 'datetime',
@@ -90,6 +99,11 @@ class Request extends Model
         return $this->belongsTo(User::class, 'dispatched_by');
     }
 
+    public function flightDispatcherAssessor()
+    {
+        return $this->belongsTo(User::class, 'flight_dispatcher_assessed_by');
+    }
+
     public function rampAgent()
     {
         return $this->belongsTo(User::class, 'handed_to_flight_by');
@@ -108,17 +122,75 @@ class Request extends Model
     // Scopes
     public function scopePending($query)
     {
-        return $query->where('status', 'pending');
+        return $query->where('status', 'pending_catering_incharge');
     }
 
     public function scopeApproved($query)
     {
-        return $query->where('status', 'approved');
+        return $query->whereIn('status', [
+            'catering_approved',
+            'supervisor_approved',
+            'items_issued',
+            'catering_staff_received',
+            'pending_final_approval',
+            'catering_final_approved',
+            'security_authenticated',
+            'ramp_dispatched',
+            'loaded',
+            'delivered',
+            'served'
+        ]);
     }
 
     public function scopeRejected($query)
     {
         return $query->where('status', 'rejected');
+    }
+    
+    // New workflow scopes
+    public function scopePendingCateringIncharge($query)
+    {
+        return $query->where('status', 'pending_catering_incharge');
+    }
+    
+    public function scopeCateringApproved($query)
+    {
+        return $query->where('status', 'catering_approved');
+    }
+    
+    public function scopeSupervisorApproved($query)
+    {
+        return $query->where('status', 'supervisor_approved');
+    }
+    
+    public function scopeItemsIssued($query)
+    {
+        return $query->where('status', 'items_issued');
+    }
+    
+    public function scopeCateringStaffReceived($query)
+    {
+        return $query->where('status', 'catering_staff_received');
+    }
+    
+    public function scopePendingFinalApproval($query)
+    {
+        return $query->where('status', 'pending_final_approval');
+    }
+    
+    public function scopeCateringFinalApproved($query)
+    {
+        return $query->where('status', 'catering_final_approved');
+    }
+    
+    public function scopeSecurityAuthenticated($query)
+    {
+        return $query->where('status', 'security_authenticated');
+    }
+    
+    public function scopeRampDispatched($query)
+    {
+        return $query->where('status', 'ramp_dispatched');
     }
 
     // Helper methods

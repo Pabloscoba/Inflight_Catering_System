@@ -58,7 +58,7 @@
                        id="airline" 
                        value="{{ old('airline') }}"
                        style="width:100%; padding:9px 12px; border:1px solid #d1d5db; border-radius:6px; font-size:14px; @error('airline') border-color:#dc2626; @enderror"
-                       placeholder="e.g., Air Tanzania"
+                       placeholder="Air Tanzania"
                        required
                        maxlength="100">
                 @error('airline')
@@ -77,7 +77,7 @@
                            id="origin" 
                            value="{{ old('origin') }}"
                            style="width:100%; padding:9px 12px; border:1px solid #d1d5db; border-radius:6px; font-size:14px; text-transform:uppercase; @error('origin') border-color:#dc2626; @enderror"
-                           placeholder="e.g., Dar es Salaam"
+                           placeholder="route 1"
                            required
                            maxlength="10">
                     @error('origin')
@@ -94,7 +94,7 @@
                            id="destination" 
                            value="{{ old('destination') }}"
                            style="width:100%; padding:9px 12px; border:1px solid #d1d5db; border-radius:6px; font-size:14px; text-transform:uppercase; @error('destination') border-color:#dc2626; @enderror"
-                           placeholder="e.g., Dodoma"
+                           placeholder="route 2"
                            required
                            maxlength="10">
                     @error('destination')
@@ -113,6 +113,7 @@
                            name="departure_time" 
                            id="departure_time" 
                            value="{{ old('departure_time') }}"
+                           min="{{ now()->format('Y-m-d\TH:i') }}"
                            style="width:100%; padding:9px 12px; border:1px solid #d1d5db; border-radius:6px; font-size:14px; @error('departure_time') border-color:#dc2626; @enderror"
                            required>
                     @error('departure_time')
@@ -128,6 +129,7 @@
                            name="arrival_time" 
                            id="arrival_time" 
                            value="{{ old('arrival_time') }}"
+                           min="{{ now()->format('Y-m-d\TH:i') }}"
                            style="width:100%; padding:9px 12px; border:1px solid #d1d5db; border-radius:6px; font-size:14px; @error('arrival_time') border-color:#dc2626; @enderror"
                            required>
                     @error('arrival_time')
@@ -171,4 +173,72 @@
         </form>
     </div>
 </div>
+
+<script>
+    // Set minimum date/time to current date/time
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const minDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+    
+    const departureInput = document.getElementById('departure_time');
+    const arrivalInput = document.getElementById('arrival_time');
+    
+    // Set minimum datetime for both fields
+    departureInput.setAttribute('min', minDateTime);
+    arrivalInput.setAttribute('min', minDateTime);
+    
+    // When departure time changes, update arrival minimum to be after departure
+    departureInput.addEventListener('change', function() {
+        const departureValue = this.value;
+        if (departureValue) {
+            arrivalInput.setAttribute('min', departureValue);
+            
+            // If arrival is before new departure, clear arrival
+            if (arrivalInput.value && arrivalInput.value <= departureValue) {
+                arrivalInput.value = '';
+                if (typeof Toast !== 'undefined') {
+                    Toast.warning('⚠️ Arrival time must be after departure time. Please select a new arrival time.');
+                }
+            }
+        }
+    });
+    
+    // Validate on form submit
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const departure = new Date(departureInput.value);
+        const arrival = new Date(arrivalInput.value);
+        const currentTime = new Date();
+        
+        if (departure < currentTime) {
+            e.preventDefault();
+            if (typeof Toast !== 'undefined') {
+                Toast.error('❌ Departure time cannot be in the past. Please select a future date and time.');
+            }
+            departureInput.focus();
+            return false;
+        }
+        
+        if (arrival < currentTime) {
+            e.preventDefault();
+            if (typeof Toast !== 'undefined') {
+                Toast.error('❌ Arrival time cannot be in the past. Please select a future date and time.');
+            }
+            arrivalInput.focus();
+            return false;
+        }
+        
+        if (arrival <= departure) {
+            e.preventDefault();
+            if (typeof Toast !== 'undefined') {
+                Toast.error('❌ Arrival time must be after departure time. Please adjust the times.');
+            }
+            arrivalInput.focus();
+            return false;
+        }
+    });
+</script>
 @endsection

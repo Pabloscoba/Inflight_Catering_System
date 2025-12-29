@@ -1,12 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit User - {{ $user->name }}</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; }
+@extends('layouts.app')
+
+@section('title', 'Edit User - {{ $user->name }}')
+
+@section('content')
+<style>
+    body { background: #f5f5f5; }
         
         .container { max-width: 700px; margin: 0 auto; padding: 40px 20px; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
@@ -164,5 +162,4 @@
         // Show role info on page load
         window.addEventListener('load', showRoleInfo);
     </script>
-</body>
-</html>
+@endsection

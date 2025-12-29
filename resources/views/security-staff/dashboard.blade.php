@@ -67,6 +67,9 @@
         </svg>
         <span>Awaiting Authentication</span>
     </a>
+    
+    <!-- DYNAMIC PERMISSION-BASED ACTIONS (Auto-appear when permissions added) -->
+    <x-permission-actions :exclude="['authenticate requests', 'authenticate orders', 'match request vs dispatch']" />
 </div>
 
 <!-- Orders Pending Security Check -->
@@ -99,34 +102,57 @@
                 <tr style="border-bottom:1px solid #f3f4f6;transition:background 0.2s;" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='white'">
                     <td style="padding:16px 20px;">
                         <div style="font-weight:700;color:#2563eb;font-size:16px;">#{{ $request->id }}</div>
+                        @php
+                            $riskBg = $request->risk_level == 'HIGH' ? '#fee2e2' : ($request->risk_level == 'MEDIUM' ? '#fed7aa' : '#d1fae5');
+                            $riskColor = $request->risk_level == 'HIGH' ? '#991b1b' : ($request->risk_level == 'MEDIUM' ? '#9a3412' : '#065f46');
+                        @endphp
+                        <div style="margin-top:4px;display:inline-block;background:{{$riskBg}};color:{{$riskColor}};padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700;">
+                            {{ $request->risk_level }} RISK
+                        </div>
                     </td>
                     <td style="padding:16px 20px;">
                         <div style="font-weight:600;color:#1f2937;font-size:14px;">{{ $request->flight->flight_number }}</div>
                         <div style="font-size:12px;color:#6b7280;margin-top:2px;">
                             {{ $request->flight->origin }} → {{ $request->flight->destination }}
                         </div>
+                        <div style="font-size:10px;color:#9ca3af;margin-top:4px;">
+                            Aircraft: {{ $request->flight->aircraft_type ?? 'N/A' }}
+                        </div>
                     </td>
                     <td style="padding:16px 20px;">
                         <div style="font-weight:600;color:#1f2937;font-size:14px;">{{ \Carbon\Carbon::parse($request->flight->departure_time)->format('M d, Y') }}</div>
                         <div style="font-size:12px;color:#6b7280;margin-top:2px;">{{ \Carbon\Carbon::parse($request->flight->departure_time)->format('H:i A') }}</div>
+                        <div style="font-size:10px;margin-top:2px;color:{{ $request->flight->departure_time < now()->addHours(6) ? '#dc2626' : '#059669' }};font-weight:600;">
+                            {{ \Carbon\Carbon::parse($request->flight->departure_time)->diffForHumans() }}
+                        </div>
                     </td>
                     <td style="padding:16px 20px;text-align:center;">
                         <span style="background:#dbeafe;color:#1e40af;padding:6px 12px;border-radius:12px;font-size:13px;font-weight:700;">
                             {{ $request->items->count() }} items
                         </span>
+                        <div style="font-size:10px;color:#6b7280;margin-top:4px;">
+                            Qty: {{ $request->items->sum('quantity') }}
+                        </div>
                     </td>
                     <td style="padding:16px 20px;">
                         <div style="font-weight:600;color:#1f2937;font-size:13px;">{{ $request->requester->name }}</div>
                         <div style="font-size:11px;color:#9ca3af;margin-top:2px;">{{ $request->requester->email }}</div>
+                        @php
+                            $docChecks = $request->document_checks ?? [];
+                            $totalChecks = count($docChecks);
+                            $passedChecks = collect($docChecks)->filter()->count();
+                        @endphp
+                        <div style="font-size:10px;margin-top:4px;color:{{ $passedChecks == $totalChecks ? '#059669' : '#dc2626' }};font-weight:600;">
+                            Checks: {{ $passedChecks }}/{{ $totalChecks }} ✓
+                        </div>
                     </td>
                     <td style="padding:16px 20px;text-align:center;">
-                        <div style="display:flex;gap:8px;justify-content:center;">
-                            <a href="{{ route('security-staff.requests.show', $request) }}" style="background:#2563eb;color:white;padding:8px 16px;border-radius:8px;text-decoration:none;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:6px;transition:background 0.2s;" onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">
+                        <div style="display:flex;gap:8px;justify-content:center;flex-direction:column;">
+                            <a href="{{ route('security-staff.requests.show', $request) }}" style="background:#2563eb;color:white;padding:10px 16px;border-radius:8px;text-decoration:none;font-size:12px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:background 0.2s;" onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">
                                 <svg style="width:14px;height:14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
                                 </svg>
-                                Verify
+                                Verify & Authenticate
                             </a>
                         </div>
                     </td>
@@ -135,6 +161,79 @@
             </tbody>
         </table>
     </div>
+    
+    <!-- Security Verification Summary -->
+    @if($ordersToVerify->count() > 0)
+    <div style="padding:24px 28px;background:#f9fafb;border-top:2px solid #e5e7eb;">
+        <h4 style="font-size:15px;font-weight:700;color:#1a1a1a;margin:0 0 16px 0;">📊 Verification Summary</h4>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;">
+            @php
+                $highRisk = $ordersToVerify->where('risk_level', 'HIGH')->count();
+                $mediumRisk = $ordersToVerify->where('risk_level', 'MEDIUM')->count();
+                $lowRisk = $ordersToVerify->where('risk_level', 'LOW')->count();
+                $urgentFlights = $ordersToVerify->filter(fn($r) => \Carbon\Carbon::parse($r->flight->departure_time) < now()->addHours(6))->count();
+            @endphp
+            
+            <div style="background:white;padding:16px;border-radius:10px;border-left:4px solid #dc2626;">
+                <div style="font-size:11px;color:#6b7280;text-transform:uppercase;font-weight:600;margin-bottom:6px;">High Risk</div>
+                <div style="font-size:24px;font-weight:700;color:#dc2626;">{{ $highRisk }}</div>
+                <div style="font-size:10px;color:#9ca3af;margin-top:4px;">Requires immediate attention</div>
+            </div>
+            
+            <div style="background:white;padding:16px;border-radius:10px;border-left:4px solid #f59e0b;">
+                <div style="font-size:11px;color:#6b7280;text-transform:uppercase;font-weight:600;margin-bottom:6px;">Medium Risk</div>
+                <div style="font-size:24px;font-weight:700;color:#f59e0b;">{{ $mediumRisk }}</div>
+                <div style="font-size:10px;color:#9ca3af;margin-top:4px;">Standard verification needed</div>
+            </div>
+            
+            <div style="background:white;padding:16px;border-radius:10px;border-left:4px solid #10b981;">
+                <div style="font-size:11px;color:#6b7280;text-transform:uppercase;font-weight:600;margin-bottom:6px;">Low Risk</div>
+                <div style="font-size:24px;font-weight:700;color:#10b981;">{{ $lowRisk }}</div>
+                <div style="font-size:10px;color:#9ca3af;margin-top:4px;">Routine clearance</div>
+            </div>
+            
+            <div style="background:white;padding:16px;border-radius:10px;border-left:4px solid #8b5cf6;">
+                <div style="font-size:11px;color:#6b7280;text-transform:uppercase;font-weight:600;margin-bottom:6px;">Urgent Flights</div>
+                <div style="font-size:24px;font-weight:700;color:#8b5cf6;">{{ $urgentFlights }}</div>
+                <div style="font-size:10px;color:#9ca3af;margin-top:4px;">Departing within 6 hours</div>
+            </div>
+        </div>
+        
+        <!-- Quick Assessment Guide -->
+        <div style="margin-top:20px;background:white;padding:16px;border-radius:10px;">
+            <h5 style="font-size:13px;font-weight:700;color:#1a1a1a;margin:0 0 12px 0;">🔍 Assessment Checklist</h5>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;font-size:12px;">
+                <div>
+                    <div style="font-weight:600;color:#2563eb;margin-bottom:6px;">📋 Document Checks</div>
+                    <div style="color:#6b7280;line-height:1.6;">
+                        • Request ID & Flight Number<br>
+                        • Aircraft Type Match<br>
+                        • Within Cutoff Time<br>
+                        • Valid Requester Role
+                    </div>
+                </div>
+                <div>
+                    <div style="font-weight:600;color:#10b981;margin-bottom:6px;">📦 Items Verification</div>
+                    <div style="color:#6b7280;line-height:1.6;">
+                        • Approved Catalog Items<br>
+                        • Quantity Within Range<br>
+                        • Category Assignment<br>
+                        • Unit Verification
+                    </div>
+                </div>
+                <div>
+                    <div style="font-weight:600;color:#f59e0b;margin-bottom:6px;">🔒 Security Specific</div>
+                    <div style="color:#6b7280;line-height:1.6;">
+                        • Tamper Evidence Check<br>
+                        • Prohibited Items Scan<br>
+                        • Personnel Clearance<br>
+                        • Integrity Assessment
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
     @else
     <div style="padding:60px 28px;text-align:center;">
         <div style="font-size:48px;margin-bottom:16px;">✅</div>
@@ -245,7 +344,8 @@
     @endif
 </div>
 
-<!-- Recent Stock Movements (Authentication History) -->
+<!-- Recent Stock Movements (Authenticated Dispatches) -->
+@if($recentVerifications->count() > 0)
 <div style="background:white;border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,0.08);overflow:hidden;margin-top:32px;">
     <div style="padding:24px 28px;border-bottom:2px solid #f3f4f6;display:flex;justify-content:space-between;align-items:center;">
         <div>
@@ -253,85 +353,91 @@
             <p style="font-size:13px;color:#6b7280;margin:4px 0 0 0;">History of authenticated stock dispatches</p>
         </div>
         <div style="background:#d1fae5;color:#065f46;padding:6px 12px;border-radius:8px;font-size:13px;font-weight:600;">
-            {{ $recentStockMovements->count() }} movements
+            {{ $recentVerifications->count() }} authenticated
         </div>
     </div>
-
-    @if($recentStockMovements->count() > 0)
+    
     <div style="overflow-x:auto;">
         <table style="width:100%;border-collapse:collapse;">
             <thead>
                 <tr style="background:#f9fafb;border-bottom:2px solid #e5e7eb;">
-                    <th style="padding:14px 20px;text-align:left;font-weight:600;color:#374151;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;">Date & Time</th>
-                    <th style="padding:14px 20px;text-align:left;font-weight:600;color:#374151;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;">Product</th>
-                    <th style="padding:14px 20px;text-align:center;font-weight:600;color:#374151;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;">Quantity</th>
-                    <th style="padding:14px 20px;text-align:left;font-weight:600;color:#374151;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;">Type</th>
-                    <th style="padding:14px 20px;text-align:left;font-weight:600;color:#374151;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;">Requested By</th>
-                    <th style="padding:14px 20px;text-align:left;font-weight:600;color:#374151;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;">Authenticated By</th>
-                    <th style="padding:14px 20px;text-align:center;font-weight:600;color:#374151;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;">Status</th>
+                    <th style="padding:14px 20px;text-align:left;font-weight:600;color:#374151;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;">Request ID</th>
+                    <th style="padding:14px 20px;text-align:left;font-weight:600;color:#374151;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;">Flight</th>
+                    <th style="padding:14px 20px;text-align:left;font-weight:600;color:#374151;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;">Requester</th>
+                    <th style="padding:14px 20px;text-align:center;font-weight:600;color:#374151;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;">Current Status</th>
+                    <th style="padding:14px 20px;text-align:left;font-weight:600;color:#374151;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;">Authenticated</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach($recentStockMovements as $movement)
+                @foreach($recentVerifications as $req)
                 <tr style="border-bottom:1px solid #f3f4f6;transition:background 0.2s;" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='white'">
                     <td style="padding:16px 20px;">
-                        <div style="font-weight:600;color:#1f2937;font-size:14px;">{{ $movement->created_at->format('M d, Y') }}</div>
-                        <div style="font-size:12px;color:#9ca3af;margin-top:2px;">{{ $movement->created_at->format('H:i A') }}</div>
+                        <div style="font-weight:700;color:#2563eb;font-size:16px;">#{{ $req->id }}</div>
                     </td>
                     <td style="padding:16px 20px;">
-                        <div style="font-weight:600;color:#1f2937;font-size:14px;">{{ $movement->product->name }}</div>
-                        <code style="background:#f3f4f6;padding:2px 6px;border-radius:4px;font-size:11px;color:#4b5563;margin-top:2px;display:inline-block;">{{ $movement->product->sku }}</code>
+                        <div style="font-weight:600;color:#1f2937;font-size:14px;">{{ $req->flight->flight_number }}</div>
+                        <div style="color:#6b7280;font-size:12px;margin-top:2px;">
+                            {{ $req->flight->aircraft_type ?? 'N/A' }}
+                        </div>
+                    </td>
+                    <td style="padding:16px 20px;">
+                        <div style="color:#1f2937;font-weight:500;font-size:14px;">{{ $req->requester->name }}</div>
+                        <div style="font-size:11px;color:#9ca3af;margin-top:2px;">{{ $req->requester->email }}</div>
                     </td>
                     <td style="padding:16px 20px;text-align:center;">
-                        <div style="font-weight:700;font-size:18px;color:#ef4444;">{{ $movement->quantity }}</div>
-                    </td>
-                    <td style="padding:16px 20px;">
-                        @if($movement->type === 'issued')
-                        <span style="background:#fee2e2;color:#991b1b;padding:4px 10px;border-radius:12px;font-size:11px;font-weight:600;">
-                            ⬇️ ISSUED
+                        @if($req->status == 'security_authenticated')
+                        <span style="background:#10b981;color:white;padding:6px 12px;border-radius:10px;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:6px;">
+                            <svg style="width:14px;height:14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                            </svg>
+                            Authenticated
                         </span>
-                        @elseif($movement->type === 'incoming')
-                        <span style="background:#dbeafe;color:#1e40af;padding:4px 10px;border-radius:12px;font-size:11px;font-weight:600;">
-                            ⬆️ INCOMING
+                        @elseif($req->status == 'ramp_dispatched')
+                        <span style="background:#3b82f6;color:white;padding:6px 12px;border-radius:10px;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:6px;">
+                            🚛 Dispatched
                         </span>
-                        @else
-                        <span style="background:#fef3c7;color:#92400e;padding:4px 10px;border-radius:12px;font-size:11px;font-weight:600;">
-                            ↩️ RETURNED
+                        @elseif($req->status == 'loaded')
+                        <span style="background:#8b5cf6;color:white;padding:6px 12px;border-radius:10px;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:6px;">
+                            ✈️ Loaded
+                        </span>
+                        @elseif($req->status == 'delivered')
+                        <span style="background:#059669;color:white;padding:6px 12px;border-radius:10px;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:6px;">
+                            📦 Delivered
+                        </span>
+                        @elseif($req->status == 'served')
+                        <span style="background:#16a34a;color:white;padding:6px 12px;border-radius:10px;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:6px;">
+                            ✓ Served
+                        </span>
+                        @elseif($req->status == 'rejected')
+                        <span style="background:#ef4444;color:white;padding:6px 12px;border-radius:10px;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:6px;">
+                            <svg style="width:14px;height:14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                            Rejected
                         </span>
                         @endif
                     </td>
                     <td style="padding:16px 20px;">
-                        <div style="font-size:13px;color:#4b5563;">{{ $movement->user->name }}</div>
-                        <div style="font-size:11px;color:#9ca3af;margin-top:2px;">{{ $movement->user->email }}</div>
-                    </td>
-                    <td style="padding:16px 20px;">
-                        <div style="display:inline-flex;align-items:center;gap:8px;background:#dbeafe;color:#1e40af;padding:8px 12px;border-radius:8px;">
-                            <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                            </svg>
-                            <span style="font-weight:600;font-size:13px;">Security Staff</span>
-                        </div>
-                        <div style="font-size:11px;color:#9ca3af;margin-top:4px;">{{ $movement->created_at->diffForHumans() }}</div>
-                    </td>
-                    <td style="padding:16px 20px;text-align:center;">
-                        <span style="background:#d1fae5;color:#065f46;padding:6px 12px;border-radius:12px;font-size:11px;font-weight:600;display:inline-flex;align-items:center;gap:4px;">
-                            <svg style="width:12px;height:12px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            AUTHENTICATED
-                        </span>
+                        <div style="font-size:13px;color:#4b5563;font-weight:600;">{{ $req->updated_at->format('M d, Y') }}</div>
+                        <div style="font-size:11px;color:#9ca3af;margin-top:2px;">{{ $req->updated_at->diffForHumans() }}</div>
                     </td>
                 </tr>
                 @endforeach
             </tbody>
         </table>
     </div>
-    @else
+</div>
+@else
+<div style="background:white;border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,0.08);overflow:hidden;margin-top:32px;">
+    <div style="padding:24px 28px;border-bottom:2px solid #f3f4f6;">
+        <h3 style="font-size:20px;font-weight:700;color:#1a1a1a;margin:0;">📋 Recent Stock Movements</h3>
+        <p style="font-size:13px;color:#6b7280;margin:4px 0 0 0;">History of authenticated stock dispatches</p>
+    </div>
     <div style="padding:60px 28px;text-align:center;">
         <div style="font-size:48px;margin-bottom:16px;">📋</div>
-        <h4 style="font-size:18px;font-weight:600;color:#374151;margin-bottom:8px;">No Stock Movements Yet</h4>
-        <p style="color:#6b7280;font-size:14px;">Stock movement history will appear here once requests are authenticated.</p>
+        <h4 style="font-size:18px;font-weight:600;color:#374151;margin-bottom:8px;">No Authenticated Requests Yet</h4>
+        <p style="color:#6b7280;font-size:14px;">Authenticated request history will appear here.</p>
     </div>
-    @endif
 </div>
+@endif
 @endsection

@@ -35,14 +35,35 @@ class RoleController extends Controller
     public function update(Request $request, Role $role)
     {
         $request->validate([
-            'permissions' => 'array',
+            'permissions' => 'nullable|array',
             'permissions.*' => 'exists:permissions,id',
         ]);
 
-        $permissions = Permission::whereIn('id', $request->permissions ?? [])->get();
+        // Get permission IDs or empty array if none selected
+        $permissionIds = $request->input('permissions', []);
+        
+        // Get permission objects
+        $permissions = Permission::whereIn('id', $permissionIds)->get();
+        
+        // Sync permissions (this will remove old ones and add new ones)
         $role->syncPermissions($permissions);
+        
+        // Clear permission cache
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+        
+        // Log the activity
+        activity('role-management')
+            ->causedBy(auth()->user())
+            ->performedOn($role)
+            ->withProperties([
+                'role' => $role->name,
+                'permissions_count' => $permissions->count(),
+                'permissions' => $permissions->pluck('name')->toArray(),
+            ])
+            ->log("Updated permissions for role '{$role->name}'");
 
-        return redirect()->route('admin.roles.index')->with('success', 'Role permissions updated successfully');
+        return redirect()->route('admin.roles.index')
+            ->with('success', "Permissions for role '{$role->name}' updated successfully. Total: {$permissions->count()} permissions.");
     }
 
     /**

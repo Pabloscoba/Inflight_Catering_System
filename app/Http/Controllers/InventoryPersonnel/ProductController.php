@@ -78,6 +78,7 @@ class ProductController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'sku' => ['required', 'string', 'max:255', 'unique:products'],
             'category_id' => ['required', 'exists:categories,id'],
+            'type' => ['required', 'string', 'max:50'],
             'description' => ['nullable', 'string'],
             'currency' => ['required', 'string', 'in:TZS,USD,EUR,GBP,KES,UGX'],
             'unit_price' => ['required', 'numeric', 'min:0'],
@@ -119,6 +120,7 @@ class ProductController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'sku' => ['required', 'string', 'max:255', 'unique:products,sku,' . $product->id],
             'category_id' => ['required', 'exists:categories,id'],
+            'type' => ['required', 'string', 'max:50'],
             'description' => ['nullable', 'string'],
             'currency' => ['required', 'string', 'in:TZS,USD,EUR,GBP,KES,UGX'],
             'unit_price' => ['required', 'numeric', 'min:0'],
@@ -142,5 +144,48 @@ class ProductController extends Controller
     {
         $product->delete();
         return redirect()->route('inventory-personnel.products.index')->with('success', 'Product deleted successfully');
+    }
+
+    /**
+     * Show form to add stock directly to approved product
+     */
+    public function showAddStock(Product $product)
+    {
+        if ($product->status !== 'approved') {
+            return redirect()->back()->with('error', 'Can only add stock to approved products');
+        }
+
+        return view('inventory-personnel.products.add-stock', compact('product'));
+    }
+
+    /**
+     * Add stock directly to product main stock
+     */
+    public function addStock(Request $request, Product $product)
+    {
+        if ($product->status !== 'approved') {
+            return redirect()->back()->with('error', 'Can only add stock to approved products');
+        }
+
+        $validated = $request->validate([
+            'quantity' => ['required', 'integer', 'min:1'],
+            'notes' => ['nullable', 'string', 'max:500'],
+        ]);
+
+        // Add directly to main stock
+        $product->increment('quantity_in_stock', $validated['quantity']);
+
+        activity()
+            ->performedOn($product)
+            ->causedBy(auth()->user())
+            ->withProperties([
+                'quantity_added' => $validated['quantity'],
+                'new_stock' => $product->quantity_in_stock,
+                'notes' => $validated['notes'] ?? null,
+            ])
+            ->log('Stock added directly to main inventory');
+
+        return redirect()->route('inventory-personnel.products.index')
+            ->with('success', "Successfully added {$validated['quantity']} units to {$product->name}. New stock: {$product->quantity_in_stock}");
     }
 }

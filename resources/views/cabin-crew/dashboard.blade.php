@@ -253,6 +253,20 @@
     </div>
     
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;">
+        <!-- Create Products (Only if has permission) -->
+        @can('create products')
+        <a href="{{ route('cabin-crew.products.create') }}" style="text-decoration:none;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);border-radius:12px;padding:20px;color:white;transition:transform 0.2s,box-shadow 0.2s;display:block;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 20px rgba(102,126,234,0.4)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='none'">
+            <div style="display:flex;align-items:center;gap:16px;">
+                <div style="font-size:36px;">➕</div>
+                <div style="flex:1;">
+                    <div style="font-size:16px;font-weight:700;margin-bottom:4px;">Add Product</div>
+                    <div style="font-size:12px;opacity:0.9;">Create new product</div>
+                </div>
+                <div style="font-size:20px;">→</div>
+            </div>
+        </a>
+        @endcan
+        
         <!-- Record Usage -->
         <a href="{{ route('cabin-crew.usage.index') }}" style="text-decoration:none;background:linear-gradient(135deg,#4facfe 0%,#00f2fe 100%);border-radius:12px;padding:20px;color:white;transition:transform 0.2s,box-shadow 0.2s;display:block;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 20px rgba(79,172,254,0.4)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='none'">
             <div style="display:flex;align-items:center;gap:16px;">
@@ -300,6 +314,9 @@
                 <div style="font-size:20px;">→</div>
             </div>
         </a>
+        
+        <!-- DYNAMIC PERMISSION-BASED ACTIONS (Auto-appear when permissions added) -->
+        <x-permission-actions :exclude="['receive goods from dispatcher', 'record items used during flight', 'record remaining items', 'submit usage report']" />
     </div>
 </div>
 

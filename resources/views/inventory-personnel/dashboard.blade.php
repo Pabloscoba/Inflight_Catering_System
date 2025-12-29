@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="content-header">
-    <h1>Inventory Personnel Dashboard</h1>
+    <h1>Inventory Personnel Dashboard</h1><br><br>
     <p>Manage products and stock levels</p>
 </div>
 
@@ -53,7 +53,7 @@
             </svg>
         </div>
         <div style="flex: 1; min-width: 0; overflow: hidden;">
-            <div style="font-size: 28px; font-weight: 700; color: #1a1a1a; line-height: 1.2; margin-bottom: 6px; word-wrap: break-word; overflow-wrap: break-word;">${{ number_format($totalStockValue, 2) }}</div>
+            <div style="font-size: 28px; font-weight: 700; color: #1a1a1a; line-height: 1.2; margin-bottom: 6px; word-wrap: break-word; overflow-wrap: break-word;">TZS{{ number_format($totalStockValue, 2) }}</div>
             <div style="font-size: 14px; color: #6c757d; font-weight: 500;">Total Stock Value</div>
         </div>
     </div>
@@ -96,26 +96,23 @@
     </a>
     <a href="{{ route('inventory-personnel.requests.supervisor-approved') }}" style="position: relative; display: flex; align-items: center; gap: 14px; padding: 18px 22px; background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); border-radius: 14px; color: white; text-decoration: none; font-weight: 600; font-size: 15px; box-shadow: 0 4px 12px rgba(14, 165, 233, 0.25); transition: all 0.3s ease;">
         <svg style="width: 26px; height: 26px; flex-shrink: 0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
         </svg>
-        <span>Forward to Security</span>
+        <span>Issue Items to Catering</span>
         @if(isset($supervisorApprovedCount) && $supervisorApprovedCount > 0)
         <span style="position: absolute; top: -8px; right: -8px; background: #dc2626; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; box-shadow: 0 2px 8px rgba(220, 38, 38, 0.5);">{{ $supervisorApprovedCount }}</span>
         @endif
     </a>
-    <a href="{{ route('inventory-personnel.stock-movements.transfer-to-catering') }}" style="display: flex; align-items: center; gap: 14px; padding: 18px 22px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 14px; color: white; text-decoration: none; font-weight: 600; font-size: 15px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25); transition: all 0.3s ease;">
-        <svg style="width: 26px; height: 26px; flex-shrink: 0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
-        </svg>
-        <span>Transfer to Catering</span>
-    </a>
+    
+    <!-- DYNAMIC PERMISSION-BASED ACTIONS (Auto-appear when permissions added) -->
+    <x-permission-actions :exclude="['view products', 'create products', 'update products', 'add stock', 'issue stock', 'process returns', 'view stock levels']" />
 </div>
 
 <!-- Supervisor Approved Requests -->
 @if(isset($supervisorApprovedRequests) && $supervisorApprovedRequests->count() > 0)
 <div style="background: white; border-radius: 16px; padding: 28px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 32px;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-        <h3 style="font-size: 20px; font-weight: 700; color: #1a1a1a; margin: 0;">✅ Supervisor Approved - Forward to Security</h3>
+        <h3 style="font-size: 20px; font-weight: 700; color: #1a1a1a; margin: 0;">📦 Supervisor Approved - Issue Items to Catering Staff</h3>
         <a href="{{ route('inventory-personnel.requests.supervisor-approved') }}" style="color: #0ea5e9; font-weight: 600; text-decoration: none; font-size: 14px;">View All →</a>
     </div>
     <table style="width: 100%; border-collapse: collapse;">
@@ -166,8 +163,8 @@
 </div>
 @endif
 
-<!-- Transfer Stats -->
-@if($pendingTransfersCount > 0 || $approvedTransfersCount > 0)
+<!-- Transfer Stats - REMOVED -->
+@if(false && ($pendingTransfersCount > 0 || $approvedTransfersCount > 0))
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-bottom: 32px;">
     @if($pendingTransfersCount > 0)
     <a href="#pending-transfers" style="text-decoration:none;color:inherit;">
@@ -354,12 +351,24 @@
                     </td>
                     <td style="padding: 14px 16px; font-size: 14px; color: #6c757d; white-space: nowrap;">{{ $product->created_at->diffForHumans() }}</td>
                     <td style="padding: 14px 16px; text-align: center;">
-                        <a href="{{ route('inventory-personnel.products.edit', $product) }}" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: #0066cc; color: white; text-decoration: none; border-radius: 6px; font-size: 13px; font-weight: 600; transition: all 0.2s;">
-                            <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                            </svg>
-                            Edit
-                        </a>
+                        <div style="display: flex; gap: 8px; justify-content: center;">
+                            <a href="{{ route('inventory-personnel.products.edit', $product) }}" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: #0066cc; color: white; text-decoration: none; border-radius: 6px; font-size: 13px; font-weight: 600; transition: all 0.2s;">
+                                <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                </svg>
+                                Edit
+                            </a>
+                            <form action="{{ route('inventory-personnel.products.destroy', $product) }}" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete {{ $product->name }}? This action cannot be undone.')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: #dc3545; color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                                    <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>
+                                    Delete
+                                </button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
                 @endforeach
@@ -438,12 +447,17 @@
                                 </svg>
                                 Edit
                             </a>
-                            <a href="{{ route('inventory-personnel.stock-movements.transfer-to-catering') }}" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: #3b82f6; color: white; text-decoration: none; border-radius: 6px; font-size: 13px; font-weight: 600; transition: all 0.2s;">
-                                <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
-                                </svg>
-                                Transfer
-                            </a>
+                            <form action="{{ route('inventory-personnel.products.destroy', $product) }}" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete {{ $product->name }}? This action cannot be undone.')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: #dc3545; color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                                    <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>
+                                    Delete
+                                </button>
+                            </form>
+
                         </div>
                     </td>
                 </tr>
@@ -483,12 +497,7 @@
                 </svg>
                 Add Stock
             </a>
-            <a href="{{ route('inventory-personnel.stock-movements.transfer-to-catering') }}" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; text-decoration: none; border-radius: 10px; font-size: 14px; font-weight: 600; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); transition: all 0.3s;">
-                <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
-                </svg>
-                Transfer to Catering
-            </a>
+
         </div>
     </div>
     

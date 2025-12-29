@@ -33,28 +33,34 @@ class DispatchController extends Controller
     }
 
     /**
-     * Handover request to Flight Crew (handles meal and product requests)
+     * Sign and approve request (NEW WORKFLOW - send to Flight Purser)
      */
     public function markDispatched(RequestModel $request)
     {
-        // Check valid statuses: sent_to_ramp OR ready_for_dispatch
-        $validStatuses = ['sent_to_ramp', 'ready_for_dispatch', 'security_dispatched', 'catering_approved'];
-        if (!in_array($request->status, $validStatuses)) {
+        // Check if awaiting ramp dispatch
+        if ($request->status !== 'security_authenticated') {
             return back()->with('error', 'This request is not ready for dispatch.');
         }
 
+        // Mark sent to Flight Dispatcher for assessment
         $request->update([
-            'status' => 'dispatched',
+            'status' => 'awaiting_flight_dispatcher',
             'dispatched_by' => auth()->id(),
             'dispatched_at' => now(),
         ]);
 
+        // Notify Flight Dispatcher(s)
+        $flightDispatchers = \App\Models\User::role('Flight Dispatcher')->get();
+        foreach ($flightDispatchers as $fd) {
+            $fd->notify(new \App\Notifications\RequestApprovedNotification($request));
+        }
+
         activity()
             ->causedBy(auth()->user())
             ->performedOn($request)
-            ->log('Dispatched request #' . $request->id . ' to aircraft');
+            ->log('Dispatched request #' . $request->id . ' to Flight Dispatcher for assessment');
 
-        return back()->with('success', 'Request dispatched to Flight Crew successfully.');
+        return back()->with('success', 'Request signed and forwarded to Flight Dispatcher for assessment.');
     }
 
     /**
@@ -63,7 +69,7 @@ class DispatchController extends Controller
     public function dispatched()
     {
         $requests = RequestModel::with(['flight', 'requester', 'items.product'])
-            ->where('status', 'dispatched')
+            ->whereIn('status', ['ramp_dispatched', 'loaded', 'delivered'])
             ->latest('dispatched_at')
             ->paginate(20);
 

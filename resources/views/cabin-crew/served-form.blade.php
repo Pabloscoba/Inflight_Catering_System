@@ -256,7 +256,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (!isValid) {
             e.preventDefault();
-            alert('Please correct the highlighted fields before submitting.');
+            if (typeof Toast !== 'undefined') {
+                Toast.error('Please correct the highlighted fields before submitting.');
+            }
             return false;
         }
         

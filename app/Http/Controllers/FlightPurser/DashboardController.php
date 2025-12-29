@@ -11,32 +11,26 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        // Get statistics - include meal requests
-        $dispatchedRequests = RequestModel::whereIn('status', ['dispatched', 'handed_to_flight'])->count();
-        $loadedRequests = RequestModel::whereIn('status', ['loaded', 'flight_received'])->count();
+        // Get statistics - NEW WORKFLOW
+        $dispatchedRequests = RequestModel::where('status', 'ramp_dispatched')->count();
+        $loadedRequests = RequestModel::where('status', 'loaded')->count();
         
         $upcomingFlights = Flight::where('departure_time', '>', now())
             ->where('departure_time', '<', now()->addDays(7))
             ->count();
 
-        // Requests handed over by Ramp - waiting to be received (meal + product)
+        // Requests dispatched by Ramp - waiting to be loaded
         $requestsToLoad = RequestModel::with(['flight', 'requester', 'items.product'])
-            ->where(function($query) {
-                $query->where('status', 'dispatched')
-                      ->orWhere('status', 'handed_to_flight'); // meal requests
-            })
+            ->where('status', 'ramp_dispatched')
             ->whereHas('flight', function($query) {
                 $query->where('departure_time', '>', now());
             })
-            ->orderByRaw("COALESCE(handed_to_flight_at, dispatched_at) DESC")
+            ->orderBy('dispatched_at', 'desc')
             ->get();
 
-        // Recently received/loaded requests
+        // Recently loaded requests
         $loadedRequestsList = RequestModel::with(['flight', 'requester', 'items.product'])
-            ->where(function($query) {
-                $query->where('status', 'loaded')
-                      ->orWhere('status', 'flight_received'); // meal requests
-            })
+            ->where('status', 'loaded')
             ->latest('loaded_at')
             ->limit(10)
             ->get();

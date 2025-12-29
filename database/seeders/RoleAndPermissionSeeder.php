@@ -26,6 +26,7 @@ class RoleAndPermissionSeeder extends Seeder
             'manage categories',
             'manage stock',
             'view all requests',
+            'view approved requests',
             'create catering request', // Admins can also create requests
             'manage flights',
             'system settings',
@@ -141,8 +142,31 @@ class RoleAndPermissionSeeder extends Seeder
             'submit final flight consumption',
         ];
 
+        // ============================================
+        // FLIGHT DISPATCHER PERMISSIONS
+        // ============================================
+        $flightDispatcherPermissions = [
+            // Core actions
+            'view requests',
+            'inspect requests for errors',
+            'assess flight readiness',
+            'assess aircraft',
+            'approve flight departure',
+            'clear flight for operations',
+            'forward requests to flight purser',
+
+            // Helpful viewing/reporting permissions
+            'view awaiting assessment requests',
+            'view flight requirements',
+            'view flight schedule',
+            'view flight products assigned',
+            'view dispatch reports',
+            'comment on request',
+            'recommend dispatch to flight operations',
+        ];
+
         // Create all permissions
-        $allPermissions = array_merge($adminPermissions, $inventoryPersonnelPermissions, $inventorySupervisorPermissions, $cateringInchargePermissions, $cateringStaffPermissions, $rampDispatcherPermissions, $securityStaffPermissions, $cabinCrewPermissions, $flightPurserPermissions);
+        $allPermissions = array_merge($adminPermissions, $inventoryPersonnelPermissions, $inventorySupervisorPermissions, $cateringInchargePermissions, $cateringStaffPermissions, $rampDispatcherPermissions, $securityStaffPermissions, $cabinCrewPermissions, $flightPurserPermissions, $flightDispatcherPermissions);
         foreach ($allPermissions as $permission) {
             Permission::firstOrCreate(['name' => $permission]);
         }
@@ -206,6 +230,12 @@ class RoleAndPermissionSeeder extends Seeder
         // ============================================
         $flightPurserRole = Role::firstOrCreate(['name' => 'Flight Purser']);
         $flightPurserRole->syncPermissions($flightPurserPermissions);
+
+        // ============================================
+        // CREATE FLIGHT DISPATCHER ROLE
+        // ============================================
+        $flightDispatcherRole = Role::firstOrCreate(['name' => 'Flight Dispatcher']);
+        $flightDispatcherRole->syncPermissions($flightDispatcherPermissions);
 
         // ============================================
         // CREATE ADMIN USER
@@ -279,7 +309,7 @@ class RoleAndPermissionSeeder extends Seeder
             ['email' => 'dispatcher@inflightcatering.com'],
             [
                 'name' => 'Ramp Dispatcher',
-                'password' => Hash::make('Dispatcher@123'),
+                'password' => Hash::make('dispatcher@123'),
                 'email_verified_at' => now(),
             ]
         );
@@ -325,6 +355,19 @@ class RoleAndPermissionSeeder extends Seeder
         $flightPurser->assignRole('Flight Purser');
 
         // ============================================
+        // CREATE FLIGHT DISPATCHER USER
+        // ============================================
+        $flightDispatcher = User::firstOrCreate(
+            ['email' => 'flight.dispatcher@inflightcatering.com'],
+            [
+                'name' => 'Flight Dispatcher',
+                'password' => Hash::make('Flight@123'),
+                'email_verified_at' => now(),
+            ]
+        );
+        $flightDispatcher->assignRole('Flight Dispatcher');
+
+        // ============================================
         // OUTPUT SUCCESS MESSAGES
         // ============================================
         $this->command->info('');
@@ -365,6 +408,10 @@ class RoleAndPermissionSeeder extends Seeder
         $this->command->info('👤 FLIGHT PURSER:');
         $this->command->info('   Email:    purser@inflightcatering.com');
         $this->command->info('   Password: Purser@123');
+        $this->command->info('');
+        $this->command->info('👤 FLIGHT DISPATCHER:');        
+        $this->command->info('   Email:    flight.dispatcher@inflightcatering.com');
+        $this->command->info('   Password: Flight@123');
         $this->command->info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     }
 }

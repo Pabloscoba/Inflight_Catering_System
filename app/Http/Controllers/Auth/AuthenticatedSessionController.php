@@ -48,28 +48,42 @@ class AuthenticatedSessionController extends Controller
             'last_regenerated' => now()->timestamp,
         ]);
         
+        // Get intended URL and check if it's a notification endpoint
+        $intended = session()->pull('url.intended', '');
+        $isNotificationEndpoint = str_contains($intended, '/notifications/');
+        
+        // Determine redirect URL based on role
+        $redirectUrl = null;
         if ($user->hasRole('Admin')) {
-            return redirect()->intended(route('admin.dashboard'));
+            $redirectUrl = route('admin.dashboard');
         } elseif ($user->hasRole('Inventory Personnel')) {
-            return redirect()->intended(route('inventory-personnel.dashboard'));
+            $redirectUrl = route('inventory-personnel.dashboard');
         } elseif ($user->hasRole('Inventory Supervisor')) {
-            return redirect()->intended(route('inventory-supervisor.dashboard'));
+            $redirectUrl = route('inventory-supervisor.dashboard');
         } elseif ($user->hasRole('Catering Incharge')) {
-            return redirect()->intended(route('catering-incharge.dashboard'));
+            $redirectUrl = route('catering-incharge.dashboard');
         } elseif ($user->hasRole('Catering Staff')) {
-            return redirect()->intended(route('catering-staff.dashboard'));
+            $redirectUrl = route('catering-staff.dashboard');
         } elseif ($user->hasRole('Ramp Dispatcher')) {
-            return redirect()->intended(route('ramp-dispatcher.dashboard'));
+            $redirectUrl = route('ramp-dispatcher.dashboard');
         } elseif ($user->hasRole('Security Staff')) {
-            return redirect()->intended(route('security-staff.dashboard'));
+            $redirectUrl = route('security-staff.dashboard');
         } elseif ($user->hasRole('Cabin Crew')) {
-            return redirect()->intended(route('cabin-crew.dashboard'));
+            $redirectUrl = route('cabin-crew.dashboard');
         } elseif ($user->hasRole('Flight Purser')) {
-            return redirect()->intended(route('flight-purser.dashboard'));
+            $redirectUrl = route('flight-purser.dashboard');
+        } elseif ($user->hasRole('Flight Dispatcher')) {
+            $redirectUrl = route('flight-dispatcher.dashboard');
+        } else {
+            $redirectUrl = route('admin.dashboard');
         }
         
-        // Default fallback to admin dashboard
-        return redirect()->intended(route('admin.dashboard'));
+        // If intended URL is not a notification endpoint, use it; otherwise use role-based URL
+        if (!$isNotificationEndpoint && $intended) {
+            return redirect($intended);
+        }
+        
+        return redirect($redirectUrl);
     }
 
     /**

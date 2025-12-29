@@ -67,24 +67,36 @@ class ProductReceiptController extends Controller
     }
 
     /**
-     * View all approved catering stock
+     * View all approved catering stock - REAL-TIME from Product table
      */
     public function stockOverview()
     {
-        $stocks = CateringStock::with(['product.category'])
-            ->where('status', 'approved')
-            ->where('quantity_available', '>', 0)
-            ->orderBy('product_id')
+        // Real-time catering stock from Product table
+        $stocks = Product::with(['category'])
+            ->where('is_active', true)
+            ->where('catering_stock', '>', 0)
+            ->orderBy('name')
             ->paginate(50);
 
-        // Group by product and sum quantities
-        $stockSummary = CateringStock::with(['product.category'])
-            ->where('status', 'approved')
-            ->select('product_id', DB::raw('SUM(quantity_available) as total_available'), DB::raw('SUM(quantity_received) as total_received'))
-            ->groupBy('product_id')
-            ->having('total_available', '>', 0)
+        // Stock summary with low stock indicators
+        $stockSummary = Product::with(['category'])
+            ->where('is_active', true)
+            ->where('catering_stock', '>', 0)
+            ->select('id', 'name', 'category_id', 'catering_stock', 'catering_reorder_level', 'unit_of_measure')
+            ->orderBy('catering_stock', 'desc')
             ->get();
 
-        return view('catering-incharge.receipts.stock-overview', compact('stocks', 'stockSummary'));
+        // Low stock count
+        $lowStockCount = Product::where('is_active', true)
+            ->whereColumn('catering_stock', '<=', 'catering_reorder_level')
+            ->where('catering_stock', '>', 0)
+            ->count();
+
+        // Out of stock count
+        $outOfStockCount = Product::where('is_active', true)
+            ->where('catering_stock', '=', 0)
+            ->count();
+
+        return view('catering-incharge.receipts.stock-overview', compact('stocks', 'stockSummary', 'lowStockCount', 'outOfStockCount'));
     }
 }

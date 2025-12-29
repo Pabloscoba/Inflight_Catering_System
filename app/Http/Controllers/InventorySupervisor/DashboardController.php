@@ -16,7 +16,8 @@ class DashboardController extends Controller
         // Get pending approvals count
         $pendingProducts = Product::where('status', 'pending')->count();
         $pendingMovements = StockMovement::where('status', 'pending')->count();
-        $pendingRequests = RequestModel::where('status', 'pending_supervisor')->count();
+        // NEW WORKFLOW: Requests awaiting Inventory Supervisor approval (after Catering Incharge approved)
+        $pendingRequests = RequestModel::where('status', 'catering_approved')->count();
         
         // Get total approved items
         $approvedProducts = Product::where('status', 'approved')->count();
@@ -52,9 +53,9 @@ class DashboardController extends Controller
             ->where('quantity_in_stock', '=', 0)
             ->count();
         
-        // Get pending requests list (need supervisor approval)
+        // Get pending requests list (need supervisor approval after Catering Incharge approved)
         $pendingRequestsList = RequestModel::with(['flight', 'requester', 'items.product'])
-            ->where('status', 'pending_supervisor')
+            ->where('status', 'catering_approved')
             ->latest()
             ->limit(10)
             ->get();

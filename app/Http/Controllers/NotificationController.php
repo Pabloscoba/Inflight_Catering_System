@@ -56,7 +56,7 @@ class NotificationController extends Controller
     /**
      * Mark single notification as read
      */
-    public function markAsRead($id)
+    public function markAsRead($id, Request $request)
     {
         $notification = auth()->user()
             ->notifications()
@@ -65,12 +65,28 @@ class NotificationController extends Controller
 
         if ($notification) {
             $notification->markAsRead();
+            
+            // If the request expects JSON, return JSON response
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'unread_count' => auth()->user()->unreadNotifications->count()
+                ]);
+            }
+            
+            // Otherwise, redirect to the action_url in the notification data
+            $actionUrl = $notification->data['action_url'] ?? route('dashboard');
+            return redirect($actionUrl);
         }
 
-        return response()->json([
-            'success' => true,
-            'unread_count' => auth()->user()->unreadNotifications->count()
-        ]);
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Notification not found'
+            ], 404);
+        }
+
+        return redirect()->back()->with('error', 'Notification not found');
     }
 
     /**

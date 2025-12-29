@@ -12,22 +12,19 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        // Get statistics - include meal requests
-        $approvedOrders = RequestModel::whereIn('status', ['ready_for_dispatch', 'security_dispatched'])->count();
-        $dispatchedToday = RequestModel::where('status', 'handed_to_flight')
-            ->whereDate('handed_to_flight_at', today())
+        // Get statistics - NEW WORKFLOW
+        $approvedOrders = RequestModel::where('status', 'security_authenticated')->count();
+        $dispatchedToday = RequestModel::where('status', 'ramp_dispatched')
+            ->whereDate('updated_at', today())
             ->count();
         
         // Flights needing dispatch today
         $todayFlights = Flight::whereDate('departure_time', today())
             ->count();
 
-        // Orders ready for dispatch (product requests OR meal requests)
+        // Orders ready for dispatch (authenticated by security)
         $ordersToDispatch = RequestModel::with(['flight', 'requester', 'items.product'])
-            ->where(function($query) {
-                $query->where('status', 'ready_for_dispatch')
-                      ->orWhere('status', 'security_dispatched'); // meal requests
-            })
+            ->where('status', 'security_authenticated')
             ->whereHas('flight', function($query) {
                 $query->where('departure_time', '>', now());
             })
@@ -36,7 +33,7 @@ class DashboardController extends Controller
 
         // Recently dispatched orders
         $recentDispatches = RequestModel::with(['flight', 'requester'])
-            ->where('status', 'dispatched')
+            ->where('status', 'ramp_dispatched')
             ->latest()
             ->limit(10)
             ->get();

@@ -73,11 +73,22 @@
 
 <!-- Quick Actions -->
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 32px;">
+    <!-- Core Catering Staff Actions (Always Visible) -->
     <a href="{{ route('catering-staff.requests.create') }}" style="display: flex; align-items: center; gap: 12px; padding: 18px 24px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 12px; text-decoration: none; font-weight: 600; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4); transition: all 0.3s;">
         <svg style="width: 24px; height: 24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
         </svg>
         <span>Create New Request</span>
+    </a>
+
+    <a href="{{ route('catering-staff.requests.items-to-receive') }}" style="display: flex; align-items: center; gap: 12px; padding: 18px 24px; background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%); color: white; border-radius: 12px; text-decoration: none; font-weight: 600; box-shadow: 0 4px 12px rgba(74, 222, 128, 0.4); transition: all 0.3s; position: relative;">
+        <svg style="width: 24px; height: 24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+        </svg>
+        <span>Receive Items</span>
+        @if(isset($itemsToReceive) && $itemsToReceive > 0)
+        <span style="position: absolute; top: -8px; right: -8px; background: #ef4444; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);">{{ $itemsToReceive }}</span>
+        @endif
     </a>
 
     <a href="{{ route('catering-staff.requests.index', ['filter' => 'pending']) }}" style="display: flex; align-items: center; gap: 12px; padding: 18px 24px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; border-radius: 12px; text-decoration: none; font-weight: 600; box-shadow: 0 4px 12px rgba(240, 147, 251, 0.4); transition: all 0.3s;">
@@ -93,6 +104,9 @@
         </svg>
         <span>Approved Requests</span>
     </a>
+    
+    <!-- DYNAMIC PERMISSION-BASED ACTIONS (Auto-appear when permissions added) -->
+    <x-permission-actions :exclude="['create catering request', 'view own catering requests', 'receive approved items', 'view product list']" />
 </div>
 
 <!-- My Recent Requests -->
@@ -218,15 +232,15 @@
     @endif
 </div>
 
-<!-- Approved Requests Ready for Collection -->
+<!-- Items Ready for Receipt from Inventory -->
 @if($readyForCollection->count() > 0)
 <div style="background:white;border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,0.08);overflow:hidden;margin-top:32px;">
     <div style="padding:24px 28px;border-bottom:2px solid #f3f4f6;display:flex;justify-content:space-between;align-items:center;">
         <div>
-            <h3 style="font-size:20px;font-weight:700;color:#1a1a1a;margin:0;">✅ Approved Requests</h3>
-            <p style="font-size:13px;color:#6b7280;margin:4px 0 0 0;">Requests approved by Catering Incharge - Ready to send to Ramp</p>
+            <h3 style="font-size:20px;font-weight:700;color:#1a1a1a;margin:0;">📦 Items Ready to Receive</h3>
+            <p style="font-size:13px;color:#6b7280;margin:4px 0 0 0;">Inventory Personnel has issued items - receive them to proceed</p>
         </div>
-        <div style="background:#d1fae5;color:#065f46;padding:6px 12px;border-radius:8px;font-size:13px;font-weight:600;">
+        <div style="background:#dbeafe;color:#1e40af;padding:6px 12px;border-radius:8px;font-size:13px;font-weight:600;">
             {{ $readyForCollection->count() }} ready
         </div>
     </div>
@@ -282,24 +296,24 @@
                     </td>
                     <td style="padding:16px 20px;text-align:center;">
                         <div style="display:flex;gap:8px;justify-content:center;">
+                            <form method="POST" action="{{ route('catering-staff.requests.receive-items', $request) }}" style="display:inline;">
+                                @csrf
+                                <button type="submit" onclick="return confirm('Receive items for Request #{{ $request->id }}? This will send the request to Catering Incharge for final approval.')" 
+                                   style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:white;padding:8px 16px;border-radius:8px;border:none;font-size:13px;font-weight:600;cursor:pointer;">
+                                    <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    Receive Items
+                                </button>
+                            </form>
                             <a href="{{ route('catering-staff.requests.show', $request) }}" 
-                               style="display:inline-flex;align-items:center;gap:6px;background:#2563eb;color:white;padding:8px 16px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:600;">
+                               style="display:inline-flex;align-items:center;gap:6px;background:#6b7280;color:white;padding:8px 16px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:600;">
                                 <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                                 </svg>
                                 View
                             </a>
-                            <form method="POST" action="{{ route('catering-staff.requests.send-to-ramp', $request) }}" style="display:inline;">
-                                @csrf
-                                <button type="submit" onclick="return confirm('Send Request #{{ $request->id }} to Ramp Dispatcher for dispatch?')" 
-                                   style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:white;padding:8px 16px;border-radius:8px;border:none;font-size:13px;font-weight:600;cursor:pointer;">
-                                    <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-                                    </svg>
-                                    Send to Ramp
-                                </button>
-                            </form>
                         </div>
                     </td>
                 </tr>

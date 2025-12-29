@@ -15,11 +15,19 @@ class DashboardController extends Controller
 
         // Get statistics for own requests
         $totalRequests = RequestModel::where('requester_id', $userId)->count();
+        
+        // CORRECTED WORKFLOW: Pending includes requests in process
         $pendingRequests = RequestModel::where('requester_id', $userId)
-            ->whereIn('status', ['pending_inventory', 'pending_supervisor', 'supervisor_approved', 'sent_to_security', 'security_approved'])
+            ->whereIn('status', ['pending_catering_incharge', 'catering_approved', 'supervisor_approved', 'pending_final_approval', 'catering_final_approved', 'security_authenticated', 'ramp_dispatched'])
             ->count();
+            
+        // CORRECTED WORKFLOW: Items awaiting receipt from inventory
+        $itemsToReceive = RequestModel::where('requester_id', $userId)
+            ->where('status', 'items_issued')
+            ->count();
+            
         $approvedRequests = RequestModel::where('requester_id', $userId)
-            ->where('status', 'catering_approved')
+            ->whereIn('status', ['loaded', 'delivered', 'served'])
             ->count();
         $rejectedRequests = RequestModel::where('requester_id', $userId)
             ->where('status', 'rejected')
@@ -40,10 +48,10 @@ class DashboardController extends Controller
             ->limit(10)
             ->get();
 
-        // Approved requests ready for collection
+        // CORRECTED WORKFLOW: Items ready for receipt from Inventory
         $readyForCollection = RequestModel::with(['flight', 'items.product'])
             ->where('requester_id', $userId)
-            ->where('status', 'catering_approved')
+            ->where('status', 'items_issued')
             ->latest()
             ->limit(5)
             ->get();

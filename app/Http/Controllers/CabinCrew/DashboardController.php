@@ -12,23 +12,20 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        // Count loaded/received requests (ready for cabin crew) - include meal requests
-        $loadedRequests = RequestModel::whereIn('status', ['loaded', 'flight_received'])->count();
+        // Count loaded requests (ready for cabin crew) - NEW WORKFLOW
+        $loadedRequests = RequestModel::where('status', 'loaded')->count();
         
         // Count delivered/served requests
         $deliveredRequests = RequestModel::whereIn('status', ['delivered', 'served'])->count();
         
         // Get total flights handled
-        $totalFlights = RequestModel::whereIn('status', ['loaded', 'delivered', 'flight_received', 'served'])
+        $totalFlights = RequestModel::whereIn('status', ['loaded', 'delivered', 'served'])
             ->distinct('flight_id')
             ->count();
         
-        // Get requests ready for service (product + meal)
+        // Get requests ready for service (NEW WORKFLOW)
         $requestsToReceive = RequestModel::with(['flight', 'requester', 'items.product'])
-            ->where(function($query) {
-                $query->where('status', 'loaded')
-                      ->orWhere('status', 'flight_received'); // meal requests
-            })
+            ->where('status', 'loaded')
             ->whereHas('flight', function($query) {
                 $query->where('departure_time', '>', now());
             })
@@ -47,7 +44,7 @@ class DashboardController extends Controller
         
         // FLIGHT OVERVIEW - Today's and upcoming flights
         $todayFlights = Flight::with(['requests' => function($query) {
-            $query->whereIn('status', ['loaded', 'flight_received', 'delivered', 'served']);
+            $query->whereIn('status', ['loaded', 'delivered', 'served']);
         }])
         ->whereDate('departure_time', today())
         ->orderBy('departure_time', 'asc')

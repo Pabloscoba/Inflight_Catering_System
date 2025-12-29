@@ -17,7 +17,7 @@ class ProductUsageController extends Controller
     public function index()
     {
         $requests = RequestModel::with(['flight', 'items.product'])
-            ->whereIn('status', ['loaded', 'flight_received', 'delivered', 'served'])
+            ->whereIn('status', ['loaded', 'delivered', 'served'])
             ->orderBy('created_at', 'desc')
             ->paginate(20);
         
@@ -30,7 +30,7 @@ class ProductUsageController extends Controller
     public function returnsIndex()
     {
         $requests = RequestModel::with(['flight', 'items.product'])
-            ->whereIn('status', ['loaded', 'flight_received'])
+            ->where('status', 'loaded')
             ->orderBy('created_at', 'desc')
             ->paginate(20);
         
@@ -40,8 +40,8 @@ class ProductUsageController extends Controller
     // View detailed product list for a request
     public function viewProducts(RequestModel $request)
     {
-        // Verify request is loaded/received (ready for cabin crew) - includes meal requests
-        if (!in_array($request->status, ['loaded', 'flight_received', 'delivered', 'served'])) {
+        // Verify request is loaded (ready for cabin crew) - NEW WORKFLOW
+        if (!in_array($request->status, ['loaded', 'delivered', 'served'])) {
             return redirect()->route('cabin-crew.dashboard')
                 ->with('error', 'This request is not available for product management. Current status: ' . $request->status);
         }

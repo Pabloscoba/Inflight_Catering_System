@@ -1,12 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Product - {{ $product->name }}</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; }
+@extends('layouts.app')
+
+@section('title', 'Edit Product - {{ $product->name }}')
+
+@section('content')
+<style>
+    body { background: #f5f5f5; }
         
         .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
@@ -49,7 +47,19 @@
     <div class="container">
         <div class="header">
             <h1>Edit Product</h1>
-            <a href="{{ route('inventory-personnel.products.index') }}" class="btn-back">← Back to Products</a>
+            @php
+                $backRoute = 'inventory-personnel.products.index';
+                if (auth()->user()->hasRole('Cabin Crew')) {
+                    $backRoute = 'cabin-crew.dashboard';
+                } elseif (auth()->user()->hasRole('Catering Staff')) {
+                    $backRoute = 'catering-staff.dashboard';
+                } elseif (auth()->user()->hasRole('Security Staff')) {
+                    $backRoute = 'security-staff.dashboard';
+                } elseif (auth()->user()->hasRole('Ramp Dispatcher')) {
+                    $backRoute = 'ramp-dispatcher.dashboard';
+                }
+            @endphp
+            <a href="{{ route($backRoute) }}" class="btn-back">← Back to Dashboard</a>
         </div>
         
         <div class="info-box">
@@ -81,15 +91,24 @@
                     
                     <div class="form-group">
                         <label>Category <span class="required">*</span></label>
-                        <select name="category_id" required>
+                        <select name="category_id" id="category_id" required>
                             <option value="">-- Select Category --</option>
                             @foreach($categories as $category)
-                            <option value="{{ $category->id }}" {{ old('category_id', $product->category_id) == $category->id ? 'selected' : '' }}>
+                            <option value="{{ $category->id }}" data-slug="{{ $category->slug }}" {{ old('category_id', $product->category_id) == $category->id ? 'selected' : '' }}>
                                 {{ $category->name }}
                             </option>
                             @endforeach
                         </select>
                         @error('category_id')
+                        <div class="error">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Product Type <span class="required">*</span></label>
+                        <input type="text" name="type" id="product_type" value="{{ old('type', $product->type) }}" required readonly style="background-color: #f3f4f6; cursor: not-allowed;">
+                        <div class="help-text">Automatically set based on category selection</div>
+                        @error('type')
                         <div class="error">{{ $message }}</div>
                         @enderror
                     </div>
@@ -158,14 +177,6 @@
                         <div class="error">{{ $message }}</div>
                         @enderror
                     </div>
-                    
-                    <div class="form-group">
-                        <div class="checkbox-group">
-                            <input type="checkbox" name="is_active" id="is_active" value="1" {{ old('is_active', $product->is_active) ? 'checked' : '' }}>
-                            <label for="is_active">Product is Active</label>
-                        </div>
-                        <div class="help-text">Inactive products won't be available for requests</div>
-                    </div>
                 </div>
                 
                 <div class="form-actions">
@@ -174,7 +185,7 @@
                     </div>
                     
                     <div class="form-actions-right">
-                        <a href="{{ route('inventory-personnel.products.index') }}" class="btn btn-secondary">Cancel</a>
+                        <a href="{{ route($backRoute) }}" class="btn btn-secondary">Cancel</a>
                         <button type="submit" class="btn btn-primary">Update Product</button>
                     </div>
                 </div>
@@ -188,5 +199,53 @@
             </form>
         </div>
     </div>
-</body>
-</html>
+@endsection
+
+@section('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const categorySelect = document.getElementById('category_id');
+    const productTypeInput = document.getElementById('product_type');
+    
+    // Function to update product type based on category
+    function updateProductType() {
+        const selectedOption = categorySelect.options[categorySelect.selectedIndex];
+        const categorySlug = selectedOption.getAttribute('data-slug');
+        
+        if (categorySlug) {
+            let type = '';
+            
+            // Map category slug to product type
+            switch(categorySlug) {
+                case 'food':
+                    type = 'Food';
+                    break;
+                case 'drinks':
+                    type = 'Drink';
+                    break;
+                case 'bites':
+                    type = 'Food';
+                    break;
+                case 'accessories':
+                    type = 'Accessory';
+                    break;
+                default:
+                    type = '';
+            }
+            
+            productTypeInput.value = type;
+        } else {
+            productTypeInput.value = '';
+        }
+    }
+    
+    // Update type when category changes
+    categorySelect.addEventListener('change', updateProductType);
+    
+    // Initialize type on page load if category is pre-selected
+    if (categorySelect.value) {
+        updateProductType();
+    }
+});
+</script>
+@endsection

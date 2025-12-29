@@ -84,7 +84,13 @@
             📦 Approve Receipts
         </a>
         <a href="{{ route('catering-incharge.requests.pending') }}" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 18px 24px; border-radius: 12px; text-decoration: none; font-weight: 600; text-align: center; box-shadow: 0 4px 12px rgba(240, 147, 251, 0.3); transition: all 0.3s ease; display: block;">
-            📋 Approve Requests
+            📋 Initial Approval
+        </a>
+        <a href="{{ route('catering-incharge.requests.pending-final') }}" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 18px 24px; border-radius: 12px; text-decoration: none; font-weight: 600; text-align: center; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3); transition: all 0.3s ease; display: block; position: relative;">
+            🔒 Final Approval
+            @if(isset($pendingItemReceipts) && $pendingItemReceipts > 0)
+            <span style="position: absolute; top: -8px; right: -8px; background: #dc2626; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; box-shadow: 0 2px 8px rgba(220, 38, 38, 0.5);">{{ $pendingItemReceipts }}</span>
+            @endif
         </a>
         <a href="{{ route('catering-incharge.requests.approved') }}" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 18px 24px; border-radius: 12px; text-decoration: none; font-weight: 600; text-align: center; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); transition: all 0.3s ease; display: block;">
             ✅ View Approved
@@ -92,6 +98,74 @@
         <a href="{{ route('catering-incharge.receipts.stock-overview') }}" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; padding: 18px 24px; border-radius: 12px; text-decoration: none; font-weight: 600; text-align: center; box-shadow: 0 4px 12px rgba(79, 172, 254, 0.3); transition: all 0.3s ease; display: block;">
             📊 Stock Overview
         </a>
+        
+        <!-- DYNAMIC PERMISSION-BASED ACTIONS (Auto-appear when permissions added) -->
+        <x-permission-actions :exclude="['approve initial request', 'approve final request after receipt', 'view approved requests', 'check mini stock']" />
+    </div>
+
+    <!-- Low Stock Alert - Always Visible -->
+    <div style="background: white; border-radius: 16px; padding: 28px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 32px; border-left: 4px solid {{ $lowStockItems->count() > 0 ? '#dc3545' : '#28a745' }};">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+            <h3 style="font-size: 20px; font-weight: 600; color: #1a202c; margin: 0;">
+                <svg style="width: 24px; height: 24px; display: inline-block; vertical-align: middle; margin-right: 8px; color: {{ $lowStockItems->count() > 0 ? '#dc3545' : '#28a745' }};" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    @if($lowStockItems->count() > 0)
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                    @else
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    @endif
+                </svg>
+                {{ $lowStockItems->count() > 0 ? 'Low Stock Alert - Action Required' : 'Stock Levels - All Good' }}
+            </h3>
+            <span style="background: {{ $lowStockItems->count() > 0 ? '#dc3545' : '#28a745' }}; color: white; padding: 6px 14px; border-radius: 20px; font-size: 14px; font-weight: 600;">{{ $lowStockItems->count() }} {{ $lowStockItems->count() == 1 ? 'item' : 'items' }}</span>
+        </div>
+        
+        @if($lowStockItems->count() > 0)
+        <div style="background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 12px 16px; margin-bottom: 20px;">
+            <p style="margin: 0; color: #856404; font-size: 14px;">⚠️ <strong>{{ $lowStockItems->count() }}</strong> product(s) are running low or out of stock. Please coordinate with Inventory to restock these items.</p>
+        </div>
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="border-bottom: 2px solid #e9ecef;">
+                        <th style="text-align: left; padding: 14px; font-size: 14px; font-weight: 600; color: #495057;">Product</th>
+                        <th style="text-align: left; padding: 14px; font-size: 14px; font-weight: 600; color: #495057;">Category</th>
+                        <th style="text-align: center; padding: 14px; font-size: 14px; font-weight: 600; color: #495057;">Current Stock</th>
+                        <th style="text-align: center; padding: 14px; font-size: 14px; font-weight: 600; color: #495057;">Reorder Level</th>
+                        <th style="text-align: left; padding: 14px; font-size: 14px; font-weight: 600; color: #495057;">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($lowStockItems as $product)
+                    <tr style="border-bottom: 1px solid #f1f3f5;">
+                        <td style="padding: 14px; font-size: 14px; color: #212529; font-weight: 600;">{{ $product->name }}</td>
+                        <td style="padding: 14px; font-size: 14px; color: #6c757d;">{{ $product->category->name }}</td>
+                        <td style="padding: 14px; text-align: center;">
+                            <span style="background: {{ $product->quantity_in_stock == 0 ? '#f8d7da' : '#fff3cd' }}; color: {{ $product->quantity_in_stock == 0 ? '#721c24' : '#856404' }}; padding: 6px 14px; border-radius: 12px; font-size: 15px; font-weight: 700;">
+                                {{ $product->quantity_in_stock }} {{ $product->unit_of_measure ?? 'units' }}
+                            </span>
+                        </td>
+                        <td style="padding: 14px; font-size: 14px; color: #6c757d; text-align: center;">{{ $product->reorder_level }} {{ $product->unit_of_measure ?? 'units' }}</td>
+                        <td style="padding: 14px;">
+                            @if($product->quantity_in_stock == 0)
+                            <span style="background: #f8d7da; color: #721c24; padding: 6px 14px; border-radius: 12px; font-size: 13px; font-weight: 600;">🚨 OUT OF STOCK</span>
+                            @else
+                            <span style="background: #fff3cd; color: #856404; padding: 6px 14px; border-radius: 12px; font-size: 13px; font-weight: 600;">⚠️ LOW STOCK</span>
+                            @endif
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+        @else
+        <div style="text-align: center; padding: 40px 20px;">
+            <svg style="width: 64px; height: 64px; color: #28a745; margin-bottom: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <h4 style="font-size: 18px; font-weight: 600; color: #28a745; margin: 0 0 8px 0;">✅ All Stock Levels Are Healthy</h4>
+            <p style="color: #718096; margin: 0; font-size: 14px;">No products are currently below their reorder levels.</p>
+        </div>
+        @endif
     </div>
 
     <!-- Pending Product Receipts Table -->
@@ -233,56 +307,189 @@
     </div>
     @endif
 
-    <!-- Low Stock Alert -->
-    @if($lowStockItems->count() > 0)
+    <!-- Catering Staff Activity Oversight Section -->
     <div style="background: white; border-radius: 16px; padding: 28px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 32px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-            <h3 style="font-size: 20px; font-weight: 600; color: #1a202c; margin: 0;">
-                <svg style="width: 24px; height: 24px; display: inline-block; vertical-align: middle; margin-right: 8px; color: #dc3545;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                </svg>
-                Low Catering Stock Alert
+        <div style="margin-bottom: 24px;">
+            <h3 style="font-size: 20px; font-weight: 600; color: #1a202c; margin: 0 0 4px 0;">
+                👥 Catering Staff Activity Oversight
             </h3>
-            <span style="background: #dc3545; color: white; padding: 6px 14px; border-radius: 20px; font-size: 14px; font-weight: 600;">{{ $lowStockItems->count() }} items</span>
+            <p style="font-size: 13px; color: #718096; margin: 0;">Monitor Catering Staff performance and stock management</p>
         </div>
-        <div style="overflow-x: auto;">
-            <table style="width: 100%; border-collapse: collapse;">
-                <thead>
-                    <tr style="border-bottom: 2px solid #e9ecef;">
-                        <th style="text-align: left; padding: 14px; font-size: 14px; font-weight: 600; color: #495057;">Product</th>
-                        <th style="text-align: left; padding: 14px; font-size: 14px; font-weight: 600; color: #495057;">Category</th>
-                        <th style="text-align: left; padding: 14px; font-size: 14px; font-weight: 600; color: #495057;">Available</th>
-                        <th style="text-align: left; padding: 14px; font-size: 14px; font-weight: 600; color: #495057;">Total Received</th>
-                        <th style="text-align: left; padding: 14px; font-size: 14px; font-weight: 600; color: #495057;">Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($lowStockItems as $stock)
-                    <tr style="border-bottom: 1px solid #f1f3f5;">
-                        <td style="padding: 14px; font-size: 14px; color: #212529; font-weight: 600;">{{ $stock->product->name }}</td>
-                        <td style="padding: 14px; font-size: 14px; color: #6c757d;">{{ $stock->product->category->name }}</td>
-                        <td style="padding: 14px;">
-                            <span style="background: {{ $stock->quantity_available == 0 ? '#f8d7da' : '#fff3cd' }}; color: {{ $stock->quantity_available == 0 ? '#721c24' : '#856404' }}; padding: 4px 12px; border-radius: 12px; font-size: 13px; font-weight: 600;">
-                                {{ $stock->quantity_available }}
-                            </span>
-                        </td>
-                        <td style="padding: 14px; font-size: 14px; color: #6c757d;">{{ $stock->quantity_received }}</td>
-                        <td style="padding: 14px;">
-                            @if($stock->quantity_available == 0)
-                            <span style="background: #f8d7da; color: #721c24; padding: 4px 12px; border-radius: 12px; font-size: 13px; font-weight: 600;">OUT OF STOCK</span>
-                            @else
-                            <span style="background: #fff3cd; color: #856404; padding: 4px 12px; border-radius: 12px; font-size: 13px; font-weight: 600;">LOW STOCK</span>
-                            @endif
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+
+        <!-- Staff Activity Stats -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; padding: 20px; color: white;">
+                <div style="font-size: 32px; font-weight: 700; margin-bottom: 4px;">{{ $cateringStaffActivity['total_staff'] }}</div>
+                <div style="font-size: 13px; opacity: 0.95;">Total Catering Staff</div>
+            </div>
+            <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 12px; padding: 20px; color: white;">
+                <div style="font-size: 32px; font-weight: 700; margin-bottom: 4px;">{{ $cateringStaffActivity['active_requests'] }}</div>
+                <div style="font-size: 13px; opacity: 0.95;">Active Requests</div>
+            </div>
+            <div style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border-radius: 12px; padding: 20px; color: white;">
+                <div style="font-size: 32px; font-weight: 700; margin-bottom: 4px;">{{ $cateringStaffActivity['pending_staff_receipt'] }}</div>
+                <div style="font-size: 13px; opacity: 0.95;">Items Ready to Receive</div>
+            </div>
+            <div style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); border-radius: 12px; padding: 20px; color: white;">
+                <div style="font-size: 32px; font-weight: 700; margin-bottom: 4px;">{{ $cateringStaffActivity['pending_final_approval'] }}</div>
+                <div style="font-size: 13px; opacity: 0.95;">Awaiting Final Approval</div>
+            </div>
         </div>
+
+        <!-- Recent Staff Requests -->
+        @if($cateringStaffActivity['recent_staff_requests']->count() > 0)
+        <div style="border-top: 2px solid #e9ecef; padding-top: 20px;">
+            <h4 style="font-size: 16px; font-weight: 600; color: #1a202c; margin: 0 0 16px 0;">📊 Recent Staff Requests & Stock Usage</h4>
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid #e9ecef;">
+                            <th style="text-align: left; padding: 12px; font-size: 13px; font-weight: 600; color: #495057;">Staff Member</th>
+                            <th style="text-align: left; padding: 12px; font-size: 13px; font-weight: 600; color: #495057;">Flight</th>
+                            <th style="text-align: left; padding: 12px; font-size: 13px; font-weight: 600; color: #495057;">Products Requested</th>
+                            <th style="text-align: left; padding: 12px; font-size: 13px; font-weight: 600; color: #495057;">Status</th>
+                            <th style="text-align: left; padding: 12px; font-size: 13px; font-weight: 600; color: #495057;">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($cateringStaffActivity['recent_staff_requests'] as $req)
+                        <tr style="border-bottom: 1px solid #f1f3f5;">
+                            <td style="padding: 12px; font-size: 13px; color: #212529; font-weight: 600;">{{ $req->requester->name }}</td>
+                            <td style="padding: 12px; font-size: 13px; color: #6c757d;">{{ $req->flight->flight_number ?? 'N/A' }}</td>
+                            <td style="padding: 12px; font-size: 13px; color: #6c757d;">
+                                @foreach($req->items->take(2) as $item)
+                                    <div style="margin-bottom: 4px;">
+                                        • {{ $item->product->name }} ({{ $item->quantity_requested }} {{ $item->product->unit_of_measure ?? 'units' }})
+                                    </div>
+                                @endforeach
+                                @if($req->items->count() > 2)
+                                    <span style="color: #667eea; font-size: 12px; font-weight: 600;">+{{ $req->items->count() - 2 }} more</span>
+                                @endif
+                            </td>
+                            <td style="padding: 12px;">
+                                @if($req->status == 'pending_catering_incharge')
+                                    <span style="background: #f59e0b; color: white; padding: 4px 10px; border-radius: 10px; font-size: 11px; font-weight: 600;">⏳ Pending Your Approval</span>
+                                @elseif($req->status == 'catering_approved')
+                                    <span style="background: #10b981; color: white; padding: 4px 10px; border-radius: 10px; font-size: 11px; font-weight: 600;">✓ Approved</span>
+                                @elseif($req->status == 'items_issued')
+                                    <span style="background: #3b82f6; color: white; padding: 4px 10px; border-radius: 10px; font-size: 11px; font-weight: 600;">📦 Items Issued</span>
+                                @elseif($req->status == 'catering_staff_received')
+                                    <span style="background: #8b5cf6; color: white; padding: 4px 10px; border-radius: 10px; font-size: 11px; font-weight: 600;">✅ Staff Received</span>
+                                @elseif($req->status == 'pending_final_approval')
+                                    <span style="background: #f97316; color: white; padding: 4px 10px; border-radius: 10px; font-size: 11px; font-weight: 600;">🔍 Needs Final Approval</span>
+                                @elseif($req->status == 'supervisor_approved')
+                                    <span style="background: #06b6d4; color: white; padding: 4px 10px; border-radius: 10px; font-size: 11px; font-weight: 600;">👔 Supervisor Approved</span>
+                                @else
+                                    <span style="background: #6c757d; color: white; padding: 4px 10px; border-radius: 10px; font-size: 11px; font-weight: 600;">{{ ucfirst(str_replace('_', ' ', $req->status)) }}</span>
+                                @endif
+                            </td>
+                            <td style="padding: 12px; font-size: 13px; color: #6c757d;">{{ $req->created_at->format('M d, Y H:i') }}</td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        @else
+        <div style="text-align: center; padding: 40px 20px; border-top: 2px solid #e9ecef; margin-top: 20px;">
+            <svg style="width: 48px; height: 48px; color: #cbd5e0; margin-bottom: 12px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+            </svg>
+            <p style="color: #718096; margin: 0; font-size: 14px;">No recent staff requests</p>
+        </div>
+        @endif
     </div>
-    @endif
 
 </div>
+
+<!-- Recent Stock Movements (Authenticated Dispatches) -->
+@if($recentAuthenticatedRequests->count() > 0)
+<div style="background: white; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); overflow: hidden; margin-top: 32px;">
+    <div style="padding: 24px 28px; border-bottom: 2px solid #f3f4f6; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h3 style="font-size: 20px; font-weight: 700; color: #1a1a1a; margin: 0;">📋 Recent Stock Movements</h3>
+            <p style="font-size: 13px; color: #6b7280; margin: 4px 0 0 0;">History of authenticated stock dispatches</p>
+        </div>
+        <div style="background: #d1fae5; color: #065f46; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: 600;">
+            {{ $recentAuthenticatedRequests->count() }} movements
+        </div>
+    </div>
+    
+    <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background: #f9fafb; border-bottom: 2px solid #e5e7eb;">
+                    <th style="padding: 14px 20px; text-align: left; font-weight: 600; color: #374151; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Request ID</th>
+                    <th style="padding: 14px 20px; text-align: left; font-weight: 600; color: #374151; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Flight</th>
+                    <th style="padding: 14px 20px; text-align: left; font-weight: 600; color: #374151; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Requested By</th>
+                    <th style="padding: 14px 20px; text-align: left; font-weight: 600; color: #374151; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Items</th>
+                    <th style="padding: 14px 20px; text-align: left; font-weight: 600; color: #374151; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Status</th>
+                    <th style="padding: 14px 20px; text-align: left; font-weight: 600; color: #374151; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($recentAuthenticatedRequests as $req)
+                <tr style="border-bottom: 1px solid #f3f4f6; transition: background 0.2s;" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='white'">
+                    <td style="padding: 16px 20px;">
+                        <div style="font-weight: 700; color: #1f2937; font-size: 15px;">#{{ $req->id }}</div>
+                    </td>
+                    <td style="padding: 16px 20px;">
+                        <div style="font-weight: 600; color: #1f2937; font-size: 14px;">{{ $req->flight->flight_number }}</div>
+                        <div style="color: #6b7280; font-size: 12px; margin-top: 2px;">
+                            {{ $req->flight->origin }} → {{ $req->flight->destination }}
+                        </div>
+                    </td>
+                    <td style="padding: 16px 20px;">
+                        <div style="color: #1f2937; font-weight: 500; font-size: 14px;">{{ $req->requester->name }}</div>
+                    </td>
+                    <td style="padding: 16px 20px;">
+                        <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                            @foreach($req->items->take(2) as $item)
+                            <span style="background: #f3f4f6; padding: 4px 8px; border-radius: 6px; font-size: 11px; color: #4b5563; font-weight: 600;">
+                                {{ $item->product->name }} ({{ $item->quantity }})
+                            </span>
+                            @endforeach
+                            @if($req->items->count() > 2)
+                            <span style="background: #e5e7eb; padding: 4px 8px; border-radius: 6px; font-size: 11px; color: #6b7280; font-weight: 600;">
+                                +{{ $req->items->count() - 2 }} more
+                            </span>
+                            @endif
+                        </div>
+                    </td>
+                    <td style="padding: 16px 20px;">
+                        @if($req->status == 'security_authenticated')
+                        <span style="background: #10b981; color: white; padding: 6px 12px; border-radius: 10px; font-size: 12px; font-weight: 600;">
+                            ✓ Authenticated
+                        </span>
+                        @elseif($req->status == 'ramp_dispatched')
+                        <span style="background: #3b82f6; color: white; padding: 6px 12px; border-radius: 10px; font-size: 12px; font-weight: 600;">
+                            🚛 Dispatched
+                        </span>
+                        @elseif($req->status == 'loaded')
+                        <span style="background: #8b5cf6; color: white; padding: 6px 12px; border-radius: 10px; font-size: 12px; font-weight: 600;">
+                            ✈️ Loaded
+                        </span>
+                        @elseif($req->status == 'delivered')
+                        <span style="background: #059669; color: white; padding: 6px 12px; border-radius: 10px; font-size: 12px; font-weight: 600;">
+                            📦 Delivered
+                        </span>
+                        @endif
+                    </td>
+                    <td style="padding: 16px 20px;">
+                        <div style="color: #1f2937; font-weight: 500; font-size: 14px;">
+                            {{ $req->updated_at->format('M d, Y') }}
+                        </div>
+                        <div style="color: #6b7280; font-size: 12px; margin-top: 2px;">
+                            {{ $req->updated_at->format('H:i') }}
+                        </div>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+</div>
+@endif
 
 <script>
 // Close modals when clicking outside

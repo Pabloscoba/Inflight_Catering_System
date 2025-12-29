@@ -165,7 +165,9 @@ function toggleAll(checkbox) {
 function bulkReceive() {
     const checkboxes = document.querySelectorAll('.return-checkbox:checked');
     if (checkboxes.length === 0) {
-        alert('Please select at least one return to receive');
+        if (typeof Toast !== 'undefined') {
+            Toast.warning('Please select at least one return to receive');
+        }
         return;
     }
     

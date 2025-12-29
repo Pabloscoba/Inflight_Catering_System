@@ -169,7 +169,9 @@
             }
             
             if (value > availableStock) {
-                alert('Approved quantity cannot exceed available stock (' + availableStock + ')');
+                if (typeof Toast !== 'undefined') {
+                    Toast.error('Approved quantity cannot exceed available stock (' + availableStock + ')');
+                }
                 input.value = availableStock;
             }
         }

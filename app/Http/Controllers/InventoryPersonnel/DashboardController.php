@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\StockMovement;
 use Illuminate\Http\Request;
+use Illuminate\Http\User;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller

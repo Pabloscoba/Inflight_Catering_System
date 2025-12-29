@@ -379,12 +379,16 @@
         const quantity = parseInt(quantityInput.value);
 
         if (!productId) {
-            alert('Please select a product');
+            if (typeof Toast !== 'undefined') {
+                Toast.warning('Please select a product');
+            }
             return;
         }
 
         if (!quantity || quantity < 1) {
-            alert('Please enter valid quantity');
+            if (typeof Toast !== 'undefined') {
+                Toast.warning('Please enter valid quantity');
+            }
             return;
         }
 
@@ -393,7 +397,9 @@
         const stock = parseInt(option.dataset.stock);
 
         if (quantity > stock) {
-            alert('Quantity cannot exceed available stock (' + stock + ')');
+            if (typeof Toast !== 'undefined') {
+                Toast.error('Quantity cannot exceed available stock (' + stock + ')');
+            }
             return;
         }
 
@@ -401,7 +407,9 @@
         if (existing) {
             const newQty = existing.quantity + quantity;
             if (newQty > stock) {
-                alert('Total quantity would exceed available stock (' + stock + ')');
+                if (typeof Toast !== 'undefined') {
+                    Toast.error('Total quantity would exceed available stock (' + stock + ')');
+                }
                 return;
             }
             existing.quantity = newQty;
@@ -437,7 +445,9 @@
         }
 
         if (newQty > item.stock) {
-            alert('Cannot exceed available stock (' + item.stock + ')');
+            if (typeof Toast !== 'undefined') {
+                Toast.error('Cannot exceed available stock (' + item.stock + ')');
+            }
             return;
         }
 

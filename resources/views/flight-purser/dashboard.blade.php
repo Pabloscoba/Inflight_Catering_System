@@ -50,6 +50,11 @@
     </div>
 </div>
 
+<!-- Quick Actions - DYNAMIC PERMISSION-BASED -->
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:32px;">
+    <x-permission-actions :exclude="['load supplies onto aircraft', 'handover goods to cabin crew']" />
+</div>
+
 <!-- Requests Dispatched from Ramp -->
 <div style="background:white;border-radius:16px;padding:28px;box-shadow:0 2px 12px rgba(0,0,0,0.08);margin-bottom:28px;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">

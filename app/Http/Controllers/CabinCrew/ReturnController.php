@@ -16,7 +16,7 @@ class ReturnController extends Controller
     {
         // Show requests that have been delivered/served (can return items)
         $requests = RequestModel::with(['flight', 'items.product'])
-            ->whereIn('status', ['loaded', 'flight_received', 'delivered', 'served'])
+            ->whereIn('status', ['loaded', 'delivered', 'served'])
             ->orderBy('created_at', 'desc')
             ->paginate(20);
         
@@ -44,7 +44,7 @@ class ReturnController extends Controller
     public function create(RequestModel $request)
     {
         // Verify request has been delivered
-        if (!in_array($request->status, ['loaded', 'flight_received', 'delivered', 'served'])) {
+        if (!in_array($request->status, ['loaded', 'delivered', 'served'])) {
             return redirect()->route('cabin-crew.returns.index')
                 ->with('error', 'This request is not eligible for returns.');
         }

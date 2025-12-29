@@ -1,12 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Products Management</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; }
+@extends('layouts.app')
+
+@section('title', 'Products Management')
+
+@section('content')
+<style>
+    body { background: #f5f5f5; }
         
         .container { max-width: 1600px; margin: 0 auto; padding: 40px 20px; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
@@ -65,11 +63,27 @@
 </head>
 <body>
     <div class="container">
+        @php
+            $backRoute = 'inventory-personnel.dashboard';
+            $createRoute = 'inventory-personnel.products.create';
+            if (auth()->user()->hasRole('Cabin Crew')) {
+                $backRoute = 'cabin-crew.dashboard';
+                $createRoute = 'cabin-crew.products.create';
+            } elseif (auth()->user()->hasRole('Catering Staff')) {
+                $backRoute = 'catering-staff.dashboard';
+            } elseif (auth()->user()->hasRole('Security Staff')) {
+                $backRoute = 'security-staff.dashboard';
+            } elseif (auth()->user()->hasRole('Ramp Dispatcher')) {
+                $backRoute = 'ramp-dispatcher.dashboard';
+            }
+        @endphp
         <div class="header">
             <h1>Products Management</h1>
             <div class="header-actions">
-                <a href="{{ route('inventory-personnel.products.create') }}" class="btn btn-primary">+ Add New Product</a>
-                <a href="{{ route('dashboard.index') }}" class="btn btn-secondary">← Back</a>
+                @can('create products')
+                <a href="{{ route($createRoute) }}" class="btn btn-primary">+ Add New Product</a>
+                @endcan
+                <a href="{{ route($backRoute) }}" class="btn btn-secondary">← Back to Dashboard</a>
             </div>
         </div>
         
@@ -177,7 +191,7 @@
                                 <span class="badge badge-secondary">{{ $product->category->name }}</span>
                             </td>
                             <td>{{ $product->sku }}</td>
-                            <td>${{ number_format($product->unit_price, 2) }} / {{ $product->unit_of_measure }}</td>
+                            <td>TZS{{ number_format($product->unit_price, 2) }} / {{ $product->unit_of_measure }}</td>
                             <td>
                                 <div style="display: flex; flex-direction: column; gap: 4px;">
                                     <div class="stock-indicator">
@@ -194,7 +208,7 @@
                                     @else
                                         <span class="badge badge-success" style="width: fit-content;">IN STOCK</span>
                                     @endif
-                                    <small style="color: #6c757d;">Catering: {{ $product->catering_quantity }}</small>
+                                    <small style="color: #6c757d;">Inventory: {{ $product->quantity_in_stock }}</small>
                                 </div>
                             </td>
                             <td>
@@ -213,8 +227,8 @@
                             </td>
                             <td>
                                 <div class="actions">
-                                    @if($product->status === 'approved')
-                                        <a href="{{ route('inventory-personnel.stock-movements.incoming') }}?product_id={{ $product->id }}" class="btn btn-sm" style="background: #059669; color: white;">📥 Add Stock</a>
+                                    @if($product->status === 'approved' && $product->is_active && $product->quantity_in_stock == 0)
+                                        <a href="{{ route('inventory-personnel.products.add-stock', $product) }}" class="btn btn-sm" style="background: #059669; color: white;" title="Add initial stock to main inventory">📦 Add Stock</a>
                                     @endif
                                     <a href="{{ route('inventory-personnel.products.edit', $product) }}" class="btn btn-primary btn-sm">Edit</a>
                                     <form method="POST" action="{{ route('inventory-personnel.products.destroy', $product) }}" onsubmit="return confirm('Delete this product?');" style="display: inline;">
@@ -252,5 +266,4 @@
             @endif
         </div>
     </div>
-</body>
-</html>
+@endsection
