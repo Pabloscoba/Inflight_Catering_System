@@ -25,60 +25,33 @@ class CheckRoleOrPermission
 
         $user = auth()->user();
 
-        // Check if user has the specified role
-        if ($user->hasRole($role)) {
+        // Allow common aliases for role names (so route params like 'flightops' still work)
+        $param = trim($role);
+        $lower = strtolower($param);
+        $aliasMap = [
+            'flightops' => 'Flight Operations Manager',
+            'flight ops' => 'Flight Operations Manager',
+            'flight-operations-manager' => 'Flight Operations Manager',
+            'flight-ops' => 'Flight Operations Manager',
+        ];
+
+        // If user has the specified role directly or via alias mapping, allow
+        if ($user->hasRole($param) || (isset($aliasMap[$lower]) && $user->hasRole($aliasMap[$lower]))) {
             return $next($request);
         }
 
-        // If user doesn't have the role, check if they have relevant permissions
-        // This allows users with specific permissions to access routes without having the full role
-        $rolePermissionMap = [
-            'Admin' => [
-                'manage users', 'manage roles', 'manage products', 'manage categories',
-                'view all requests', 'approve requests', 'manage flights',
-                'manage system settings', 'view activity logs', 'manage backups'
-            ],
-            'Inventory Personnel' => [
-                'view products', 'create products', 'edit products', 'delete products',
-                'manage stock movements', 'transfer stock', 'view stock levels'
-            ],
-            'Inventory Supervisor' => [
-                'view products', 'approve stock movements', 'view all requests',
-                'approve requests', 'manage stock movements', 'view stock levels'
-            ],
-            'Catering Incharge' => [
-                'view all requests', 'final approve requests', 'approve requests',
-                'view products', 'manage catering operations'
-            ],
-            'Catering Staff' => [
-                'create catering request', 'view own requests', 'manage meals',
-                'view products', 'view flights'
-            ],
-            'Ramp Dispatcher' => [
-                'manage returns', 'view products', 'view flight schedule',
-                'dispatch returns'
-            ],
-            'Flight Dispatcher' => [
-                'dispatch flights', 'manage dispatches', 'manage messages',
-                'view flight schedule', 'view products'
-            ],
-            'Security Staff' => [
-                'create catering request', 'view own requests', 'manage security requests',
-                'view products'
-            ],
-            'Cabin Crew' => [
-                'view flight schedule', 'submit served form', 'view products',
-                'view assigned flights'
-            ],
-            'Flight Purser' => [
-                'view flight schedule', 'manage cabin crew', 'view products',
-                'view assigned flights'
-            ],
-        ];
+        // Determine which key to use when checking the permission map
+        $mapKey = $param;
+        if (isset($aliasMap[$lower])) {
+            $mapKey = $aliasMap[$lower];
+        }
 
-        // Check if user has any of the permissions associated with this role
-        if (isset($rolePermissionMap[$role])) {
-            foreach ($rolePermissionMap[$role] as $permission) {
+        // Load role→permissions mapping from config so it's editable without code changes
+        $rolePermissionMap = config('role_permission_map', []);
+
+        // Check if user has any of the permissions associated with this role (use the map key)
+        if (isset($rolePermissionMap[$mapKey]) && is_array($rolePermissionMap[$mapKey])) {
+            foreach ($rolePermissionMap[$mapKey] as $permission) {
                 if ($user->can($permission)) {
                     return $next($request);
                 }

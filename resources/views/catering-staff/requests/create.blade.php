@@ -25,17 +25,17 @@
                 <label for="flight_id" style="display:block;font-weight:600;margin-bottom:6px;">Flight *</label>
                 <select name="flight_id" id="flight_id" class="form-control" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #e5e7eb;background:white;">
                     <option value="">-- Select Flight --</option>
-                    @foreach(App\Models\Flight::where('status', 'scheduled')->orderBy('flight_number')->get() as $flight)
-                        <option value="{{ $flight->id }}" {{ old('flight_id') == $flight->id ? 'selected' : '' }}>
-                            {{ $flight->flight_number }} — {{ $flight->origin }}→{{ $flight->destination }}
+                    @foreach(App\Models\Flight::where('status', 'scheduled')->orderBy('departure_time')->get() as $flight)
+                        <option value="{{ $flight->id }}" data-departure="{{ optional($flight->departure_time)->format('Y-m-d\TH:i') }}" {{ old('flight_id') == $flight->id ? 'selected' : '' }}>
+                            {{ $flight->flight_number }} — {{ $flight->origin }}→{{ $flight->destination }} @if($flight->departure_time) — {{ $flight->departure_time->format('Y-m-d H:i') }}@endif
                         </option>
                     @endforeach
                 </select>
             </div>
-
             <div>
-                <label for="flight_datetime" style="display:block;font-weight:600;margin-bottom:6px;">Flight Date & Time *</label>
-                <input type="datetime-local" name="flight_datetime" id="flight_datetime" class="form-control" required value="{{ old('flight_datetime', now()->format('Y-m-d\TH:i')) }}" min="{{ now()->format('Y-m-d\TH:i') }}" style="width:100%;padding:10px;border-radius:8px;border:1px solid #e5e7eb;">
+                <label for="flight_schedule_display" style="display:block;font-weight:600;margin-bottom:6px;">Scheduled Flight Time</label>
+                <input type="text" id="flight_schedule_display" class="form-control" readonly style="width:100%;padding:10px;border-radius:8px;border:1px solid #e5e7eb;background:#f8fafc;" value="{{ old('flight_id') ? optional(App\Models\Flight::find(old('flight_id'))->departure_time)->format('Y-m-d H:i') : '' }}">
+                <p style="margin-top:6px;color:#6b7280;font-size:13px;">The scheduled time is set by Flight Ops; do not change it here.</p>
             </div>
         </div>
 
@@ -107,6 +107,24 @@
     const minutes = String(now.getMinutes()).padStart(2, '0');
     const minDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
     document.getElementById('requested_date').setAttribute('min', minDateTime);
+
+    // Update scheduled flight display when flight selection changes
+    const flightSelect = document.getElementById('flight_id');
+    const scheduleDisplay = document.getElementById('flight_schedule_display');
+    function updateScheduleDisplay() {
+        const opt = flightSelect.options[flightSelect.selectedIndex];
+        if (opt && opt.dataset && opt.dataset.departure) {
+            // Format the datetime nicely for display
+            const dt = opt.dataset.departure; // 'YYYY-MM-DDTHH:MM'
+            const display = dt.replace('T', ' ');
+            scheduleDisplay.value = display;
+        } else {
+            scheduleDisplay.value = '';
+        }
+    }
+    flightSelect.addEventListener('change', updateScheduleDisplay);
+    // Initialize on load (if preselected)
+    updateScheduleDisplay();
 
     let idx = 1;
     document.getElementById('add-item').addEventListener('click', function(){

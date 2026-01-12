@@ -74,10 +74,38 @@ class AuthenticatedSessionController extends Controller
             $redirectUrl = route('flight-purser.dashboard');
         } elseif ($user->hasRole('Flight Dispatcher')) {
             $redirectUrl = route('flight-dispatcher.dashboard');
+        } elseif ($user->hasAnyRole(['Flight Operations Manager', 'Flight Ops', 'flightops'])) {
+            $redirectUrl = route('flight-operations-manager.dashboard');
         } else {
             $redirectUrl = route('admin.dashboard');
         }
         
+        // If intended URL points to admin area, but user lacks Admin role/permissions, ignore it
+        if ($intended) {
+            $intendedPath = parse_url($intended, PHP_URL_PATH) ?: '';
+            if (str_starts_with($intendedPath, '/admin')) {
+                $adminPermissions = [
+                    'manage users', 'manage roles', 'manage products', 'manage categories',
+                    'view all requests', 'approve requests', 'manage flights',
+                    'manage system settings', 'view activity logs', 'manage backups'
+                ];
+
+                $canAccessAdmin = $user->hasRole('Admin');
+                if (!$canAccessAdmin) {
+                    foreach ($adminPermissions as $perm) {
+                        if ($user->can($perm)) {
+                            $canAccessAdmin = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (!$canAccessAdmin) {
+                    $intended = '';
+                }
+            }
+        }
+
         // If intended URL is not a notification endpoint, use it; otherwise use role-based URL
         if (!$isNotificationEndpoint && $intended) {
             return redirect($intended);

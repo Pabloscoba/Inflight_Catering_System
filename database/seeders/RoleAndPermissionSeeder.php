@@ -15,227 +15,20 @@ class RoleAndPermissionSeeder extends Seeder
      */
     public function run(): void
     {
-        // ============================================
-        // ADMIN PERMISSIONS
-        // ============================================
-        $adminPermissions = [
-            'manage users',
-            'manage roles',
-            'manage permissions',
-            'manage products',
-            'manage categories',
-            'manage stock',
-            'view all requests',
-            'view approved requests',
-            'create catering request', // Admins can also create requests
-            'manage flights',
-            'system settings',
-            'assign roles',
-            'approve any request',
-            'view logs',
-        ];
-
-        // ============================================
-        // PMU INVENTORY PERSONNEL PERMISSIONS
-        // ============================================
-        $inventoryPersonnelPermissions = [
-            'view products',
-            'create products',
-            'update products',
-            'add stock',
-            'issue stock',
-            'process returns',
-            'view stock levels',
-            'generate stock movement reports',
-        ];
-
-        // ============================================
-        // PMU INVENTORY SUPERVISOR PERMISSIONS
-        // ============================================
-        $inventorySupervisorPermissions = [
-            'approve products',
-            'approve stock movements',
-            'approve stock entries',
-            'verify stock movement',
-            'view inventory reports',
-            'view stock levels',
-            'block allow product usage',
-            'edit product records',
-            'view incoming requests from catering staff',
-            'approve deny catering requests',
-        ];
-
-        // ============================================
-        // CATERING INCHARGE PERMISSIONS
-        // ============================================
-        $cateringInchargePermissions = [
-            'view all catering requests',
-            'approve catering staff requests',
-            'receive products from inventory', // Approve product receipts from Inventory Personnel
-            'approve product receipts', // Approve received products
-            'oversee catering stock', // View and manage catering stock levels
-            'request stock from PMU',
-            'view inventory usage',
-            'view dispatch reports',
-            'view product categories',
-            'return receive items from flights',
-        ];
-
-        // ============================================
-        // CATERING STAFF PERMISSIONS
-        // ============================================
-        $cateringStaffPermissions = [
-            'create catering request',
-            'view own catering requests',
-            'receive approved items',
-            'record items used',
-            'return unused items',
-            'view product list',
-            'view flight assigned requests',
-        ];
-
-        // ============================================
-        // RAMP DISPATCHER PERMISSIONS
-        // ============================================
-        $rampDispatcherPermissions = [
-            'view approved orders',
-            'prepare dispatch manifest',
-            'mark items as dispatched',
-            'handover to flight crew',
-            'view dispatch reports',
-            'verify quantities before loading',
-        ];
-
-        // ============================================
-        // SECURITY STAFF PERMISSIONS
-        // ============================================
-        $securityStaffPermissions = [
-            'authenticate requests',
-            'authenticate orders',
-            'match request vs dispatch',
-            'approve final dispatch security check',
-            'block suspicious dispatch',
-            'view dispatch logs',
-        ];
-
-        // ============================================
-        // CABIN CREW PERMISSIONS
-        // ============================================
-        $cabinCrewPermissions = [
-            'receive goods from dispatcher',
-            'record items used during flight',
-            'record remaining items',
-            'submit usage report',
-            'view flight details assigned to them',
-        ];
-
-        // ============================================
-        // FLIGHT PURSER PERMISSIONS
-        // ============================================
-        $flightPurserPermissions = [
-            'view flight schedule',
-            'view flight passenger capacity',
-            'view flight products assigned',
-            'approve cabin crew usage report',
-            'finalize flight report',
-            'view all usage per flight',
-            'submit final flight consumption',
-        ];
-
-        // ============================================
-        // FLIGHT DISPATCHER PERMISSIONS
-        // ============================================
-        $flightDispatcherPermissions = [
-            // Core actions
-            'view requests',
-            'inspect requests for errors',
-            'assess flight readiness',
-            'assess aircraft',
-            'approve flight departure',
-            'clear flight for operations',
-            'forward requests to flight purser',
-
-            // Helpful viewing/reporting permissions
-            'view awaiting assessment requests',
-            'view flight requirements',
-            'view flight schedule',
-            'view flight products assigned',
-            'view dispatch reports',
-            'comment on request',
-            'recommend dispatch to flight operations',
-        ];
-
-        // Create all permissions
-        $allPermissions = array_merge($adminPermissions, $inventoryPersonnelPermissions, $inventorySupervisorPermissions, $cateringInchargePermissions, $cateringStaffPermissions, $rampDispatcherPermissions, $securityStaffPermissions, $cabinCrewPermissions, $flightPurserPermissions, $flightDispatcherPermissions);
+        // Load permissions from centralized config and create them
+        $allPermissions = config('permissions.list', []);
         foreach ($allPermissions as $permission) {
             Permission::firstOrCreate(['name' => $permission]);
         }
 
-        // ============================================
-        // CREATE ADMIN ROLE
-        // ============================================
-        $adminRole = Role::firstOrCreate(['name' => 'Admin']);
-        $adminRole->syncPermissions($adminPermissions);
-
-        // ============================================
-        // CREATE INVENTORY PERSONNEL ROLE
-        // ============================================
-        $inventoryPersonnelRole = Role::firstOrCreate(['name' => 'Inventory Personnel']);
-        $inventoryPersonnelRole->syncPermissions($inventoryPersonnelPermissions);
-
-        // ============================================
-        // CREATE INVENTORY SUPERVISOR ROLE
-        // ============================================
-        $inventorySupervisorRole = Role::firstOrCreate(['name' => 'Inventory Supervisor']);
-        // Supervisor has their own permissions + can view what personnel do
-        $supervisorAllPermissions = array_merge($inventorySupervisorPermissions, [
-            'view products',
-            'view stock levels',
-            'generate stock movement reports',
-        ]);
-        $inventorySupervisorRole->syncPermissions($supervisorAllPermissions);
-
-        // ============================================
-        // CREATE CATERING INCHARGE ROLE
-        // ============================================
-        $cateringInchargeRole = Role::firstOrCreate(['name' => 'Catering Incharge']);
-        $cateringInchargeRole->syncPermissions($cateringInchargePermissions);
-
-        // ============================================
-        // CREATE CATERING STAFF ROLE
-        // ============================================
-        $cateringStaffRole = Role::firstOrCreate(['name' => 'Catering Staff']);
-        $cateringStaffRole->syncPermissions($cateringStaffPermissions);
-
-        // ============================================
-        // CREATE RAMP DISPATCHER ROLE
-        // ============================================
-        $rampDispatcherRole = Role::firstOrCreate(['name' => 'Ramp Dispatcher']);
-        $rampDispatcherRole->syncPermissions($rampDispatcherPermissions);
-
-        // ============================================
-        // CREATE SECURITY STAFF ROLE
-        // ============================================
-        $securityStaffRole = Role::firstOrCreate(['name' => 'Security Staff']);
-        $securityStaffRole->syncPermissions($securityStaffPermissions);
-
-        // ============================================
-        // CREATE CABIN CREW ROLE
-        // ============================================
-        $cabinCrewRole = Role::firstOrCreate(['name' => 'Cabin Crew']);
-        $cabinCrewRole->syncPermissions($cabinCrewPermissions);
-
-        // ============================================
-        // CREATE FLIGHT PURSER ROLE
-        // ============================================
-        $flightPurserRole = Role::firstOrCreate(['name' => 'Flight Purser']);
-        $flightPurserRole->syncPermissions($flightPurserPermissions);
-
-        // ============================================
-        // CREATE FLIGHT DISPATCHER ROLE
-        // ============================================
-        $flightDispatcherRole = Role::firstOrCreate(['name' => 'Flight Dispatcher']);
-        $flightDispatcherRole->syncPermissions($flightDispatcherPermissions);
+        // Load role => permission mapping from config and sync roles dynamically
+        $roleMap = config('role_permission_map', []);
+        foreach ($roleMap as $roleName => $permissions) {
+            $role = Role::firstOrCreate(['name' => $roleName]);
+            // Ensure only existing permissions are synced to avoid errors
+            $valid = array_filter($permissions, fn($p) => in_array($p, $allPermissions));
+            $role->syncPermissions($valid);
+        }
 
         // ============================================
         // CREATE ADMIN USER
@@ -412,6 +205,9 @@ class RoleAndPermissionSeeder extends Seeder
         $this->command->info('👤 FLIGHT DISPATCHER:');        
         $this->command->info('   Email:    flight.dispatcher@inflightcatering.com');
         $this->command->info('   Password: Flight@123');
+        $this->command->info('👤 FlightOperations:');
+        $this->command->info('   Email:    flight.operations@inflightcatering.com');
+        $this->command->info('   Password: Password');
         $this->command->info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     }
 }

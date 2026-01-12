@@ -87,6 +87,24 @@ return [
         'color' => 'linear-gradient(135deg,#30cfd0 0%,#330867 100%)', // Teal
     ],
     
+    'view inventory reports' => [
+        'title' => 'Inventory Reports',
+        'description' => 'Stock movement reports',
+        'icon' => '📈',
+        'route' => 'inventory-supervisor.stock-movements.index',
+        'color' => 'linear-gradient(135deg,#ffecd2 0%,#fcb69f 100%)', // Peach
+        'dynamic_route' => true,
+    ],
+    
+    'generate stock movement reports' => [
+        'title' => 'Stock Movement Reports',
+        'description' => 'Generate movement reports',
+        'icon' => '📊',
+        'route' => 'inventory-supervisor.stock-movements.index',
+        'color' => 'linear-gradient(135deg,#a8edea 0%,#fed6e3 100%)', // Pastel
+        'dynamic_route' => true,
+    ],
+    
     'manage roles' => [
         'title' => 'Roles & Permissions',
         'description' => 'Configure access',

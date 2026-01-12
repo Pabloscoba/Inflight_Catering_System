@@ -267,6 +267,21 @@
                 </a>
                 @endcan
 
+                @if(auth()->user()->hasRole('Flight Operations Manager'))
+                <!-- Flight Operations Manager Menu -->
+                <div>
+                    <button class="sidebar-link w-full btn-ghost" onclick="toggleSubmenu('flight-ops')">
+                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                        <span class="font-medium flex-1 text-left">Flight Management</span>
+                        <svg id="flight-ops-icon" class="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <div id="flight-ops-submenu" class="sidebar-submenu" style="max-height: 0px;">
+                        <a href="{{ route('flight-operations-manager.flights.create') }}" class="{{ request()->routeIs('flight-operations-manager.flights.create') ? 'active' : '' }}">Add Flight</a>
+                        <a href="{{ route('flight-operations-manager.flights.index') }}" class="{{ request()->routeIs('flight-operations-manager.flights.index') ? 'active' : '' }}">All Flights</a>
+                    </div>
+                </div>
+                @endif
+
                 @can('dispatch flights')
                 <!-- Flight Dispatcher Operations -->
                 <div>
@@ -310,6 +325,8 @@
                             elseif (auth()->user()->hasRole('Ramp Dispatcher')) $settingsPrefix = 'ramp-dispatcher';
                             elseif (auth()->user()->hasRole('Flight Dispatcher')) $settingsPrefix = 'flight-dispatcher';
                             elseif (auth()->user()->hasRole('Flight Purser')) $settingsPrefix = 'flight-purser';
+                            elseif (auth()->user()->hasRole('Flight Operations Manager')) $settingsPrefix = 'flight-operations-manager';
+                            elseif (auth()->user()->hasAnyRole(['Flight Ops','flightops'])) $settingsPrefix = 'flight-operations-manager';
                             elseif (auth()->user()->hasRole('Cabin Crew')) $settingsPrefix = 'cabin-crew';
                         @endphp
                         

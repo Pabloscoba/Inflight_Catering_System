@@ -331,16 +331,8 @@
             <h3 style="font-size:20px;font-weight:700;color:#1a1a1a;margin:0;">✈️ Upcoming Flights</h3>
             <p style="font-size:13px;color:#6b7280;margin:4px 0 0 0;">Next 7 days - Create requests for scheduled flights</p>
         </div>
-        <div style="display:flex;align-items:center;gap:12px;">
-            <div style="background:#eff6ff;color:#1e40af;padding:6px 12px;border-radius:8px;font-size:13px;font-weight:600;">
-                {{ $upcomingFlights->count() }} flights
-            </div>
-            <a href="{{ route('catering-staff.flights.create') }}" style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#2563eb 0%,#1e40af 100%);color:white;padding:8px 16px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:600;transition:all 0.2s;">
-                <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                </svg>
-                Add Flight
-            </a>
+        <div style="background:#eff6ff;color:#1e40af;padding:6px 12px;border-radius:8px;font-size:13px;font-weight:600;">
+            {{ $upcomingFlights->count() }} flights
         </div>
     </div>
     

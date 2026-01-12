@@ -34,6 +34,8 @@ Route::middleware(['auth'])->group(function () {
             return redirect()->route('flight-dispatcher.dashboard');
         } elseif ($user->hasRole('Flight Purser')) {
             return redirect()->route('flight-purser.dashboard');
+        } elseif ($user->hasAnyRole(['Flight Operations Manager', 'Flight Ops', 'flightops'])) {
+            return redirect()->route('flight-operations-manager.dashboard');
         }
         
         // Default to admin dashboard if no role found
@@ -102,19 +104,6 @@ Route::middleware(['auth', 'check_role_or_permission:Admin'])->prefix('admin')->
     Route::post('/requests/{request}/reject', [App\Http\Controllers\Admin\RequestController::class, 'reject'])->name('requests.reject');
     Route::delete('/requests/{request}', [App\Http\Controllers\Admin\RequestController::class, 'destroy'])->name('requests.destroy');
 
-    // Audit Logs (Admin Only)
-    Route::middleware(['check_role_or_permission:Admin'])->group(function () {
-        Route::get('/logs', [App\Http\Controllers\Admin\AuditLogController::class, 'index'])->name('logs.index');
-        Route::get('/logs/{log}', [App\Http\Controllers\Admin\AuditLogController::class, 'show'])->name('logs.show');
-        Route::post('/logs/clear', [App\Http\Controllers\Admin\AuditLogController::class, 'clear'])->name('logs.clear');
-    });
-
-    // Activity Logs (Permission-based: view activity logs)
-    Route::get('/activity-logs', [App\Http\Controllers\Admin\ActivityLogController::class, 'index'])->name('activity-logs.index')->middleware('permission:view activity logs');
-    Route::get('/activity-logs/{activity}', [App\Http\Controllers\Admin\ActivityLogController::class, 'show'])->name('activity-logs.show')->middleware('permission:view activity logs');
-    Route::get('/activity-logs-export', [App\Http\Controllers\Admin\ActivityLogController::class, 'export'])->name('activity-logs.export')->middleware('permission:view activity logs');
-    Route::delete('/activity-logs-delete-old', [App\Http\Controllers\Admin\ActivityLogController::class, 'deleteOld'])->name('activity-logs.delete-old')->middleware('permission:view activity logs');
-
     // System Settings
     Route::get('/settings/general', [App\Http\Controllers\Admin\SettingsController::class, 'general'])->name('settings.general');
     Route::put('/settings/general', [App\Http\Controllers\Admin\SettingsController::class, 'updateGeneral'])->name('settings.update-general');
@@ -126,6 +115,41 @@ Route::middleware(['auth', 'check_role_or_permission:Admin'])->prefix('admin')->
         Route::get('/backup/download/{filename}', [App\Http\Controllers\Admin\BackupController::class, 'download'])->name('backup.download');
         Route::delete('/backup/delete/{filename}', [App\Http\Controllers\Admin\BackupController::class, 'delete'])->name('backup.delete');
     });
+});
+
+// ============================================
+// FLIGHT OPERATIONS MANAGER ROUTES
+// ============================================
+Route::middleware(['auth', 'check_role_or_permission:Flight Operations Manager'])->prefix('flight-operations-manager')->name('flight-operations-manager.')->group(function () {
+    // Dashboard
+    Route::get('/dashboard', [App\Http\Controllers\FlightOperationsManager\DashboardController::class, 'index'])->name('dashboard');
+    
+    // Flight Management
+    Route::get('/flights', [App\Http\Controllers\FlightOperationsManager\FlightController::class, 'index'])->name('flights.index')->middleware('permission:view flights');
+    Route::get('/flights/create', [App\Http\Controllers\FlightOperationsManager\FlightController::class, 'create'])->name('flights.create')->middleware('permission:create flights');
+    Route::post('/flights', [App\Http\Controllers\FlightOperationsManager\FlightController::class, 'store'])->name('flights.store')->middleware('permission:create flights');
+    Route::get('/flights/{flight}', [App\Http\Controllers\FlightOperationsManager\FlightController::class, 'show'])->name('flights.show')->middleware('permission:view flights');
+    Route::get('/flights/{flight}/edit', [App\Http\Controllers\FlightOperationsManager\FlightController::class, 'edit'])->name('flights.edit')->middleware('permission:edit flights');
+    Route::put('/flights/{flight}', [App\Http\Controllers\FlightOperationsManager\FlightController::class, 'update'])->name('flights.update')->middleware('permission:edit flights');
+    Route::delete('/flights/{flight}', [App\Http\Controllers\FlightOperationsManager\FlightController::class, 'destroy'])->name('flights.destroy')->middleware('permission:delete flights');
+    // Settings (permission-based)
+    Route::get('/settings', [App\Http\Controllers\FlightOperationsManager\SettingsController::class, 'index'])->name('settings')->middleware('permission:view settings');
+});
+
+// ============================================
+// AUDIT & ACTIVITY LOGS (Permission-Based Access)
+// ============================================
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    // Audit Logs (Permission-based: view audit logs)
+    Route::get('/logs', [App\Http\Controllers\Admin\AuditLogController::class, 'index'])->name('logs.index')->middleware('permission:view audit logs');
+    Route::get('/logs/{log}', [App\Http\Controllers\Admin\AuditLogController::class, 'show'])->name('logs.show')->middleware('permission:view audit logs');
+    Route::post('/logs/clear', [App\Http\Controllers\Admin\AuditLogController::class, 'clear'])->name('logs.clear')->middleware('permission:view audit logs');
+
+    // Activity Logs (Permission-based: view activity logs)
+    Route::get('/activity-logs', [App\Http\Controllers\Admin\ActivityLogController::class, 'index'])->name('activity-logs.index')->middleware('permission:view activity logs');
+    Route::get('/activity-logs/{activity}', [App\Http\Controllers\Admin\ActivityLogController::class, 'show'])->name('activity-logs.show')->middleware('permission:view activity logs');
+    Route::get('/activity-logs-export', [App\Http\Controllers\Admin\ActivityLogController::class, 'export'])->name('activity-logs.export')->middleware('permission:view activity logs');
+    Route::delete('/activity-logs-delete-old', [App\Http\Controllers\Admin\ActivityLogController::class, 'deleteOld'])->name('activity-logs.delete-old')->middleware('permission:view activity logs');
 });
 
 // ============================================
@@ -279,10 +303,6 @@ Route::middleware(['auth', 'check_role_or_permission:Catering Staff'])->prefix('
 
     // Send approved request to Ramp Dispatcher
     Route::post('/requests/{requestModel}/send-to-ramp', [App\Http\Controllers\CateringStaff\RequestController::class, 'sendToRamp'])->name('requests.send-to-ramp')->middleware('permission:create catering request');
-
-    // Flight management
-    Route::get('/flights/create', [App\Http\Controllers\CateringStaff\FlightController::class, 'create'])->name('flights.create')->middleware('permission:create catering request');
-    Route::post('/flights', [App\Http\Controllers\CateringStaff\FlightController::class, 'store'])->name('flights.store')->middleware('permission:create catering request');
 
     // Record usage and return items
     Route::post('/requests/{requestModel}/record-usage', [App\Http\Controllers\CateringStaff\RequestController::class, 'recordUsage'])->name('requests.record-usage')->middleware('permission:record items used');

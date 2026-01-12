@@ -54,7 +54,6 @@ class RequestController extends Controller
     {
         $data = $request->validate([
             'flight_id' => 'required|exists:flights,id',
-            'flight_datetime' => 'required|date|after_or_equal:now',
             'requested_date' => 'required|date|after_or_equal:now',
             'notes' => 'nullable|string|max:1000',
             'items' => 'required|array|min:1',
@@ -78,11 +77,9 @@ class RequestController extends Controller
             }
         }
         DB::transaction(function () use ($data) {
-            // Update flight departure time with user-selected datetime
+            // Use existing scheduled departure_time from the selected flight
             $flight = Flight::find($data['flight_id']);
-            $flight->departure_time = $data['flight_datetime'];
-            $flight->arrival_time = \Carbon\Carbon::parse($data['flight_datetime'])->addHours(2); // Estimate 2 hours
-            $flight->save();
+            // do not overwrite flight times here; they must be set when creating/editing flights by Ops Manager
             
             // Auto-detect request type based on items
             $requestType = 'product'; // default
