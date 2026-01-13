@@ -91,7 +91,7 @@
                             <input type="text" name="verification_notes" placeholder="Additional notes about this return" style="width:100%;padding:10px;border:2px solid #e2e8f0;border-radius:8px;font-size:14px;">
                         </div>
                         <div style="display:flex;gap:8px;">
-                            <button type="submit" onclick="return confirm('Authenticate this return and adjust stock?')" style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:white;padding:10px 20px;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">
+                            <button type="button" onclick="showAuthReturnConfirmation({{ $return->id }})" style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:white;padding:10px 20px;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">
                                 <svg style="width:18px;height:18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                 </svg>
@@ -113,7 +113,7 @@
                     <label style="display:block;font-weight:600;color:#991b1b;margin-bottom:8px;font-size:14px;">Rejection Reason *</label>
                     <textarea name="rejection_reason" required rows="2" placeholder="Explain why this return is being rejected" style="width:100%;padding:10px;border:2px solid #fca5a5;border-radius:8px;font-size:14px;resize:vertical;"></textarea>
                     <div style="display:flex;gap:8px;margin-top:12px;">
-                        <button type="submit" onclick="return confirm('Reject this return?')" style="background:#dc2626;color:white;padding:8px 16px;border:none;border-radius:6px;font-weight:600;font-size:13px;cursor:pointer;">
+                        <button type="button" onclick="showRejectReturnConfirmation({{ $return->id }})" style="background:#dc2626;color:white;padding:8px 16px;border:none;border-radius:6px;font-weight:600;font-size:13px;cursor:pointer;">
                             Confirm Rejection
                         </button>
                         <button type="button" onclick="hideRejectForm({{ $return->id }})" style="background:#e5e7eb;color:#374151;padding:8px 16px;border:none;border-radius:6px;font-weight:600;font-size:13px;cursor:pointer;">
@@ -171,6 +171,77 @@ function showRejectForm(id) {
 
 function hideRejectForm(id) {
     document.getElementById('rejectForm' + id).style.display = 'none';
+}
+
+function showAuthReturnConfirmation(returnId) {
+    const confirmDiv = document.createElement('div');
+    confirmDiv.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;padding:28px;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.2);z-index:10000;max-width:450px;width:90%;';
+    confirmDiv.innerHTML = `
+        <h3 style="margin:0 0 16px 0;font-size:20px;font-weight:700;color:#1a202c;">Authenticate Return?</h3>
+        <div style="color:#4a5568;font-size:15px;line-height:1.6;margin-bottom:20px;">
+            <p style="margin:0 0 8px 0;">Una uhakika unataka kuthibitisha return hii?</p>
+            <p style="margin:0;">Stock itaboreshwa automatically.</p>
+        </div>
+        <div style="display:flex;gap:12px;justify-content:flex-end;">
+            <button onclick="closeAuthReturnModal()" style="background:#6c757d;color:white;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">Cancel</button>
+            <button onclick="submitAuthReturnForm(${returnId})" style="background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:white;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">✓ Authenticate</button>
+        </div>
+    `;
+    
+    const overlay = document.createElement('div');
+    overlay.id = 'auth-return-modal-overlay';
+    overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999;';
+    overlay.onclick = closeAuthReturnModal;
+    
+    document.body.appendChild(overlay);
+    document.body.appendChild(confirmDiv);
+    window.currentAuthReturnConfirmDiv = confirmDiv;
+}
+
+function closeAuthReturnModal() {
+    const overlay = document.getElementById('auth-return-modal-overlay');
+    if (overlay) overlay.remove();
+    if (window.currentAuthReturnConfirmDiv) window.currentAuthReturnConfirmDiv.remove();
+}
+
+function submitAuthReturnForm(returnId) {
+    closeAuthReturnModal();
+    document.getElementById('authForm' + returnId).submit();
+}
+
+function showRejectReturnConfirmation(returnId) {
+    const confirmDiv = document.createElement('div');
+    confirmDiv.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;padding:28px;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.2);z-index:10000;max-width:450px;width:90%;';
+    confirmDiv.innerHTML = `
+        <h3 style="margin:0 0 16px 0;font-size:20px;font-weight:700;color:#dc2626;">Reject Return?</h3>
+        <div style="color:#4a5568;font-size:15px;line-height:1.6;margin-bottom:20px;">
+            <p style="margin:0;">Una uhakika unataka kukataa return hii?</p>
+        </div>
+        <div style="display:flex;gap:12px;justify-content:flex-end;">
+            <button onclick="closeRejectReturnModal()" style="background:#6c757d;color:white;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">Cancel</button>
+            <button onclick="submitRejectReturnForm(${returnId})" style="background:#dc2626;color:white;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">✗ Reject</button>
+        </div>
+    `;
+    
+    const overlay = document.createElement('div');
+    overlay.id = 'reject-return-modal-overlay';
+    overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999;';
+    overlay.onclick = closeRejectReturnModal;
+    
+    document.body.appendChild(overlay);
+    document.body.appendChild(confirmDiv);
+    window.currentRejectReturnConfirmDiv = confirmDiv;
+}
+
+function closeRejectReturnModal() {
+    const overlay = document.getElementById('reject-return-modal-overlay');
+    if (overlay) overlay.remove();
+    if (window.currentRejectReturnConfirmDiv) window.currentRejectReturnConfirmDiv.remove();
+}
+
+function submitRejectReturnForm(returnId) {
+    closeRejectReturnModal();
+    document.getElementById('rejectForm' + returnId).submit();
 }
 </script>
 @endsection

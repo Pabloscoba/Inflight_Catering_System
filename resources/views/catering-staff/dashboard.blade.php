@@ -198,15 +198,15 @@
                                 View
                             </a>
                             @if($request->status === 'catering_approved')
-                            <form method="POST" action="{{ route('catering-staff.requests.send-to-ramp', $request) }}" style="display:inline;">
-                                @csrf
-                                <button type="submit" onclick="return confirm('Send Request #{{ $request->id }} to Ramp Dispatcher for dispatch?')" 
+                            <button type="button" onclick="showRampConfirmation({{ $request->id }})" 
                                    style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:white;padding:8px 16px;border-radius:8px;border:none;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;">
-                                    <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                    </svg>
-                                    Send to Ramp
-                                </button>
+                                <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Send to Ramp
+                            </button>
+                            <form id="ramp-form-{{ $request->id }}" method="POST" action="{{ route('catering-staff.requests.send-to-ramp', $request) }}" style="display:none;">
+                                @csrf
                             </form>
                             @endif
                         </div>
@@ -296,16 +296,13 @@
                     </td>
                     <td style="padding:16px 20px;text-align:center;">
                         <div style="display:flex;gap:8px;justify-content:center;">
-                            <form method="POST" action="{{ route('catering-staff.requests.receive-items', $request) }}" style="display:inline;">
-                                @csrf
-                                <button type="submit" onclick="return confirm('Receive items for Request #{{ $request->id }}? This will send the request to Catering Incharge for final approval.')" 
-                                   style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:white;padding:8px 16px;border-radius:8px;border:none;font-size:13px;font-weight:600;cursor:pointer;">
-                                    <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                    </svg>
-                                    Receive Items
-                                </button>
-                            </form>
+                            <a href="{{ route('catering-staff.requests.show', $request) }}" 
+                               style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:white;padding:8px 16px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:600;">
+                                <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Receive Items
+                            </a>
                             <a href="{{ route('catering-staff.requests.show', $request) }}" 
                                style="display:inline-flex;align-items:center;gap:6px;background:#6b7280;color:white;padding:8px 16px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:600;">
                                 <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -809,6 +806,43 @@ function toggleStockDetails() {
         modal.style.display = 'none';
         document.body.style.overflow = 'auto';
     }
+}
+
+// Send to Ramp Confirmation Modal
+function showRampConfirmation(requestId) {
+    const confirmDiv = document.createElement('div');
+    confirmDiv.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;padding:28px;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.2);z-index:10000;max-width:450px;width:90%;';
+    confirmDiv.innerHTML = `
+        <h3 style="margin:0 0 16px 0;font-size:20px;font-weight:700;color:#1a202c;">Send to Ramp Dispatcher?</h3>
+        <div style="color:#4a5568;font-size:15px;line-height:1.6;margin-bottom:20px;">
+            <p style="margin:0 0 12px 0;"><strong>Request #${requestId}</strong></p>
+            <p style="margin:0;">Una uhakika unataka kupeleka ombi hili kwa Ramp Dispatcher kwa ajili ya dispatch?</p>
+        </div>
+        <div style="display:flex;gap:12px;justify-content:flex-end;">
+            <button onclick="closeRampModal()" style="background:#6c757d;color:white;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">Cancel</button>
+            <button onclick="submitRampForm(${requestId})" style="background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:white;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">Send to Ramp</button>
+        </div>
+    `;
+    
+    const overlay = document.createElement('div');
+    overlay.id = 'ramp-modal-overlay';
+    overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999;';
+    overlay.onclick = closeRampModal;
+    
+    document.body.appendChild(overlay);
+    document.body.appendChild(confirmDiv);
+    window.currentRampConfirmDiv = confirmDiv;
+}
+
+function closeRampModal() {
+    const overlay = document.getElementById('ramp-modal-overlay');
+    if (overlay) overlay.remove();
+    if (window.currentRampConfirmDiv) window.currentRampConfirmDiv.remove();
+}
+
+function submitRampForm(requestId) {
+    closeRampModal();
+    document.getElementById('ramp-form-' + requestId).submit();
 }
 </script>
 

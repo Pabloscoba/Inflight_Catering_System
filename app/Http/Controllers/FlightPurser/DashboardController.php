@@ -12,7 +12,7 @@ class DashboardController extends Controller
     public function index()
     {
         // Get statistics - NEW WORKFLOW
-        $dispatchedRequests = RequestModel::where('status', 'ramp_dispatched')->count();
+        $dispatchedRequests = RequestModel::whereIn('status', ['ramp_dispatched', 'flight_cleared_for_departure'])->count();
         $loadedRequests = RequestModel::where('status', 'loaded')->count();
         
         $upcomingFlights = Flight::where('departure_time', '>', now())
@@ -21,7 +21,7 @@ class DashboardController extends Controller
 
         // Requests dispatched by Ramp - waiting to be loaded
         $requestsToLoad = RequestModel::with(['flight', 'requester', 'items.product'])
-            ->where('status', 'ramp_dispatched')
+            ->whereIn('status', ['ramp_dispatched', 'flight_cleared_for_departure'])
             ->whereHas('flight', function($query) {
                 $query->where('departure_time', '>', now());
             })

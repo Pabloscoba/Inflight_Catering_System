@@ -94,15 +94,15 @@
         <div style="background:white;border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:24px;">
             <h3 style="font-size:18px;font-weight:700;color:#111827;margin-bottom:20px;">🔐 Authentication</h3>
             
-            <form action="{{ route('security-staff.meals.authenticate', $meal) }}" method="POST">
+            <button type="button" onclick="showAuthMealConfirmation({{ $meal->id }})"
+                    style="width:100%;background:#10b981;color:white;padding:14px;border-radius:10px;border:none;font-weight:600;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+                <svg style="width:20px;height:20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                </svg>
+                Authenticate Meal
+            </button>
+            <form id="auth-meal-form-{{ $meal->id }}" action="{{ route('security-staff.meals.authenticate', $meal) }}" method="POST" style="display:none;">
                 @csrf
-                <button type="submit" onclick="return confirm('Authenticate this meal? It will be sent to Ramp Dispatcher for dispatch.')"
-                        style="width:100%;background:#10b981;color:white;padding:14px;border-radius:10px;border:none;font-weight:600;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
-                    <svg style="width:20px;height:20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                    </svg>
-                    Authenticate Meal
-                </button>
             </form>
         </div>
 
@@ -138,4 +138,43 @@
         @endif
     </div>
 </div>
+
+<script>
+function showAuthMealConfirmation(mealId) {
+    const confirmDiv = document.createElement('div');
+    confirmDiv.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;padding:28px;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.2);z-index:10000;max-width:450px;width:90%;';
+    confirmDiv.innerHTML = `
+        <h3 style="margin:0 0 16px 0;font-size:20px;font-weight:700;color:#1a202c;">Authenticate Meal?</h3>
+        <div style="color:#4a5568;font-size:15px;line-height:1.6;margin-bottom:20px;">
+            <p style="margin:0 0 8px 0;">Una uhakika unataka kuthibitisha meal hii?</p>
+            <p style="margin:0;">Itapelekwa kwa Ramp Dispatcher kwa ajili ya dispatch.</p>
+        </div>
+        <div style="display:flex;gap:12px;justify-content:flex-end;">
+            <button onclick="closeAuthMealModal()" style="background:#6c757d;color:white;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">Cancel</button>
+            <button onclick="submitAuthMealForm(${mealId})" style="background:#10b981;color:white;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">✓ Authenticate</button>
+        </div>
+    `;
+    
+    const overlay = document.createElement('div');
+    overlay.id = 'auth-meal-modal-overlay';
+    overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999;';
+    overlay.onclick = closeAuthMealModal;
+    
+    document.body.appendChild(overlay);
+    document.body.appendChild(confirmDiv);
+    window.currentAuthMealConfirmDiv = confirmDiv;
+}
+
+function closeAuthMealModal() {
+    const overlay = document.getElementById('auth-meal-modal-overlay');
+    if (overlay) overlay.remove();
+    if (window.currentAuthMealConfirmDiv) window.currentAuthMealConfirmDiv.remove();
+}
+
+function submitAuthMealForm(mealId) {
+    closeAuthMealModal();
+    document.getElementById('auth-meal-form-' + mealId).submit();
+}
+</script>
+
 @endsection

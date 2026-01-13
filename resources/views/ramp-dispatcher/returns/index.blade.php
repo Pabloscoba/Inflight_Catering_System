@@ -100,14 +100,14 @@
                             <div style="font-size:12px;color:#9ca3af;">{{ $return->returned_at->diffForHumans() }}</div>
                         </td>
                         <td style="padding:16px 20px;text-align:center;">
-                            <form action="{{ route('ramp-dispatcher.returns.receive', $return) }}" method="POST" style="display:inline;">
+                            <button type="button" onclick="showReceiveReturnConfirmation({{ $return->id }})" style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:white;padding:8px 16px;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">
+                                <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                                </svg>
+                                Receive & Forward
+                            </button>
+                            <form id="receive-return-form-{{ $return->id }}" action="{{ route('ramp-dispatcher.returns.receive', $return) }}" method="POST" style="display:none;">
                                 @csrf
-                                <button type="submit" onclick="return confirm('Receive this return and forward to Security?')" style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:white;padding:8px 16px;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">
-                                    <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-                                    </svg>
-                                    Receive & Forward
-                                </button>
                             </form>
                         </td>
                     </tr>
@@ -171,12 +171,12 @@ function bulkReceive() {
         return;
     }
     
-    if (!confirm(`Receive and forward ${checkboxes.length} return(s) to Security?`)) {
-        return;
-    }
-    
+    showBulkReceiveConfirmation(checkboxes.length);
+}
+
+function submitBulkReceive() {
+    const checkboxes = document.querySelectorAll('.return-checkbox:checked');
     const form = document.getElementById('bulkForm');
-    const bulkIds = document.getElementById('bulkIds');
     
     // Clear existing values
     form.querySelectorAll('input[name="return_ids[]"]').forEach(input => input.remove());
@@ -191,6 +191,78 @@ function bulkReceive() {
     });
     
     form.submit();
+}
+
+function showReceiveReturnConfirmation(returnId) {
+    const confirmDiv = document.createElement('div');
+    confirmDiv.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;padding:28px;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.2);z-index:10000;max-width:450px;width:90%;';
+    confirmDiv.innerHTML = `
+        <h3 style="margin:0 0 16px 0;font-size:20px;font-weight:700;color:#1a202c;">Receive & Forward Return?</h3>
+        <div style="color:#4a5568;font-size:15px;line-height:1.6;margin-bottom:20px;">
+            <p style="margin:0 0 8px 0;">Una uhakika unataka kupokea return hii?</p>
+            <p style="margin:0;">Itapelekwa kwa Security kwa ajili ya authentication.</p>
+        </div>
+        <div style="display:flex;gap:12px;justify-content:flex-end;">
+            <button onclick="closeReceiveReturnModal()" style="background:#6c757d;color:white;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">Cancel</button>
+            <button onclick="submitReceiveReturnForm(${returnId})" style="background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:white;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">Receive & Forward</button>
+        </div>
+    `;
+    
+    const overlay = document.createElement('div');
+    overlay.id = 'receive-return-modal-overlay';
+    overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999;';
+    overlay.onclick = closeReceiveReturnModal;
+    
+    document.body.appendChild(overlay);
+    document.body.appendChild(confirmDiv);
+    window.currentReceiveReturnConfirmDiv = confirmDiv;
+}
+
+function closeReceiveReturnModal() {
+    const overlay = document.getElementById('receive-return-modal-overlay');
+    if (overlay) overlay.remove();
+    if (window.currentReceiveReturnConfirmDiv) window.currentReceiveReturnConfirmDiv.remove();
+}
+
+function submitReceiveReturnForm(returnId) {
+    closeReceiveReturnModal();
+    document.getElementById('receive-return-form-' + returnId).submit();
+}
+
+function showBulkReceiveConfirmation(count) {
+    const confirmDiv = document.createElement('div');
+    confirmDiv.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;padding:28px;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.2);z-index:10000;max-width:450px;width:90%;';
+    confirmDiv.innerHTML = `
+        <h3 style="margin:0 0 16px 0;font-size:20px;font-weight:700;color:#1a202c;">Bulk Receive Returns?</h3>
+        <div style="color:#4a5568;font-size:15px;line-height:1.6;margin-bottom:20px;">
+            <p style="margin:0 0 8px 0;">Una uhakika unataka kupokea returns <strong>${count}</strong>?</p>
+            <p style="margin:0;">Zitapelekwa kwa Security kwa ajili ya authentication.</p>
+        </div>
+        <div style="display:flex;gap:12px;justify-content:flex-end;">
+            <button onclick="closeBulkReceiveModal()" style="background:#6c757d;color:white;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">Cancel</button>
+            <button onclick="submitBulkReceiveConfirm()" style="background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:white;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">Receive All</button>
+        </div>
+    `;
+    
+    const overlay = document.createElement('div');
+    overlay.id = 'bulk-receive-modal-overlay';
+    overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999;';
+    overlay.onclick = closeBulkReceiveModal;
+    
+    document.body.appendChild(overlay);
+    document.body.appendChild(confirmDiv);
+    window.currentBulkReceiveConfirmDiv = confirmDiv;
+}
+
+function closeBulkReceiveModal() {
+    const overlay = document.getElementById('bulk-receive-modal-overlay');
+    if (overlay) overlay.remove();
+    if (window.currentBulkReceiveConfirmDiv) window.currentBulkReceiveConfirmDiv.remove();
+}
+
+function submitBulkReceiveConfirm() {
+    closeBulkReceiveModal();
+    submitBulkReceive();
 }
 </script>
 @endsection

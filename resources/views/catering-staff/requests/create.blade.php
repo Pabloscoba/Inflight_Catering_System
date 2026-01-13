@@ -4,8 +4,8 @@
 
 @section('content')
 </div>
-<div style="padding:20px; max-width:900px; margin:-60px auto 40px;">
-    <h1 style="margin-bottom:20px; font-size:24px; color:#1f2937;">Create Catering Request</h1>
+<div style="padding:24px; max-width:900px; margin:8px auto 40px;">
+    <h1 style="margin-bottom:18px; font-size:22px; color:#111827;">Create Catering Request</h1>
 
     @if($errors->any())
         <div style="background:#ffe9ea;border:1px solid #ffc4c7;padding:12px;border-radius:8px;margin-bottom:16px;color:#842029;">
@@ -18,12 +18,13 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('catering-staff.requests.store') }}" style="background:#fff;padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.06);">
+    <form method="POST" action="{{ route('catering-staff.requests.store') }}" style="background:#fff;padding:20px;border-radius:12px;box-shadow:0 8px 24px rgba(15,23,42,0.06);">
         @csrf
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+        <div style="max-height: calc(100vh - 240px); overflow-y:auto; padding-right:8px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px;align-items:start;">
             <div>
                 <label for="flight_id" style="display:block;font-weight:600;margin-bottom:6px;">Flight *</label>
-                <select name="flight_id" id="flight_id" class="form-control" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #e5e7eb;background:white;">
+                <select name="flight_id" id="flight_id" class="form-control" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #e5e7eb;background:white;font-size:14px;">
                     <option value="">-- Select Flight --</option>
                     @foreach(App\Models\Flight::where('status', 'scheduled')->orderBy('departure_time')->get() as $flight)
                         <option value="{{ $flight->id }}" data-departure="{{ optional($flight->departure_time)->format('Y-m-d\TH:i') }}" {{ old('flight_id') == $flight->id ? 'selected' : '' }}>
@@ -34,14 +35,15 @@
             </div>
             <div>
                 <label for="flight_schedule_display" style="display:block;font-weight:600;margin-bottom:6px;">Scheduled Flight Time</label>
-                <input type="text" id="flight_schedule_display" class="form-control" readonly style="width:100%;padding:10px;border-radius:8px;border:1px solid #e5e7eb;background:#f8fafc;" value="{{ old('flight_id') ? optional(App\Models\Flight::find(old('flight_id'))->departure_time)->format('Y-m-d H:i') : '' }}">
-                <p style="margin-top:6px;color:#6b7280;font-size:13px;">The scheduled time is set by Flight Ops; do not change it here.</p>
+                <input type="text" id="flight_schedule_display" class="form-control" readonly style="width:100%;padding:10px;border-radius:8px;border:1px solid #e5e7eb;background:#f8fafc;font-size:14px;color:#111827;" value="{{ old('flight_id') ? optional(App\Models\Flight::find(old('flight_id'))->departure_time)->format('Y-m-d H:i') : '' }}">
+                <p style="margin-top:6px;color:#6b7280;font-size:13px;">The scheduled time is set by Flight Ops and will be used as the request time.</p>
             </div>
         </div>
 
         <div style="margin-bottom:16px;">
-            <label for="requested_date" style="display:block;font-weight:600;margin-bottom:6px;">Request Date & Time *</label>
-            <input type="datetime-local" name="requested_date" id="requested_date" class="form-control" required value="{{ old('requested_date', now()->format('Y-m-d\TH:i')) }}" min="{{ now()->format('Y-m-d\TH:i') }}" style="max-width:300px;padding:10px;border-radius:8px;border:1px solid #e5e7eb;">
+            <label for="requested_date" style="display:block;font-weight:600;margin-bottom:6px;">Request Time (from scheduled flight)</label>
+            <input type="datetime-local" name="requested_date" id="requested_date" class="form-control" readonly value="{{ old('requested_date', '') }}" style="max-width:320px;padding:10px;border-radius:8px;border:1px solid #e5e7eb;background:#f8fafc;font-size:14px;color:#111827;">
+            <p style="margin-top:6px;color:#6b7280;font-size:13px;">This value is populated from the flight schedule and cannot be changed here.</p>
         </div>
 
         <div style="margin-top:16px;">
@@ -75,14 +77,16 @@
             </div>
         </div>
 
-        <div style="margin-top:18px;">
+        <div style="margin-top:10px;">
             <label for="notes" style="display:block;font-weight:600;margin-bottom:6px;">Notes (optional)</label>
-            <textarea name="notes" id="notes" class="form-control" style="width:100%;min-height:100px;padding:10px;border-radius:8px;border:1px solid #e5e7eb;">{{ old('notes') }}</textarea>
+            <textarea name="notes" id="notes" class="form-control" style="width:100%;min-height:140px;padding:10px;border-radius:8px;border:1px solid #e5e7eb;margin-bottom:12px;">{{ old('notes') }}</textarea>
         </div>
 
-        <div style="margin-top:18px;display:flex;gap:12px;">
-            <button type="submit" class="btn btn-primary" style="background:#2563eb;color:white;padding:10px 16px;border-radius:8px;border:none;font-weight:600;">Submit Request</button>
+        <div style="margin-top:16px; padding-top:16px; border-top:1px solid #e5e7eb; display:flex; justify-content:flex-end; gap:12px;">
             <a href="{{ route('catering-staff.requests.index') }}" class="btn btn-secondary" style="background:#f3f4f6;color:#374151;padding:10px 14px;border-radius:8px;text-decoration:none;">Cancel</a>
+            <button type="submit" class="btn btn-primary" style="background:#2563eb;color:white;padding:10px 16px;border-radius:8px;border:none;font-weight:600;">Submit Request</button>
+        </div>
+
         </div>
     </form>
 </div>
@@ -114,12 +118,18 @@
     function updateScheduleDisplay() {
         const opt = flightSelect.options[flightSelect.selectedIndex];
         if (opt && opt.dataset && opt.dataset.departure) {
-            // Format the datetime nicely for display
             const dt = opt.dataset.departure; // 'YYYY-MM-DDTHH:MM'
             const display = dt.replace('T', ' ');
             scheduleDisplay.value = display;
+            // Also set the request datetime to the scheduled departure (readonly input)
+            const requestedInput = document.getElementById('requested_date');
+            if (requestedInput) {
+                requestedInput.value = dt;
+            }
         } else {
             scheduleDisplay.value = '';
+            const requestedInput = document.getElementById('requested_date');
+            if (requestedInput) requestedInput.value = '';
         }
     }
     flightSelect.addEventListener('change', updateScheduleDisplay);

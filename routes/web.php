@@ -386,7 +386,7 @@ Route::middleware(['auth', 'check_role_or_permission:Flight Dispatcher'])->prefi
     Route::post('/dispatches/{dispatch}/confirm-item', [App\Http\Controllers\FlightDispatcher\DispatchController::class, 'confirmItem'])->name('dispatches.confirm-item');
     
     // Request Management (Legacy routes)
-    Route::get('/requests/{request}', [App\Http\Controllers\FlightDispatcher\DispatchController::class, 'show'])->name('requests.show');
+    Route::get('/requests/{request}', [App\Http\Controllers\FlightDispatcher\DispatchController::class, 'showRequest'])->name('requests.show');
     Route::post('/requests/{request}/forward', [App\Http\Controllers\FlightDispatcher\DispatchController::class, 'forward'])->name('requests.forward');
     Route::post('/requests/{request}/comment', [App\Http\Controllers\FlightDispatcher\DispatchController::class, 'comment'])->name('requests.comment');
     Route::post('/requests/{request}/recommend', [App\Http\Controllers\FlightDispatcher\DispatchController::class, 'recommend'])->name('requests.recommend');

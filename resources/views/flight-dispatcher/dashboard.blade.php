@@ -158,7 +158,7 @@
                                 <span style="padding:4px 8px;border-radius:6px;{{ $dispatch->catering_status === 'confirmed' ? 'background:#d1fae5;color:#065f46' : 'background:#f3f4f6;color:#6b7280' }}">🍽️</span>
                                 <span style="padding:4px 8px;border-radius:6px;{{ $dispatch->baggage_status === 'confirmed' ? 'background:#d1fae5;color:#065f46' : 'background:#f3f4f6;color:#6b7280' }}">🧳</span>
                             </div>
-                            <a href="{{ route('flight-dispatcher.dispatches.show', $dispatch) }}" style="color:#3b82f6;text-decoration:none;font-size:14px;font-weight:500">
+                            <a href="{{ route('flight-dispatcher.dispatches.show', ['dispatch' => $dispatch->id]) }}" style="color:#3b82f6;text-decoration:none;font-size:14px;font-weight:500">
                                 View Details →
                             </a>
                         </div>
@@ -280,10 +280,10 @@
                         <p style="font-size:12px;color:#334155;margin:0">{{ $request->flightDispatcherAssessor->name }}</p>
                     </div>
                     
-                    <form method="POST" action="{{ route('flight-dispatcher.requests.clear-departure', $request) }}" style="margin:0">
+                    <form method="POST" action="{{ route('flight-dispatcher.requests.clear-departure', $request) }}" style="margin:0" id="clear-form-{{ $request->id }}">
                         @csrf
                         <textarea name="clearance_notes" placeholder="Clearance notes (optional)" style="width:100%;padding:8px;border:1px solid #e5e7eb;border-radius:6px;font-size:12px;margin-bottom:10px;resize:vertical" rows="2"></textarea>
-                        <button type="submit" onclick="return confirm('Clear flight {{ $request->flight->flight_number }} for departure?')" style="width:100%;background:#10b981;color:white;padding:10px;border-radius:8px;border:none;font-weight:600;font-size:13px;cursor:pointer;transition:background 0.2s" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">
+                        <button type="button" onclick="showClearConfirmation({{ $request->id }}, '{{ $request->flight->flight_number }}')" style="width:100%;background:#10b981;color:white;padding:10px;border-radius:8px;border:none;font-weight:600;font-size:13px;cursor:pointer;transition:background 0.2s" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">
                             ✅ Clear for Departure →
                         </button>
                     </form>
@@ -337,5 +337,43 @@
             @endforelse
         </div>
     </div>
+
+    {{-- Confirmation Modal --}}
+    <div id="clearModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:1000;align-items:center;justify-content:center">
+        <div style="background:white;padding:24px;border-radius:12px;max-width:400px;width:90%;box-shadow:0 4px 20px rgba(0,0,0,0.2)">
+            <h3 style="margin:0 0 12px;font-size:18px;font-weight:700">Confirm Flight Clearance</h3>
+            <p id="clearMessage" style="color:#6b7280;margin:0 0 20px"></p>
+            <div style="display:flex;gap:12px;justify-content:flex-end">
+                <button onclick="closeClearModal()" style="padding:10px 20px;background:#e5e7eb;color:#374151;border:none;border-radius:6px;font-weight:600;cursor:pointer">
+                    Cancel
+                </button>
+                <button onclick="submitClearForm()" style="padding:10px 20px;background:#10b981;color:white;border:none;border-radius:6px;font-weight:600;cursor:pointer">
+                    Confirm Clearance
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentRequestId = null;
+
+        function showClearConfirmation(requestId, flightNumber) {
+            currentRequestId = requestId;
+            document.getElementById('clearMessage').textContent = 'Clear flight ' + flightNumber + ' for departure?';
+            const modal = document.getElementById('clearModal');
+            modal.style.display = 'flex';
+        }
+
+        function closeClearModal() {
+            document.getElementById('clearModal').style.display = 'none';
+            currentRequestId = null;
+        }
+
+        function submitClearForm() {
+            if (currentRequestId) {
+                document.getElementById('clear-form-' + currentRequestId).submit();
+            }
+        }
+    </script>
 
 @endsection

@@ -47,9 +47,9 @@
                         </details>
                     </td>
                     <td style="padding:12px;">
-                        <form method="POST" action="{{ route('inventory-personnel.requests.forward-to-supervisor', $req) }}" style="display:inline-block;">
+                        <button type="button" onclick="showForwardConfirmation({{ $req->id }})" class="btn btn-sm" style="background:#2563eb;color:white;padding:8px 12px;border-radius:6px;border:none;cursor:pointer;">Forward to Supervisor</button>
+                        <form id="forward-form-{{ $req->id }}" method="POST" action="{{ route('inventory-personnel.requests.forward-to-supervisor', $req) }}" style="display:none;">
                             @csrf
-                            <button type="submit" onclick="return confirm('Forward request #{{ $req->id }} to Supervisor for approval?')" class="btn btn-sm" style="background:#2563eb;color:white;padding:8px 12px;border-radius:6px;border:none;cursor:pointer;">Forward to Supervisor</button>
                         </form>
                         <a href="{{ route('admin.requests.show', $req) }}" class="btn btn-sm" style="margin-left:8px;background:#f3f4f6;color:#374151;padding:8px 12px;border-radius:6px;text-decoration:none;">View</a>
                     </td>
@@ -66,4 +66,44 @@
     </div>
     @endif
 </div>
+
+<script>
+function showForwardConfirmation(requestId) {
+    // Show custom confirmation modal
+    const confirmDiv = document.createElement('div');
+    confirmDiv.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;padding:28px;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.2);z-index:10000;max-width:450px;width:90%;';
+    confirmDiv.innerHTML = `
+        <h3 style="margin:0 0 16px 0;font-size:20px;font-weight:700;color:#1a202c;">Forward to Supervisor?</h3>
+        <div style="color:#4a5568;font-size:15px;line-height:1.6;margin-bottom:20px;">
+            <p style="margin:0 0 12px 0;"><strong>Request #${requestId}</strong></p>
+            <p style="margin:0;">Una uhakika unataka kupeleka ombi hili kwa Supervisor kwa ajili ya kibali?</p>
+        </div>
+        <div style="display:flex;gap:12px;justify-content:flex-end;">
+            <button onclick="closeForwardModal()" style="background:#6c757d;color:white;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">Cancel</button>
+            <button onclick="submitForwardForm(${requestId})" style="background:#2563eb;color:white;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">Forward</button>
+        </div>
+    `;
+    
+    const overlay = document.createElement('div');
+    overlay.id = 'forward-modal-overlay';
+    overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999;';
+    overlay.onclick = closeForwardModal;
+    
+    document.body.appendChild(overlay);
+    document.body.appendChild(confirmDiv);
+    window.currentForwardConfirmDiv = confirmDiv;
+}
+
+function closeForwardModal() {
+    const overlay = document.getElementById('forward-modal-overlay');
+    if (overlay) overlay.remove();
+    if (window.currentForwardConfirmDiv) window.currentForwardConfirmDiv.remove();
+}
+
+function submitForwardForm(requestId) {
+    closeForwardModal();
+    document.getElementById('forward-form-' + requestId).submit();
+}
+</script>
+
 @endsection

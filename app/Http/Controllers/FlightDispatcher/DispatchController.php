@@ -8,9 +8,12 @@ use App\Models\FlightDispatch;
 use App\Models\Request as RequestModel;
 use App\Models\RequestMessage;
 use Illuminate\Http\Request;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class DispatchController extends Controller
 {
+    use AuthorizesRequests;
+
     /**
      * Show all dispatch records
      */
@@ -204,6 +207,16 @@ class DispatchController extends Controller
     }
 
     /**
+     * Show request for assessment
+     */
+    public function showRequest(RequestModel $request)
+    {
+        $request->load(['flight', 'requester', 'items.product', 'flightDispatcherAssessor']);
+
+        return view('flight-dispatcher.requests.show', compact('request'));
+    }
+
+    /**
      * Forward to Flight Purser after assessment
      */
     public function forward(RequestModel $request)
@@ -300,7 +313,9 @@ class DispatchController extends Controller
             ->withProperties($validated)
             ->log('Flight Dispatcher assessed request #' . $request->id);
 
-        return back()->with('success', 'Aircraft assessment completed. Proceed with flight clearance.');
+        return redirect()
+            ->route('flight-dispatcher.requests.show', $request)
+            ->with('success', 'Aircraft assessment completed. Proceed with flight clearance.');
     }
 
     /**
@@ -334,13 +349,9 @@ class DispatchController extends Controller
                 $purser->notify(new \App\Notifications\FlightClearedNotification($request));
             }
 
-            // Notify Cabin Crew
-            $cabinCrew = \App\Models\User::role('Cabin Crew')
-                ->whereHas('requests', function ($q) use ($request) {
-                    $q->where('id', $request->id);
-                })
-                ->get();
-
+            // Notify all Cabin Crew about cleared flight
+            $cabinCrew = \App\Models\User::role('Cabin Crew')->get();
+            
             foreach ($cabinCrew as $crew) {
                 $crew->notify(new \App\Notifications\FlightClearedNotification($request));
             }

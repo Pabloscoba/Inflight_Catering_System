@@ -13,8 +13,8 @@ class LoadController extends Controller
      */
     public function markLoaded(RequestModel $request)
     {
-        // Check if awaiting loading
-        if ($request->status !== 'ramp_dispatched') {
+        // Check if awaiting loading (can be ramp_dispatched or flight_cleared_for_departure)
+        if (!in_array($request->status, ['ramp_dispatched', 'flight_cleared_for_departure'])) {
             return back()->with('error', 'This request is not ready for loading.');
         }
 

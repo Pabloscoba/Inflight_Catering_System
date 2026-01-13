@@ -292,7 +292,7 @@
                     </button>
                     <div id="dispatcher-flights-submenu" class="sidebar-submenu" style="max-height: 0px;">
                         <a href="{{ route('flight-dispatcher.flights.schedule') }}" class="{{ request()->routeIs('flight-dispatcher.flights.schedule') ? 'active' : '' }}">Flight Schedule</a>
-                        <a href="{{ route('flight-dispatcher.dispatches.index') }}" class="{{ request()->routeIs('flight-dispatcher.dispatches.*') ? 'active' : '' }}">Dispatch Records</a>
+                        <a href="{{ route('flight-dispatcher.dispatches.index') }}" class="{{ request()->routeIs('flight-dispatcher.dispatches.index') || request()->routeIs('flight-dispatcher.dispatches.show') || request()->routeIs('flight-dispatcher.dispatches.edit') ? 'active' : '' }}">Dispatch Records</a>
                         <a href="{{ route('flight-dispatcher.dispatches.create') }}" class="{{ request()->routeIs('flight-dispatcher.dispatches.create') ? 'active' : '' }}">New Dispatch</a>
                     </div>
                 </div>

@@ -57,7 +57,7 @@
                                 <a href="{{ route('flight-dispatcher.dispatches.show', $dispatch) }}" style="color:#3b82f6;text-decoration:none;font-weight:500;margin-right:12px">
                                     👁️ View
                                 </a>
-                                <a href="{{ route('flight-dispatcher.dispatches.edit', $dispatch) }}" style="color:#10b981;text-decoration:none;font-weight:500">
+                                <a href="{{ route('flight-dispatcher.dispatches.edit', ['dispatch' => $dispatch->id]) }}" style="color:#10b981;text-decoration:none;font-weight:500">
                                     ✏️ Edit
                                 </a>
                             </td>

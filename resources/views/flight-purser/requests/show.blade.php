@@ -201,14 +201,45 @@
             <h3 style="font-size:18px;font-weight:700;color:#1a1a1a;margin:0 0 8px 0;">Ready to Load?</h3>
             <p style="font-size:13px;color:#6b7280;margin:0;">Confirm that all items have been received and loaded onto the aircraft.</p>
         </div>
-        <form action="{{ route('flight-purser.requests.load', $request) }}" method="POST">
+        <form action="{{ route('flight-purser.requests.load', $request) }}" method="POST" id="load-request-form">
             @csrf
-            <button type="submit" onclick="return confirm('Confirm receiving Request #{{ $request->id }}?')" style="background:linear-gradient(135deg,#43e97b 0%,#38f9d7 100%);color:white;border:none;padding:12px 32px;border-radius:12px;font-weight:700;font-size:14px;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(67,233,123,0.4)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='none'">
+            <button type="button" onclick="showLoadRequestConfirmation({{ $request->id }})" style="background:linear-gradient(135deg,#43e97b 0%,#38f9d7 100%);color:white;border:none;padding:12px 32px;border-radius:12px;font-weight:700;font-size:14px;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(67,233,123,0.4)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='none'">
                 ✅ Confirm Receipt & Load onto Aircraft
             </button>
         </form>
     </div>
 </div>
 @endif
+
+{{-- Load Request Confirmation Modal --}}
+<div id="loadRequestModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:1000;align-items:center;justify-content:center">
+    <div style="background:white;padding:24px;border-radius:12px;max-width:400px;width:90%;box-shadow:0 4px 20px rgba(0,0,0,0.2)">
+        <h3 style="margin:0 0 12px;font-size:18px;font-weight:700">✅ Confirm Receipt & Load</h3>
+        <p id="loadRequestMessage" style="color:#6b7280;margin:0 0 20px"></p>
+        <div style="display:flex;gap:12px;justify-content:flex-end">
+            <button onclick="closeLoadRequestModal()" style="padding:10px 20px;background:#e5e7eb;color:#374151;border:none;border-radius:6px;font-weight:600;cursor:pointer">
+                Cancel
+            </button>
+            <button onclick="submitLoadRequestForm()" style="padding:10px 20px;background:#10b981;color:white;border:none;border-radius:6px;font-weight:600;cursor:pointer">
+                Confirm
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showLoadRequestConfirmation(requestId) {
+        document.getElementById('loadRequestMessage').textContent = 'Confirm receiving Request #' + requestId + ' and loading onto aircraft?';
+        document.getElementById('loadRequestModal').style.display = 'flex';
+    }
+
+    function closeLoadRequestModal() {
+        document.getElementById('loadRequestModal').style.display = 'none';
+    }
+
+    function submitLoadRequestForm() {
+        document.getElementById('load-request-form').submit();
+    }
+</script>
 
 @endsection

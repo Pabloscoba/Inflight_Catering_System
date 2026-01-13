@@ -109,14 +109,14 @@
                     </td>
                     <td style="padding:16px 20px;text-align:center;">
                         <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
-                            <form method="POST" action="{{ route('security-staff.requests.authenticate', $req) }}" style="display:inline-block;">
+                            <button type="button" onclick="showAuthenticateConfirmation({{ $req->id }})" style="background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:white;padding:10px 18px;border-radius:8px;border:none;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px;cursor:pointer;box-shadow:0 2px 8px rgba(16,185,129,0.25);transition:all 0.2s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 12px rgba(16,185,129,0.35)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 2px 8px rgba(16,185,129,0.25)'">
+                                <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                                </svg>
+                                Authenticate
+                            </button>
+                            <form id="auth-form-{{ $req->id }}" method="POST" action="{{ route('security-staff.requests.authenticate', $req) }}" style="display:none;">
                                 @csrf
-                                <button type="submit" onclick="return confirm('✓ Authenticate Request #{{ $req->id }}?\n\nThis will:\n• Issue stock from main inventory\n• Forward to Catering Incharge for approval\n• Update request status to security_approved\n\nProceed?')" style="background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:white;padding:10px 18px;border-radius:8px;border:none;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px;cursor:pointer;box-shadow:0 2px 8px rgba(16,185,129,0.25);transition:all 0.2s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 12px rgba(16,185,129,0.35)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 2px 8px rgba(16,185,129,0.25)'">
-                                    <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                                    </svg>
-                                    Authenticate
-                                </button>
                             </form>
                             <a href="{{ route('security-staff.requests.show', $req) }}" style="background:#f3f4f6;color:#374151;padding:10px 18px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px;transition:all 0.2s;" onmouseover="this.style.background='#e5e7eb'" onmouseout="this.style.background='#f3f4f6'">
                                 <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -147,5 +147,45 @@
     </div>
     @endif
 </div>
+
+<script>
+function showAuthenticateConfirmation(requestId) {
+    const confirmDiv = document.createElement('div');
+    confirmDiv.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;padding:28px;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.2);z-index:10000;max-width:450px;width:90%;';
+    confirmDiv.innerHTML = `
+        <h3 style="margin:0 0 16px 0;font-size:20px;font-weight:700;color:#1a202c;">✓ Authenticate Request?</h3>
+        <div style="color:#4a5568;font-size:15px;line-height:1.6;margin-bottom:20px;">
+            <p style="margin:0 0 12px 0;"><strong>Request #${requestId}</strong></p>
+            <p style="margin:0 0 8px 0;">• Issue stock from main inventory</p>
+            <p style="margin:0 0 8px 0;">• Forward to Catering Incharge for approval</p>
+            <p style="margin:0;">• Update request status to security_approved</p>
+        </div>
+        <div style="display:flex;gap:12px;justify-content:flex-end;">
+            <button onclick="closeAuthModal()" style="background:#6c757d;color:white;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">Cancel</button>
+            <button onclick="submitAuthForm(${requestId})" style="background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:white;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">✓ Authenticate</button>
+        </div>
+    `;
+    
+    const overlay = document.createElement('div');
+    overlay.id = 'auth-modal-overlay';
+    overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999;';
+    overlay.onclick = closeAuthModal;
+    
+    document.body.appendChild(overlay);
+    document.body.appendChild(confirmDiv);
+    window.currentAuthConfirmDiv = confirmDiv;
+}
+
+function closeAuthModal() {
+    const overlay = document.getElementById('auth-modal-overlay');
+    if (overlay) overlay.remove();
+    if (window.currentAuthConfirmDiv) window.currentAuthConfirmDiv.remove();
+}
+
+function submitAuthForm(requestId) {
+    closeAuthModal();
+    document.getElementById('auth-form-' + requestId).submit();
+}
+</script>
 
 @endsection

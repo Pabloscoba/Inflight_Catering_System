@@ -240,17 +240,56 @@
         <div style="background:white;border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-top:24px;">
             <h3 style="font-size:16px;font-weight:700;color:#1a1a1a;margin:0 0 16px 0;">⚡ Actions</h3>
             
-            <form action="{{ route('catering-staff.meals.destroy', $meal) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this meal? This action cannot be undone.');">
+            <button type="button" onclick="showDeleteMealConfirmation({{ $meal->id }})" style="width:100%;background:#fee2e2;color:#991b1b;border:1px solid #fecaca;padding:12px;border-radius:8px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+                <svg style="width:18px;height:18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+                Delete Meal
+            </button>
+            <form id="delete-meal-form-{{ $meal->id }}" action="{{ route('catering-staff.meals.destroy', $meal) }}" method="POST" style="display:none;">
                 @csrf
                 @method('DELETE')
-                <button type="submit" style="width:100%;background:#fee2e2;color:#991b1b;border:1px solid #fecaca;padding:12px;border-radius:8px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
-                    <svg style="width:18px;height:18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                    </svg>
-                    Delete Meal
-                </button>
             </form>
         </div>
     </div>
 </div>
+
+<script>
+function showDeleteMealConfirmation(mealId) {
+    const confirmDiv = document.createElement('div');
+    confirmDiv.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;padding:28px;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.2);z-index:10000;max-width:450px;width:90%;';
+    confirmDiv.innerHTML = `
+        <h3 style="margin:0 0 16px 0;font-size:20px;font-weight:700;color:#dc2626;">Delete Meal?</h3>
+        <div style="color:#4a5568;font-size:15px;line-height:1.6;margin-bottom:20px;">
+            <p style="margin:0 0 8px 0;">Una uhakika unataka kufuta meal hii?</p>
+            <p style="margin:0;color:#dc3545;"><strong>⚠️ Haiwezi kurudishwa!</strong></p>
+        </div>
+        <div style="display:flex;gap:12px;justify-content:flex-end;">
+            <button onclick="closeDeleteMealModal()" style="background:#6c757d;color:white;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">Cancel</button>
+            <button onclick="submitDeleteMealForm(${mealId})" style="background:#dc2626;color:white;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">Delete</button>
+        </div>
+    `;
+    
+    const overlay = document.createElement('div');
+    overlay.id = 'delete-meal-modal-overlay';
+    overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999;';
+    overlay.onclick = closeDeleteMealModal;
+    
+    document.body.appendChild(overlay);
+    document.body.appendChild(confirmDiv);
+    window.currentDeleteMealConfirmDiv = confirmDiv;
+}
+
+function closeDeleteMealModal() {
+    const overlay = document.getElementById('delete-meal-modal-overlay');
+    if (overlay) overlay.remove();
+    if (window.currentDeleteMealConfirmDiv) window.currentDeleteMealConfirmDiv.remove();
+}
+
+function submitDeleteMealForm(mealId) {
+    closeDeleteMealModal();
+    document.getElementById('delete-meal-form-' + mealId).submit();
+}
+</script>
+
 @endsection

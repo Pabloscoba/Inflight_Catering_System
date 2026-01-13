@@ -35,7 +35,8 @@ class FlightClearedNotification extends Notification
      */
     public function toArray(object $notifiable): array
     {
-        $actionUrl = route('dashboard');
+        // Default to flight-purser dashboard, fallback to home
+        $actionUrl = '#';
         
         if ($notifiable->hasRole('Flight Purser')) {
             $actionUrl = route('flight-purser.dashboard');

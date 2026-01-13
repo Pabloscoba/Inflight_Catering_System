@@ -20,6 +20,7 @@ return [
         'view products', 'approve stock movements', 'approve products', 'approve stock entries',
         'verify stock movement', 'view inventory reports', 'view stock levels', 'manage stock movements',
         'add stock', 'issue stock', 'create stock movements',
+        'approve deny catering requests', 'view incoming requests from catering staff',
     ],
 
     'Catering Incharge' => [

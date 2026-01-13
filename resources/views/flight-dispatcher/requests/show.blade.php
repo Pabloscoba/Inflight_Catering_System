@@ -164,7 +164,7 @@
                         </div>
                     @endif
 
-                    <form method="POST" action="{{ route('flight-dispatcher.requests.clear-departure', $request) }}">
+                    <form method="POST" action="{{ route('flight-dispatcher.requests.clear-departure', $request) }}" id="clearance-form">
                         @csrf
                         
                         <div style="margin-bottom:20px">
@@ -172,7 +172,7 @@
                             <textarea name="clearance_notes" rows="4" placeholder="Add any final notes before clearing for departure..." style="width:100%;padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;resize:vertical"></textarea>
                         </div>
 
-                        <button type="submit" onclick="return confirm('Clear Flight {{ $request->flight->flight_number }} for departure?\n\nThis will notify Flight Purser and Cabin Crew that operations can begin.')" style="width:100%;background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:white;padding:14px;border-radius:8px;border:none;font-weight:700;font-size:15px;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 12px rgba(16,185,129,0.3)" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 16px rgba(16,185,129,0.4)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 12px rgba(16,185,129,0.3)'">
+                        <button type="button" onclick="showClearanceConfirmation('{{ $request->flight->flight_number }}')" style="width:100%;background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:white;padding:14px;border-radius:8px;border:none;font-weight:700;font-size:15px;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 12px rgba(16,185,129,0.3)" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 16px rgba(16,185,129,0.4)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 12px rgba(16,185,129,0.3)'">
                             ✅ Clear for Departure
                         </button>
                     </form>
@@ -242,4 +242,37 @@
         </div>
     </div>
 </div>
+
+{{-- Clearance Confirmation Modal --}}
+<div id="clearanceModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:1000;align-items:center;justify-content:center">
+    <div style="background:white;padding:24px;border-radius:12px;max-width:450px;width:90%;box-shadow:0 4px 20px rgba(0,0,0,0.2)">
+        <h3 style="margin:0 0 12px;font-size:18px;font-weight:700">✈️ Confirm Flight Clearance</h3>
+        <p id="clearanceMessage" style="color:#6b7280;margin:0 0 8px"></p>
+        <p style="color:#9ca3af;margin:0 0 20px;font-size:13px">This will notify Flight Purser and Cabin Crew that operations can begin.</p>
+        <div style="display:flex;gap:12px;justify-content:flex-end">
+            <button onclick="closeClearanceModal()" style="padding:10px 20px;background:#e5e7eb;color:#374151;border:none;border-radius:6px;font-weight:600;cursor:pointer">
+                Cancel
+            </button>
+            <button onclick="submitClearanceForm()" style="padding:10px 20px;background:#10b981;color:white;border:none;border-radius:6px;font-weight:600;cursor:pointer">
+                Confirm Clearance
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showClearanceConfirmation(flightNumber) {
+        document.getElementById('clearanceMessage').textContent = 'Clear Flight ' + flightNumber + ' for departure?';
+        document.getElementById('clearanceModal').style.display = 'flex';
+    }
+
+    function closeClearanceModal() {
+        document.getElementById('clearanceModal').style.display = 'none';
+    }
+
+    function submitClearanceForm() {
+        document.getElementById('clearance-form').submit();
+    }
+</script>
+
 @endsection

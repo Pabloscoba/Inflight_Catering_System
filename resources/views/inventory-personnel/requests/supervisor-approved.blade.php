@@ -155,15 +155,16 @@
                         <!-- Actions -->
                         <td style="padding: 18px 20px; text-align: center;">
                             <div style="display: flex; flex-direction: column; gap: 8px; align-items: center;">
-                                <form method="POST" action="{{ route('inventory-personnel.requests.issue-items', $req) }}" style="width: 100%;">
+                                <button type="button" 
+                                        onclick="showIssueConfirmation({{ $req->id }}, {{ $req->items->count() }})"
+                                        style="width: 100%; padding: 10px 16px; background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; box-shadow: 0 2px 8px rgba(14, 165, 233, 0.3); transition: transform 0.2s;"
+                                        onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(14, 165, 233, 0.4)'" 
+                                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(14, 165, 233, 0.3)'">
+                                    📦 Issue Items
+                                </button>
+                                <!-- Hidden Form -->
+                                <form id="issue-form-{{ $req->id }}" method="POST" action="{{ route('inventory-personnel.requests.issue-items', $req) }}" style="display: none;">
                                     @csrf
-                                    <button type="submit" 
-                                            onclick="return confirm('📦 Issue Items for Request #{{ $req->id }}?\n\nThis action will:\n✓ Deduct stock for {{ $req->items->count() }} item(s)\n✓ Mark items as issued\n✓ Notify Catering Staff to collect items\n\nContinue?')" 
-                                            style="width: 100%; padding: 10px 16px; background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; box-shadow: 0 2px 8px rgba(14, 165, 233, 0.3); transition: transform 0.2s;"
-                                            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(14, 165, 233, 0.4)'" 
-                                            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(14, 165, 233, 0.3)'">
-                                        📦 Issue Items
-                                    </button>
                                 </form>
                                 <a href="{{ route('admin.requests.show', $req) }}" 
                                    style="width: 100%; padding: 8px 16px; background: #f3f4f6; color: #374151; border-radius: 8px; text-decoration: none; font-size: 13px; font-weight: 600; text-align: center; display: block; transition: background 0.2s;"
@@ -194,5 +195,47 @@
     </div>
     @endif
 </div>
+
+<script>
+function showIssueConfirmation(requestId, itemCount) {
+    // Show custom confirmation modal
+    const confirmDiv = document.createElement('div');
+    confirmDiv.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;padding:28px;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.2);z-index:10000;max-width:450px;width:90%;';
+    confirmDiv.innerHTML = `
+        <h3 style="margin:0 0 16px 0;font-size:20px;font-weight:700;color:#1a202c;">📦 Issue Items?</h3>
+        <div style="color:#4a5568;font-size:15px;line-height:1.6;margin-bottom:20px;">
+            <p style="margin:0 0 12px 0;"><strong>Request #${requestId}</strong></p>
+            <p style="margin:0 0 8px 0;">✓ Deduct stock for ${itemCount} item(s)</p>
+            <p style="margin:0 0 8px 0;">✓ Mark items as issued</p>
+            <p style="margin:0 0 8px 0;">✓ Notify Catering Staff to collect items</p>
+            <p style="margin:0;color:#dc3545;"><strong>⚠️ Haiwezi kurudishwa</strong></p>
+        </div>
+        <div style="display:flex;gap:12px;justify-content:flex-end;">
+            <button onclick="closeIssueModal()" style="background:#6c757d;color:white;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">Cancel</button>
+            <button onclick="submitIssueForm(${requestId})" style="background:linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);color:white;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">📦 Issue Items</button>
+        </div>
+    `;
+    
+    const overlay = document.createElement('div');
+    overlay.id = 'issue-modal-overlay';
+    overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999;';
+    overlay.onclick = closeIssueModal;
+    
+    document.body.appendChild(overlay);
+    document.body.appendChild(confirmDiv);
+    window.currentIssueConfirmDiv = confirmDiv;
+}
+
+function closeIssueModal() {
+    const overlay = document.getElementById('issue-modal-overlay');
+    if (overlay) overlay.remove();
+    if (window.currentIssueConfirmDiv) window.currentIssueConfirmDiv.remove();
+}
+
+function submitIssueForm(requestId) {
+    closeIssueModal();
+    document.getElementById('issue-form-' + requestId).submit();
+}
+</script>
 
 @endsection

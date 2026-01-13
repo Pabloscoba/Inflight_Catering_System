@@ -132,9 +132,9 @@
                             <a href="{{ route('flight-purser.requests.show', $request) }}" style="background:#f3f4f6;color:#374151;border:none;padding:8px 16px;border-radius:8px;font-weight:600;font-size:13px;text-decoration:none;display:inline-block;">
                                 👁️ View Products
                             </a>
-                            <form action="{{ route('flight-purser.requests.load', $request) }}" method="POST" style="display:inline;">
+                            <form action="{{ route('flight-purser.requests.load', $request) }}" method="POST" style="display:inline;" id="load-form-{{ $request->id }}">
                                 @csrf
-                                <button type="submit" onclick="return confirm('Confirm loading Request #{{ $request->id }} onto aircraft?')" style="background:linear-gradient(135deg,#43e97b 0%,#38f9d7 100%);color:white;border:none;padding:8px 20px;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 12px rgba(67,233,123,0.4)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='none'">
+                                <button type="button" onclick="showLoadConfirmation({{ $request->id }})" style="background:linear-gradient(135deg,#43e97b 0%,#38f9d7 100%);color:white;border:none;padding:8px 20px;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 12px rgba(67,233,123,0.4)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='none'">
                                     📦 Load onto Aircraft
                                 </button>
                             </form>
@@ -207,4 +207,42 @@
     </div>
     @endif
 </div>
+
+{{-- Load Confirmation Modal --}}
+<div id="loadModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:1000;align-items:center;justify-content:center">
+    <div style="background:white;padding:24px;border-radius:12px;max-width:400px;width:90%;box-shadow:0 4px 20px rgba(0,0,0,0.2)">
+        <h3 style="margin:0 0 12px;font-size:18px;font-weight:700">📦 Confirm Load</h3>
+        <p id="loadMessage" style="color:#6b7280;margin:0 0 20px"></p>
+        <div style="display:flex;gap:12px;justify-content:flex-end">
+            <button onclick="closeLoadModal()" style="padding:10px 20px;background:#e5e7eb;color:#374151;border:none;border-radius:6px;font-weight:600;cursor:pointer">
+                Cancel
+            </button>
+            <button onclick="submitLoadForm()" style="padding:10px 20px;background:#10b981;color:white;border:none;border-radius:6px;font-weight:600;cursor:pointer">
+                Confirm Load
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentRequestId = null;
+
+    function showLoadConfirmation(requestId) {
+        currentRequestId = requestId;
+        document.getElementById('loadMessage').textContent = 'Confirm loading Request #' + requestId + ' onto aircraft?';
+        document.getElementById('loadModal').style.display = 'flex';
+    }
+
+    function closeLoadModal() {
+        document.getElementById('loadModal').style.display = 'none';
+        currentRequestId = null;
+    }
+
+    function submitLoadForm() {
+        if (currentRequestId) {
+            document.getElementById('load-form-' + currentRequestId).submit();
+        }
+    }
+</script>
+
 @endsection

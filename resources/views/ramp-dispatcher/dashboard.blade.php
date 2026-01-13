@@ -158,15 +158,15 @@
                         <div style="color:#6b7280;font-size:12px;margin-top:2px;">Catering Staff</div>
                     </td>
                     <td style="padding:16px 20px;text-align:center;">
-                        <form method="POST" action="{{ route('ramp-dispatcher.requests.dispatch', $request) }}" style="display:inline;">
-                            @csrf
-                                     <button type="submit" onclick="return confirm('Send Request #{{ $request->id }} to Flight Dispatcher for assessment?\n\nFlight: {{ $request->flight->flight_number }}\nItems: {{ $request->items->count() }}')" 
+                        <button type="button" onclick="showDispatchConfirmation({{ $request->id }}, '{{ $request->flight->flight_number }}', {{ $request->items->count() }})" 
                                style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:white;padding:10px 18px;border-radius:8px;border:none;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;">
-                                <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                </svg>
-                                Send
-                            </button>
+                            <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            Send
+                        </button>
+                        <form id="dispatch-form-{{ $request->id }}" method="POST" action="{{ route('ramp-dispatcher.requests.dispatch', $request) }}" style="display:none;">
+                            @csrf
                         </form>
                     </td>
                 </tr>
@@ -309,4 +309,45 @@
     </div>
     @endif
 </div>
+
+<script>
+function showDispatchConfirmation(requestId, flightNumber, itemsCount) {
+    const confirmDiv = document.createElement('div');
+    confirmDiv.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;padding:28px;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.2);z-index:10000;max-width:450px;width:90%;';
+    confirmDiv.innerHTML = `
+        <h3 style="margin:0 0 16px 0;font-size:20px;font-weight:700;color:#1a202c;">Send to Flight Dispatcher?</h3>
+        <div style="color:#4a5568;font-size:15px;line-height:1.6;margin-bottom:20px;">
+            <p style="margin:0 0 12px 0;"><strong>Request #${requestId}</strong></p>
+            <p style="margin:0 0 8px 0;"><strong>Flight:</strong> ${flightNumber}</p>
+            <p style="margin:0 0 8px 0;"><strong>Items:</strong> ${itemsCount}</p>
+            <p style="margin:0;">Peleka kwa Flight Dispatcher kwa ajili ya assessment?</p>
+        </div>
+        <div style="display:flex;gap:12px;justify-content:flex-end;">
+            <button onclick="closeDispatchModal()" style="background:#6c757d;color:white;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">Cancel</button>
+            <button onclick="submitDispatchForm(${requestId})" style="background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:white;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">Send</button>
+        </div>
+    `;
+    
+    const overlay = document.createElement('div');
+    overlay.id = 'dispatch-modal-overlay';
+    overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999;';
+    overlay.onclick = closeDispatchModal;
+    
+    document.body.appendChild(overlay);
+    document.body.appendChild(confirmDiv);
+    window.currentDispatchConfirmDiv = confirmDiv;
+}
+
+function closeDispatchModal() {
+    const overlay = document.getElementById('dispatch-modal-overlay');
+    if (overlay) overlay.remove();
+    if (window.currentDispatchConfirmDiv) window.currentDispatchConfirmDiv.remove();
+}
+
+function submitDispatchForm(requestId) {
+    closeDispatchModal();
+    document.getElementById('dispatch-form-' + requestId).submit();
+}
+</script>
+
 @endsection

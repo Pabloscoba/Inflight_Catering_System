@@ -103,9 +103,9 @@
         <div style="background:white;border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:24px;">
             <h3 style="font-size:18px;font-weight:700;color:#111827;margin-bottom:20px;">✈️ Load onto Aircraft</h3>
             
-            <form action="{{ route('flight-purser.meals.receive', $meal) }}" method="POST">
+            <form action="{{ route('flight-purser.meals.receive', $meal) }}" method="POST" id="load-meal-form">
                 @csrf
-                <button type="submit" onclick="return confirm('Confirm loading this meal onto the aircraft?')"
+                <button type="button" onclick="showLoadMealConfirmation()"
                         style="width:100%;background:#10b981;color:white;padding:14px;border-radius:10px;border:none;font-weight:600;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
                     <svg style="width:20px;height:20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
@@ -158,4 +158,35 @@
         @endif
     </div>
 </div>
+
+{{-- Load Meal Confirmation Modal --}}
+<div id="loadMealModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:1000;align-items:center;justify-content:center">
+    <div style="background:white;padding:24px;border-radius:12px;max-width:400px;width:90%;box-shadow:0 4px 20px rgba(0,0,0,0.2)">
+        <h3 style="margin:0 0 12px;font-size:18px;font-weight:700">✈️ Confirm Load</h3>
+        <p style="color:#6b7280;margin:0 0 20px">Confirm loading this meal onto the aircraft?</p>
+        <div style="display:flex;gap:12px;justify-content:flex-end">
+            <button onclick="closeLoadMealModal()" style="padding:10px 20px;background:#e5e7eb;color:#374151;border:none;border-radius:6px;font-weight:600;cursor:pointer">
+                Cancel
+            </button>
+            <button onclick="submitLoadMealForm()" style="padding:10px 20px;background:#10b981;color:white;border:none;border-radius:6px;font-weight:600;cursor:pointer">
+                Confirm Load
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showLoadMealConfirmation() {
+        document.getElementById('loadMealModal').style.display = 'flex';
+    }
+
+    function closeLoadMealModal() {
+        document.getElementById('loadMealModal').style.display = 'none';
+    }
+
+    function submitLoadMealForm() {
+        document.getElementById('load-meal-form').submit();
+    }
+</script>
+
 @endsection

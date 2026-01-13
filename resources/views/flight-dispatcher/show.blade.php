@@ -30,9 +30,9 @@
 
         @can('recommend dispatch to flight operations')
             @if(!$request->dispatcher_recommended)
-                <form method="POST" action="{{ route('flight-dispatcher.requests.recommend', $request->id) }}" style="margin-top:10px">
+                <form method="POST" action="{{ route('flight-dispatcher.requests.recommend', $request->id) }}" style="margin-top:10px" id="recommend-form">
                     @csrf
-                    <button style="padding:8px 12px;background:linear-gradient(90deg,#06b6d4,#0ea5a4);color:white;border:none;border-radius:6px;cursor:pointer" onclick="return confirm('Recommend this request for dispatch to Flight Operations?')">Recommend Dispatch to Flight Operations</button>
+                    <button type="button" onclick="showRecommendConfirmation()" style="padding:8px 12px;background:linear-gradient(90deg,#06b6d4,#0ea5a4);color:white;border:none;border-radius:6px;cursor:pointer">Recommend Dispatch to Flight Operations</button>
                 </form>
             @else
                 <div style="margin-top:10px;padding:8px;border-radius:6px;background:#ecfeff;color:#065f46">Recommended on {{ optional($request->dispatcher_recommended_at)->format('Y-m-d H:i') }} by {{ optional($request->dispatcher_recommended_by ? App\Models\User::find($request->dispatcher_recommended_by) : null)->name }}</div>
@@ -40,11 +40,69 @@
         @endcan
 
         @can('forward requests to flight purser')
-            <form method="POST" action="{{ route('flight-dispatcher.requests.forward', $request->id) }}" style="margin-top:12px">
+            <form method="POST" action="{{ route('flight-dispatcher.requests.forward', $request->id) }}" style="margin-top:12px" id="forward-form">
                 @csrf
-                <button style="padding:8px 12px;background:linear-gradient(90deg,#7c3aed,#6d28d9);color:white;border:none;border-radius:6px;cursor:pointer" onclick="return confirm('Forward Request #{{ $request->id }} to Flight Purser?')">Forward to Flight Purser</button>
+                <button type="button" onclick="showForwardConfirmation({{ $request->id }})" style="padding:8px 12px;background:linear-gradient(90deg,#7c3aed,#6d28d9);color:white;border:none;border-radius:6px;cursor:pointer">Forward to Flight Purser</button>
             </form>
         @endcan
     </div>
+
+    {{-- Confirmation Modals --}}
+    <div id="recommendModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:1000;align-items:center;justify-content:center">
+        <div style="background:white;padding:24px;border-radius:12px;max-width:400px;width:90%;box-shadow:0 4px 20px rgba(0,0,0,0.2)">
+            <h3 style="margin:0 0 12px;font-size:18px;font-weight:700">Confirm Recommendation</h3>
+            <p style="color:#6b7280;margin:0 0 20px">Recommend this request for dispatch to Flight Operations?</p>
+            <div style="display:flex;gap:12px;justify-content:flex-end">
+                <button onclick="closeRecommendModal()" style="padding:10px 20px;background:#e5e7eb;color:#374151;border:none;border-radius:6px;font-weight:600;cursor:pointer">
+                    Cancel
+                </button>
+                <button onclick="submitRecommendForm()" style="padding:10px 20px;background:#06b6d4;color:white;border:none;border-radius:6px;font-weight:600;cursor:pointer">
+                    Confirm
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="forwardModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:1000;align-items:center;justify-content:center">
+        <div style="background:white;padding:24px;border-radius:12px;max-width:400px;width:90%;box-shadow:0 4px 20px rgba(0,0,0,0.2)">
+            <h3 style="margin:0 0 12px;font-size:18px;font-weight:700">Forward to Flight Purser</h3>
+            <p id="forwardMessage" style="color:#6b7280;margin:0 0 20px"></p>
+            <div style="display:flex;gap:12px;justify-content:flex-end">
+                <button onclick="closeForwardModal()" style="padding:10px 20px;background:#e5e7eb;color:#374151;border:none;border-radius:6px;font-weight:600;cursor:pointer">
+                    Cancel
+                </button>
+                <button onclick="submitForwardForm()" style="padding:10px 20px;background:#7c3aed;color:white;border:none;border-radius:6px;font-weight:600;cursor:pointer">
+                    Forward
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showRecommendConfirmation() {
+            document.getElementById('recommendModal').style.display = 'flex';
+        }
+
+        function closeRecommendModal() {
+            document.getElementById('recommendModal').style.display = 'none';
+        }
+
+        function submitRecommendForm() {
+            document.getElementById('recommend-form').submit();
+        }
+
+        function showForwardConfirmation(requestId) {
+            document.getElementById('forwardMessage').textContent = 'Forward Request #' + requestId + ' to Flight Purser?';
+            document.getElementById('forwardModal').style.display = 'flex';
+        }
+
+        function closeForwardModal() {
+            document.getElementById('forwardModal').style.display = 'none';
+        }
+
+        function submitForwardForm() {
+            document.getElementById('forward-form').submit();
+        }
+    </script>
 
 @endsection

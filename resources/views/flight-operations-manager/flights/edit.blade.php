@@ -51,6 +51,7 @@
             </div>
 
             <div style="display:flex; gap:12px; justify-content:flex-end; margin-top:14px;">
+                <input type="hidden" name="status" value="{{ old('status', $flight->status) }}" />
                 <button type="submit" style="background:#06b6d4; color:#fff; padding:10px 16px; border-radius:8px; border:none; font-weight:600;">Save</button>
             </div>
         </form>

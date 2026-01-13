@@ -105,12 +105,12 @@
                             </button>
                             
                             <!-- Reject Button -->
-                            <form action="{{ route('catering-staff.additional-requests.reject', $addRequest) }}" method="POST" style="display:inline;">
+                            <button type="button" onclick="showRejectConfirmation({{ $addRequest->id }})" 
+                                    style="background:#e53e3e;color:white;border:none;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;">
+                                ✗ Reject
+                            </button>
+                            <form id="reject-form-{{ $addRequest->id }}" action="{{ route('catering-staff.additional-requests.reject', $addRequest) }}" method="POST" style="display:none;">
                                 @csrf
-                                <button type="submit" onclick="return confirm('Are you sure you want to reject this request?')" 
-                                        style="background:#e53e3e;color:white;border:none;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;">
-                                    ✗ Reject
-                                </button>
                             </form>
                         </div>
                     </td>
@@ -276,5 +276,41 @@ function closeApproveModal() {
 document.getElementById('approveModal').addEventListener('click', function(e) {
     if (e.target === this) closeApproveModal();
 });
+
+// Reject Confirmation Modal
+function showRejectConfirmation(requestId) {
+    const confirmDiv = document.createElement('div');
+    confirmDiv.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;padding:28px;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.2);z-index:10000;max-width:450px;width:90%;';
+    confirmDiv.innerHTML = `
+        <h3 style="margin:0 0 16px 0;font-size:20px;font-weight:700;color:#dc2626;">Reject Request?</h3>
+        <div style="color:#4a5568;font-size:15px;line-height:1.6;margin-bottom:20px;">
+            <p style="margin:0;">Una uhakika unataka kukataa ombi hili?</p>
+        </div>
+        <div style="display:flex;gap:12px;justify-content:flex-end;">
+            <button onclick="closeRejectModal()" style="background:#6c757d;color:white;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">Cancel</button>
+            <button onclick="submitRejectForm(${requestId})" style="background:#dc2626;color:white;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">✗ Reject</button>
+        </div>
+    `;
+    
+    const overlay = document.createElement('div');
+    overlay.id = 'reject-modal-overlay';
+    overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999;';
+    overlay.onclick = closeRejectModal;
+    
+    document.body.appendChild(overlay);
+    document.body.appendChild(confirmDiv);
+    window.currentRejectConfirmDiv = confirmDiv;
+}
+
+function closeRejectModal() {
+    const overlay = document.getElementById('reject-modal-overlay');
+    if (overlay) overlay.remove();
+    if (window.currentRejectConfirmDiv) window.currentRejectConfirmDiv.remove();
+}
+
+function submitRejectForm(requestId) {
+    closeRejectModal();
+    document.getElementById('reject-form-' + requestId).submit();
+}
 </script>
 @endsection

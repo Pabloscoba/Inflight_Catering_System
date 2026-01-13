@@ -61,19 +61,24 @@ class DeliveryController extends Controller
                 $quantityRemaining = $approvedQty - $quantityUsed;
                 
                 $item->update([
-                    'quantity_used' => $quantityUsed,
+                    'quantity_used' => ($item->quantity_used ?? 0) + $quantityUsed,
                     'quantity_remaining' => $quantityRemaining,
                     'usage_notes' => $itemData['usage_notes'] ?? null,
                 ]);
             }
         }
         
-        // Update request status to served
+        // Check if there are any items remaining
+        $totalRemaining = $request->items()->sum('quantity_remaining');
+        
+        // Update request status based on remaining items
+        $newStatus = $totalRemaining > 0 ? 'loaded' : 'served'; // Keep as loaded if items remaining
+        
         $request->update([
-            'status' => 'served',
+            'status' => $newStatus,
             'served_by' => auth()->id(),
             'served_at' => now(),
-            'notes' => $request->notes ? $request->notes . "\n\n[Served Notes] " . $validated['general_notes'] : $validated['general_notes'],
+            'notes' => $request->notes ? $request->notes . "\n\n[Service Notes - " . now()->format('Y-m-d H:i') . "] " . $validated['general_notes'] : $validated['general_notes'],
         ]);
         
         // Log activity

@@ -3,10 +3,19 @@
 @section('title', 'Dispatch Record Details')
 
 @section('content')
+    @if(!isset($dispatch) || !$dispatch)
+        <div style="background:#fee2e2;border-left:4px solid #dc2626;padding:20px;border-radius:8px;margin-bottom:24px">
+            <h3 style="margin:0 0 8px;color:#991b1b;font-weight:700">⚠️ Error: Dispatch Record Not Found</h3>
+            <p style="margin:0;color:#991b1b">The dispatch record you're looking for doesn't exist or couldn't be loaded.</p>
+        </div>
+        <a href="{{ route('flight-dispatcher.dispatches.index') }}" style="display:inline-block;padding:12px 24px;background:#3b82f6;color:white;border-radius:8px;text-decoration:none;font-weight:600">
+            ← Back to Dispatch Records
+        </a>
+    @else
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
         <h1>📋 Dispatch Record #{{ $dispatch->id }}</h1>
         <div style="display:flex;gap:10px">
-            <a href="{{ route('flight-dispatcher.dispatches.edit', $dispatch) }}" style="padding:10px 16px;background:#3b82f6;color:white;border-radius:6px;text-decoration:none;font-weight:600">
+            <a href="{{ route('flight-dispatcher.dispatches.edit', ['dispatch' => $dispatch->id]) }}" style="padding:10px 16px;background:#3b82f6;color:white;border-radius:6px;text-decoration:none;font-weight:600">
                 ✏️ Edit
             </a>
             <a href="{{ route('flight-dispatcher.dispatches.index') }}" style="padding:10px 16px;background:#6b7280;color:white;border-radius:6px;text-decoration:none;font-weight:600">
@@ -183,5 +192,6 @@
             </div>
         </div>
     </div>
+    @endif
 
 @endsection
