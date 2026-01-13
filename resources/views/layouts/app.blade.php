@@ -133,16 +133,7 @@
                 @can('view products')
                 <!-- Products Management -->
                 @php
-                    $rolePrefix = 'admin';
-                    if (auth()->user()->hasRole('Cabin Crew')) $rolePrefix = 'cabin-crew';
-                    elseif (auth()->user()->hasRole('Catering Staff')) $rolePrefix = 'catering-staff';
-                    elseif (auth()->user()->hasRole('Inventory Personnel')) $rolePrefix = 'inventory-personnel';
-                    elseif (auth()->user()->hasRole('Inventory Supervisor')) $rolePrefix = 'inventory-supervisor';
-                    elseif (auth()->user()->hasRole('Catering Incharge')) $rolePrefix = 'catering-incharge';
-                    elseif (auth()->user()->hasRole('Security Staff')) $rolePrefix = 'security-staff';
-                    elseif (auth()->user()->hasRole('Ramp Dispatcher')) $rolePrefix = 'ramp-dispatcher';
-                    elseif (auth()->user()->hasRole('Flight Purser')) $rolePrefix = 'flight-purser';
-                    
+                    $rolePrefix = getRolePrefix();
                     $productsIndexRoute = $rolePrefix . '.products.index';
                 @endphp
                 
@@ -162,12 +153,10 @@
                     </button>
                     <div id="stock-submenu" class="sidebar-submenu" style="max-height: 0px;">
                         @php
-                            $stockPrefix = 'admin';
-                            if (auth()->user()->hasRole('Inventory Personnel')) $stockPrefix = 'inventory-personnel';
-                            elseif (auth()->user()->hasRole('Inventory Supervisor')) $stockPrefix = 'inventory-supervisor';
+                            $stockPrefix = getRolePrefix();
                         @endphp
                         
-                        @if($stockPrefix === 'admin' || $stockPrefix === 'inventory-personnel')
+                        @if(in_array($stockPrefix, ['admin', 'inventory-personnel', 'inventory-supervisor']))
                             @can('add stock')
                             <a href="{{ route($stockPrefix . '.stock-movements.incoming') }}" class="{{ request()->routeIs($stockPrefix . '.stock-movements.incoming') ? 'active' : '' }}">Incoming</a>
                             @endcan
@@ -315,19 +304,7 @@
                     </button>
                     <div id="settings-submenu" class="sidebar-submenu" style="max-height: 0px;">
                         @php
-                            $settingsPrefix = '';
-                            if (auth()->user()->hasRole('Admin')) $settingsPrefix = 'admin';
-                            elseif (auth()->user()->hasRole('Catering Staff')) $settingsPrefix = 'catering-staff';
-                            elseif (auth()->user()->hasRole('Inventory Personnel')) $settingsPrefix = 'inventory-personnel';
-                            elseif (auth()->user()->hasRole('Inventory Supervisor')) $settingsPrefix = 'inventory-supervisor';
-                            elseif (auth()->user()->hasRole('Security Staff')) $settingsPrefix = 'security-staff';
-                            elseif (auth()->user()->hasRole('Catering Incharge')) $settingsPrefix = 'catering-incharge';
-                            elseif (auth()->user()->hasRole('Ramp Dispatcher')) $settingsPrefix = 'ramp-dispatcher';
-                            elseif (auth()->user()->hasRole('Flight Dispatcher')) $settingsPrefix = 'flight-dispatcher';
-                            elseif (auth()->user()->hasRole('Flight Purser')) $settingsPrefix = 'flight-purser';
-                            elseif (auth()->user()->hasRole('Flight Operations Manager')) $settingsPrefix = 'flight-operations-manager';
-                            elseif (auth()->user()->hasAnyRole(['Flight Ops','flightops'])) $settingsPrefix = 'flight-operations-manager';
-                            elseif (auth()->user()->hasRole('Cabin Crew')) $settingsPrefix = 'cabin-crew';
+                            $settingsPrefix = getRolePrefix();
                         @endphp
                         
                         @if($settingsPrefix === 'admin')

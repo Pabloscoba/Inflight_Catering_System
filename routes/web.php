@@ -132,6 +132,16 @@ Route::middleware(['auth', 'check_role_or_permission:Flight Operations Manager']
     Route::get('/flights/{flight}/edit', [App\Http\Controllers\FlightOperationsManager\FlightController::class, 'edit'])->name('flights.edit')->middleware('permission:edit flights');
     Route::put('/flights/{flight}', [App\Http\Controllers\FlightOperationsManager\FlightController::class, 'update'])->name('flights.update')->middleware('permission:edit flights');
     Route::delete('/flights/{flight}', [App\Http\Controllers\FlightOperationsManager\FlightController::class, 'destroy'])->name('flights.destroy')->middleware('permission:delete flights');
+    
+    // Products Management (permission-based)
+    Route::get('/products', [App\Http\Controllers\Admin\ProductController::class, 'index'])->name('products.index')->middleware('permission:view products');
+    Route::get('/products/create', [App\Http\Controllers\Admin\ProductController::class, 'create'])->name('products.create')->middleware('permission:create products');
+    Route::post('/products', [App\Http\Controllers\Admin\ProductController::class, 'store'])->name('products.store')->middleware('permission:create products');
+    Route::get('/products/{product}/edit', [App\Http\Controllers\Admin\ProductController::class, 'edit'])->name('products.edit')->middleware('permission:update products');
+    Route::put('/products/{product}', [App\Http\Controllers\Admin\ProductController::class, 'update'])->name('products.update')->middleware('permission:update products');
+    Route::delete('/products/{product}', [App\Http\Controllers\Admin\ProductController::class, 'destroy'])->name('products.destroy')->middleware('permission:delete products');
+    Route::patch('/products/{product}/toggle-status', [App\Http\Controllers\Admin\ProductController::class, 'toggleStatus'])->name('products.toggle-status')->middleware('permission:update products');
+    
     // Settings (permission-based)
     Route::get('/settings', [App\Http\Controllers\FlightOperationsManager\SettingsController::class, 'index'])->name('settings')->middleware('permission:view settings');
 });
