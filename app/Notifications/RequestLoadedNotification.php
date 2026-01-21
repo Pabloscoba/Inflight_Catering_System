@@ -24,13 +24,28 @@ class RequestLoadedNotification extends Notification
 
     public function toArray($notifiable)
     {
+        // Determine action URL based on user role
+        $actionUrl = '#';
+        
+        if ($notifiable->hasRole('Flight Purser')) {
+            $actionUrl = route('flight-purser.requests.show', $this->request->id);
+        } elseif ($notifiable->hasRole('Cabin Crew')) {
+            $actionUrl = route('cabin-crew.dashboard');
+        } elseif ($notifiable->hasRole('Ramp Dispatcher')) {
+            $actionUrl = route('ramp-dispatcher.dashboard');
+        } elseif ($notifiable->hasRole('Admin')) {
+            $actionUrl = route('admin.requests.show', $this->request->id);
+        } else {
+            $actionUrl = url('/dashboard');
+        }
+        
         return [
             'title' => 'Request Loaded',
             'message' => "Request #{$this->request->id} for flight {$this->request->flight->flight_number} has been loaded onto aircraft",
             'request_id' => $this->request->id,
             'flight_number' => $this->request->flight->flight_number,
             'loaded_by' => $this->request->loadedBy->name ?? 'Ramp Dispatcher',
-            'action_url' => route('flight-purser.requests.show', $this->request->id),
+            'action_url' => $actionUrl,
             'icon' => 'truck',
             'color' => 'purple'
         ];

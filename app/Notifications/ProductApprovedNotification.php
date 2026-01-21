@@ -26,13 +26,26 @@ class ProductApprovedNotification extends Notification
     {
         $approverName = $this->product->approvedBy ? $this->product->approvedBy->name : 'Supervisor';
         
+        // Determine action URL based on user role
+        $actionUrl = '#';
+        
+        if ($notifiable->hasRole('Inventory Personnel')) {
+            $actionUrl = route('inventory-personnel.products.index');
+        } elseif ($notifiable->hasRole('Inventory Supervisor')) {
+            $actionUrl = route('inventory-supervisor.products.index');
+        } elseif ($notifiable->hasRole('Admin')) {
+            $actionUrl = route('admin.products.edit', $this->product->id);
+        } else {
+            $actionUrl = url('/dashboard');
+        }
+        
         return [
             'title' => 'Product Approved',
             'message' => "Your product '{$this->product->name}' has been approved by {$approverName}",
             'product_id' => $this->product->id,
             'product_name' => $this->product->name,
             'approved_by' => $approverName,
-            'action_url' => route('inventory-personnel.products.show', $this->product->id),
+            'action_url' => $actionUrl,
             'icon' => 'check',
             'color' => 'green'
         ];

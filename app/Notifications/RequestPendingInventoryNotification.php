@@ -24,6 +24,19 @@ class RequestPendingInventoryNotification extends Notification
 
     public function toArray($notifiable)
     {
+        // Determine action URL based on user role
+        $actionUrl = '#';
+        
+        if ($notifiable->hasRole('Inventory Personnel')) {
+            $actionUrl = route('inventory-personnel.requests.pending');
+        } elseif ($notifiable->hasRole('Inventory Supervisor')) {
+            $actionUrl = route('inventory-supervisor.requests.pending');
+        } elseif ($notifiable->hasRole('Admin')) {
+            $actionUrl = route('admin.requests.pending');
+        } else {
+            $actionUrl = url('/dashboard');
+        }
+        
         return [
             'title' => 'Request Needs Review',
             'message' => "Request #{$this->request->id} for flight {$this->request->flight->flight_number} needs inventory review",
@@ -31,7 +44,7 @@ class RequestPendingInventoryNotification extends Notification
             'flight_number' => $this->request->flight->flight_number,
             'requester' => $this->request->requester->name,
             'items_count' => $this->request->items->count(),
-            'action_url' => route('inventory-personnel.requests.pending'),
+            'action_url' => $actionUrl,
             'icon' => 'review',
             'color' => 'blue'
         ];

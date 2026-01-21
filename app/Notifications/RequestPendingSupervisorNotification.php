@@ -24,6 +24,19 @@ class RequestPendingSupervisorNotification extends Notification
 
     public function toArray($notifiable)
     {
+        // Determine action URL based on user role
+        $actionUrl = '#';
+        
+        if ($notifiable->hasRole('Admin')) {
+            $actionUrl = route('admin.requests.pending');
+        } elseif ($notifiable->hasRole('Inventory Supervisor')) {
+            $actionUrl = route('inventory-supervisor.requests.pending');
+        } elseif ($notifiable->hasRole('Inventory Personnel')) {
+            $actionUrl = route('inventory-personnel.requests.pending');
+        } else {
+            $actionUrl = url('/dashboard');
+        }
+        
         return [
             'title' => 'Request Needs Approval',
             'message' => "Request #{$this->request->id} for flight {$this->request->flight->flight_number} forwarded for supervisor approval",
@@ -31,7 +44,7 @@ class RequestPendingSupervisorNotification extends Notification
             'flight_number' => $this->request->flight->flight_number,
             'requester' => $this->request->requester->name,
             'items_count' => $this->request->items->count(),
-            'action_url' => route('admin.requests.pending'),
+            'action_url' => $actionUrl,
             'icon' => 'approval',
             'color' => 'purple'
         ];

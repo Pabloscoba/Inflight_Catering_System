@@ -32,6 +32,19 @@ class StockMovementCreatedNotification extends Notification
         ];
 
         $typeLabel = $typeLabels[$this->movement->type] ?? 'Stock Movement';
+        
+        // Determine action URL based on user role
+        $actionUrl = '#';
+        
+        if ($notifiable->hasRole('Inventory Supervisor')) {
+            $actionUrl = route('inventory-supervisor.approvals.movements');
+        } elseif ($notifiable->hasRole('Admin')) {
+            $actionUrl = route('admin.stock-movements.index');
+        } elseif ($notifiable->hasRole('Inventory Personnel')) {
+            $actionUrl = route('inventory-personnel.stock-movements.index');
+        } else {
+            $actionUrl = url('/dashboard');
+        }
 
         return [
             'title' => 'New Stock Movement Pending',
@@ -41,7 +54,7 @@ class StockMovementCreatedNotification extends Notification
             'type' => $this->movement->type,
             'quantity' => $this->movement->quantity,
             'created_by' => $this->movement->user->name ?? 'Personnel',
-            'action_url' => route('inventory-supervisor.approvals.movements'),
+            'action_url' => $actionUrl,
             'icon' => 'movement',
             'color' => 'orange'
         ];

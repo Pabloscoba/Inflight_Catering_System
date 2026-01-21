@@ -32,6 +32,19 @@ class StockMovementApprovedNotification extends Notification
         ];
 
         $typeLabel = $typeLabels[$this->movement->type] ?? 'Stock Movement';
+        
+        // Determine action URL based on user role
+        $actionUrl = '#';
+        
+        if ($notifiable->hasRole('Inventory Personnel')) {
+            $actionUrl = route('inventory-personnel.stock-movements.index');
+        } elseif ($notifiable->hasRole('Inventory Supervisor')) {
+            $actionUrl = route('inventory-supervisor.stock-movements.index');
+        } elseif ($notifiable->hasRole('Admin')) {
+            $actionUrl = route('admin.stock-movements.index');
+        } else {
+            $actionUrl = url('/dashboard');
+        }
 
         return [
             'title' => 'Stock Movement Approved',
@@ -41,7 +54,7 @@ class StockMovementApprovedNotification extends Notification
             'type' => $this->movement->type,
             'quantity' => $this->movement->quantity,
             'approved_by' => $this->movement->approvedBy->name ?? 'Supervisor',
-            'action_url' => route('inventory-personnel.stock-movements.index'),
+            'action_url' => $actionUrl,
             'icon' => 'check',
             'color' => 'green'
         ];

@@ -24,6 +24,19 @@ class StockLowNotification extends Notification
 
     public function toArray($notifiable)
     {
+        // Determine action URL based on user role
+        $actionUrl = '#';
+        
+        if ($notifiable->hasRole('Inventory Personnel')) {
+            $actionUrl = route('inventory-personnel.products.index');
+        } elseif ($notifiable->hasRole('Inventory Supervisor')) {
+            $actionUrl = route('inventory-supervisor.products.index');
+        } elseif ($notifiable->hasRole('Admin')) {
+            $actionUrl = route('admin.products.edit', $this->product->id);
+        } else {
+            $actionUrl = url('/dashboard');
+        }
+        
         return [
             'title' => 'Low Stock Alert',
             'message' => "{$this->product->name} stock is low ({$this->product->quantity_in_stock} units remaining)",
@@ -31,7 +44,7 @@ class StockLowNotification extends Notification
             'product_name' => $this->product->name,
             'current_stock' => $this->product->quantity_in_stock,
             'reorder_level' => $this->product->reorder_level ?? 50,
-            'action_url' => route('inventory-personnel.products.show', $this->product->id),
+            'action_url' => $actionUrl,
             'icon' => 'alert',
             'color' => 'red'
         ];
