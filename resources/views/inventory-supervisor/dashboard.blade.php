@@ -286,7 +286,7 @@
 <!-- Recently Approved Movements -->
 @if($recentlyApproved->count() > 0)
 <div style="background: white; border-radius: 16px; padding: 28px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-    <h3 style="font-size: 20px; font-weight: 700; color: #1a1a1a; margin: 0 0 24px 0;">Recently Approved</h3>
+    <h3 style="font-size: 20px; font-weight: 700; color: #1a1a1a; margin: 0 0 24px 0;">Recently Approved Request</h3>
     <table style="width: 100%; border-collapse: collapse;">
         <thead>
             <tr style="border-bottom: 2px solid #e9ecef;">

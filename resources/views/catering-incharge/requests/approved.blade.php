@@ -129,9 +129,27 @@
                         </div>
                     </td>
                     <td style="padding:16px 20px;">
-                        <div style="font-weight:600;color:#1f2937;font-size:14px;">{{ $request->approved_date->format('M d, Y') }}</div>
-                        <div style="font-size:12px;color:#6b7280;margin-top:2px;">{{ $request->approved_date->format('h:i A') }}</div>
-                        <div style="font-size:11px;color:#9ca3af;margin-top:4px;">{{ $request->approved_date->diffForHumans() }}</div>
+                        <div style="font-weight:600;color:#1f2937;font-size:14px;">
+                            @if($request->approved_date)
+                                {{ $request->approved_date->format('M d, Y') }}
+                            @else
+                                <span style="color:#ef4444;">N/A</span>
+                            @endif
+                        </div>
+                        <div style="font-size:12px;color:#6b7280;margin-top:2px;">
+                            @if($request->approved_date)
+                                {{ $request->approved_date->format('h:i A') }}
+                            @else
+                                <span style="color:#ef4444;">N/A</span>
+                            @endif
+                        </div>
+                        <div style="font-size:11px;color:#9ca3af;margin-top:4px;">
+                            @if($request->approved_date)
+                                {{ $request->approved_date->diffForHumans() }}
+                            @else
+                                <span style="color:#ef4444;">N/A</span>
+                            @endif
+                        </div>
                     </td>
                     <td style="padding:16px 20px;text-align:center;">
                         <span style="background:#d1fae5;color:#065f46;padding:8px 14px;border-radius:12px;font-size:12px;font-weight:700;display:inline-flex;align-items:center;gap:6px;">

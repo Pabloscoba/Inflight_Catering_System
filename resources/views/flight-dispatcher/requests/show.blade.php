@@ -7,7 +7,7 @@
     {{-- Header --}}
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
         <div>
-            <h1 style="margin:0 0 8px;font-size:28px;font-weight:700;color:#1a1a1a">✈️ Aircraft Assessment</h1>
+            <h1 style="margin:0 0 8px;font-size:28px;font-weight:700;color:#1a1a1a">✈️ Request Assessment</h1>
             <p style="margin:0;color:#6b7280;font-size:14px">Request #{{ $request->id }} • Flight {{ $request->flight->flight_number }}</p>
         </div>
         <a href="{{ route('flight-dispatcher.dashboard') }}" style="display:inline-flex;align-items:center;gap:8px;padding:10px 20px;background:#f3f4f6;color:#374151;border-radius:8px;text-decoration:none;font-weight:600;transition:all 0.2s" onmouseover="this.style.background='#e5e7eb'" onmouseout="this.style.background='#f3f4f6'">
@@ -89,14 +89,14 @@
             @if($request->status === 'awaiting_flight_dispatcher')
                 {{-- Assessment Form --}}
                 <div style="background:white;border-radius:12px;padding:24px;box-shadow:0 2px 12px rgba(0,0,0,0.08);margin-bottom:24px">
-                    <h3 style="margin:0 0 20px;font-size:18px;font-weight:700;color:#1a1a1a">🔍 Aircraft Assessment</h3>
+                    <h3 style="margin:0 0 20px;font-size:18px;font-weight:700;color:#1a1a1a">🔍 Aircraft-Request Assessment</h3>
                     
                     <form method="POST" action="{{ route('flight-dispatcher.requests.assess', $request) }}">
                         @csrf
                         
                         {{-- Aircraft Condition --}}
                         <div style="margin-bottom:16px">
-                            <label style="display:block;margin-bottom:8px;font-weight:600;color:#374151;font-size:13px">Aircraft Condition *</label>
+                            <label style="display:block;margin-bottom:8px;font-weight:600;color:#374151;font-size:13px">Request product Condition *</label>
                             <select name="aircraft_condition" required style="width:100%;padding:10px;border:1px solid #d1d5db;border-radius:8px;font-size:14px">
                                 <option value="">Select condition</option>
                                 <option value="good">✅ Good - Ready for flight</option>

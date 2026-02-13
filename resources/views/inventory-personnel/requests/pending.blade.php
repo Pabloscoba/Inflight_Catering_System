@@ -52,6 +52,7 @@
                             @csrf
                         </form>
                         <a href="{{ route('admin.requests.show', $req) }}" class="btn btn-sm" style="margin-left:8px;background:#f3f4f6;color:#374151;padding:8px 12px;border-radius:6px;text-decoration:none;">View</a>
+                        <a href="{{ route('inventory-personnel.requests.edit', $req) }}" class="btn btn-sm" style="margin-right:8px;background:#2563eb;color:white;padding:8px 12px;border-radius:6px;text-decoration:none;">✎ Edit</a>
                     </td>
                 </tr>
                 @endforeach

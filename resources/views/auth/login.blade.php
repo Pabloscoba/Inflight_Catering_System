@@ -56,9 +56,16 @@
         }
         
         .logo-container {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
-            border: 2px solid rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 15px;
+        }
+        
+        .logo-img {
+            width: 70px;
+            height: 60px;
+            object-fit: contain;
         }
         
         .aircraft-bg {
@@ -93,12 +100,11 @@
         <div class="relative z-10 w-full max-w-md px-6 fade-in-up">
             <!-- Logo/Brand Section -->
             <div class="text-center mb-8">
-                <div class="inline-flex items-center justify-center w-20 h-20 rounded-full logo-container mb-4">
-                    <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
-                    </svg>
+                <div class="inline-flex items-center justify-center w-24 h-24 rounded-2xl logo-container mb-4">
+                    <img src="{{ asset('images/ATCL LOGO.jpg') }}" alt="Air Tanzania Logo" class="logo-img">
                 </div>
-                <h1 class="text-3xl font-bold text-white mb-2">Inflight Catering System</h1>
+                <h1 style="font-style: italic;" class="text-xl font-semibold text-blue-100 mb-2">Air Tanzania</h1>
+                <h2 class="text-xl font-semibold text-blue-100 mb-2">Inflight Catering System</h2>
                 <p class="text-blue-100 text-sm">Welcome back! Please login to your account.</p>
             </div>
             

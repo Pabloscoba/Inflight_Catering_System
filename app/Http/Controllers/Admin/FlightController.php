@@ -15,6 +15,11 @@ class FlightController extends Controller
     {
         $query = Flight::query()->orderBy('departure_time', 'desc');
 
+        // Exclude completed/archived and arrived flights from default view
+        if (!$request->has('show_archived')) {
+            $query->whereNotIn('status', ['completed', 'arrived']);
+        }
+
         // Search by flight number, airline, origin, or destination
         if ($request->filled('search')) {
             $search = $request->search;

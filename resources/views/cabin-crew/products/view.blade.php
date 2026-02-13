@@ -16,6 +16,9 @@
             <a href="{{ route('cabin-crew.products.report', $request) }}" style="background:linear-gradient(135deg,#43e97b 0%,#38f9d7 100%);color:white;border:none;padding:10px 24px;border-radius:8px;font-weight:600;font-size:14px;text-decoration:none;display:inline-flex;align-items:center;gap:8px;">
                 📊 Generate Report
             </a>
+            <a href="{{ route('cabin-crew.products.report', [$request, 'pdf' => 1]) }}" target="_blank" style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;border:none;padding:10px 24px;border-radius:8px;font-weight:600;font-size:14px;text-decoration:none;display:inline-flex;align-items:center;gap:8px;">
+                🖨️ Export to PDF
+            </a>
             <a href="{{ route('cabin-crew.dashboard') }}" style="background:#e2e8f0;color:#2d3748;border:none;padding:10px 24px;border-radius:8px;font-weight:600;font-size:14px;text-decoration:none;">
                 ← Back
             </a>

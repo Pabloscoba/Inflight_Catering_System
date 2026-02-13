@@ -59,6 +59,53 @@ class Flight extends Model
         return $query->where('status', 'cancelled');
     }
 
+    public function scopeCompleted($query)
+    {
+        return $query->where('status', 'completed');
+    }
+
+    // Scope to get only active/relevant flights (not old departed/completed flights)
+    public function scopeActive($query)
+    {
+        // Show scheduled flights OR flights that departed within last 7 days
+        return $query->where(function($q) {
+            $q->where('status', 'scheduled')
+              ->orWhere(function($q2) {
+                  $q2->whereIn('status', ['departed', 'arrived', 'boarding'])
+                     ->where('departure_time', '>=', now()->subDays(7));
+              });
+        })->where('status', '!=', 'completed');
+    }
+
+    // Scope to get upcoming flights only
+    public function scopeUpcoming($query)
+    {
+        return $query->where('status', 'scheduled')
+                     ->where('departure_time', '>', now());
+    }
+
+    // Scope to get expired flights (old departed/completed)
+    public function scopeExpired($query)
+    {
+        return $query->where(function($q) {
+            $q->where('departure_time', '<', now()->subDays(30))
+              ->whereIn('status', ['departed', 'arrived']);
+        });
+    }
+
+    // Check if flight should auto-depart (departed time passed)
+    public function shouldAutoDeparted()
+    {
+        return $this->status === 'scheduled' && $this->departure_time < now();
+    }
+
+    // Check if flight is expired (old completed flight)
+    public function isExpired()
+    {
+        return in_array($this->status, ['departed', 'arrived']) && 
+               $this->departure_time < now()->subDays(30);
+    }
+
     // Helper methods
     public function isScheduled()
     {
@@ -85,6 +132,11 @@ class Flight extends Model
         return $this->status === 'cancelled';
     }
 
+    public function isCompleted()
+    {
+        return $this->status === 'completed';
+    }
+
     // Get status badge color
     public function getStatusColor()
     {
@@ -94,6 +146,7 @@ class Flight extends Model
             'departed' => '#7c3aed',
             'arrived' => '#059669',
             'cancelled' => '#dc2626',
+            'completed' => '#6b7280',
             default => '#64748b',
         };
     }
@@ -107,6 +160,7 @@ class Flight extends Model
             'departed' => '#f3e8ff',
             'arrived' => '#d1fae5',
             'cancelled' => '#fee2e2',
+            'completed' => '#f3f4f6',
             default => '#f1f5f9',
         };
     }

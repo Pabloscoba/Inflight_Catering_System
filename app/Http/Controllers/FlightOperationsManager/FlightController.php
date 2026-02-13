@@ -17,6 +17,11 @@ class FlightController extends Controller
 
         $query = Flight::query();
 
+        // Exclude completed/archived and arrived flights from default view
+        if (!$request->has('show_archived')) {
+            $query->whereNotIn('status', ['completed', 'arrived']);
+        }
+
         if ($q) {
             $query->where(function($r) use ($q) {
                 $r->where('flight_number', 'like', "%{$q}%")

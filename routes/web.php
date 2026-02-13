@@ -120,7 +120,7 @@ Route::middleware(['auth', 'check_role_or_permission:Admin'])->prefix('admin')->
 // ============================================
 // FLIGHT OPERATIONS MANAGER ROUTES
 // ============================================
-Route::middleware(['auth', 'check_role_or_permission:Flight Operations Manager'])->prefix('flight-operations-manager')->name('flight-operations-manager.')->group(function () {
+Route::middleware(['auth'])->prefix('flight-operations-manager')->name('flight-operations-manager.')->group(function () {
     // Dashboard
     Route::get('/dashboard', [App\Http\Controllers\FlightOperationsManager\DashboardController::class, 'index'])->name('dashboard');
     
@@ -141,6 +141,15 @@ Route::middleware(['auth', 'check_role_or_permission:Flight Operations Manager']
     Route::put('/products/{product}', [App\Http\Controllers\Admin\ProductController::class, 'update'])->name('products.update')->middleware('permission:update products');
     Route::delete('/products/{product}', [App\Http\Controllers\Admin\ProductController::class, 'destroy'])->name('products.destroy')->middleware('permission:delete products');
     Route::patch('/products/{product}/toggle-status', [App\Http\Controllers\Admin\ProductController::class, 'toggleStatus'])->name('products.toggle-status')->middleware('permission:update products');
+    
+    // Stock Movements (permission-based)
+    Route::get('/stock-movements', [App\Http\Controllers\Admin\StockMovementController::class, 'index'])->name('stock-movements.index')->middleware('permission:view stock levels');
+    Route::get('/stock-movements/incoming', [App\Http\Controllers\Admin\StockMovementController::class, 'incomingForm'])->name('stock-movements.incoming')->middleware('permission:add stock');
+    Route::post('/stock-movements/incoming', [App\Http\Controllers\Admin\StockMovementController::class, 'storeIncoming'])->name('stock-movements.store-incoming')->middleware('permission:add stock');
+    Route::get('/stock-movements/issue', [App\Http\Controllers\Admin\StockMovementController::class, 'issueForm'])->name('stock-movements.issue')->middleware('permission:issue stock');
+    Route::post('/stock-movements/issue', [App\Http\Controllers\Admin\StockMovementController::class, 'storeIssue'])->name('stock-movements.store-issue')->middleware('permission:issue stock');
+    Route::get('/stock-movements/returns', [App\Http\Controllers\Admin\StockMovementController::class, 'returnsForm'])->name('stock-movements.returns')->middleware('permission:process returns');
+    Route::post('/stock-movements/returns', [App\Http\Controllers\Admin\StockMovementController::class, 'storeReturns'])->name('stock-movements.store-returns')->middleware('permission:process returns');
     
     // Settings (permission-based)
     Route::get('/settings', [App\Http\Controllers\FlightOperationsManager\SettingsController::class, 'index'])->name('settings')->middleware('permission:view settings');
@@ -165,7 +174,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
 // ============================================
 // INVENTORY PERSONNEL ROUTES
 // ============================================
-Route::middleware(['auth', 'check_role_or_permission:Inventory Personnel'])->prefix('inventory-personnel')->name('inventory-personnel.')->group(function () {
+Route::middleware(['auth'])->prefix('inventory-personnel')->name('inventory-personnel.')->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\InventoryPersonnel\DashboardController::class, 'index'])->name('dashboard');
     
     // Products Management
@@ -213,7 +222,7 @@ Route::middleware(['auth', 'check_role_or_permission:Inventory Personnel'])->pre
 // ============================================
 // INVENTORY SUPERVISOR ROUTES
 // ============================================
-Route::middleware(['auth', 'check_role_or_permission:Inventory Supervisor'])->prefix('inventory-supervisor')->name('inventory-supervisor.')->group(function () {
+Route::middleware(['auth'])->prefix('inventory-supervisor')->name('inventory-supervisor.')->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\InventorySupervisor\DashboardController::class, 'index'])->name('dashboard');
     
     // Product approval and management routes
@@ -232,8 +241,14 @@ Route::middleware(['auth', 'check_role_or_permission:Inventory Supervisor'])->pr
     Route::post('/approvals/movements/{movement}/approve', [App\Http\Controllers\InventorySupervisor\ApprovalController::class, 'approveMovement'])->name('approvals.movements.approve')->middleware('permission:approve stock movements');
     Route::post('/approvals/movements/{movement}/reject', [App\Http\Controllers\InventorySupervisor\ApprovalController::class, 'rejectMovement'])->name('approvals.movements.reject')->middleware('permission:approve stock movements');
     
-    // Stock Movements history (view only)
+    // Stock Movements routes
     Route::get('/stock-movements', [App\Http\Controllers\Admin\StockMovementController::class, 'index'])->middleware('permission:view stock levels')->name('stock-movements.index');
+    Route::get('/stock-movements/incoming', [App\Http\Controllers\Admin\StockMovementController::class, 'incomingForm'])->name('stock-movements.incoming')->middleware('permission:add stock');
+    Route::post('/stock-movements/incoming', [App\Http\Controllers\Admin\StockMovementController::class, 'storeIncoming'])->name('stock-movements.store-incoming')->middleware('permission:add stock');
+    Route::get('/stock-movements/outgoing', [App\Http\Controllers\Admin\StockMovementController::class, 'outgoingForm'])->name('stock-movements.outgoing')->middleware('permission:add stock');
+    Route::post('/stock-movements/outgoing', [App\Http\Controllers\Admin\StockMovementController::class, 'storeOutgoing'])->name('stock-movements.store-outgoing')->middleware('permission:add stock');
+    Route::get('/stock-movements/issue', [App\Http\Controllers\Admin\StockMovementController::class, 'issueForm'])->name('stock-movements.issue')->middleware('permission:issue stock');
+    Route::post('/stock-movements/issue', [App\Http\Controllers\Admin\StockMovementController::class, 'storeIssue'])->name('stock-movements.store-issue')->middleware('permission:issue stock');
 
     // Inventory Supervisor can view and approve requests awaiting supervisor approval
     Route::get('/requests/pending', [App\Http\Controllers\InventorySupervisor\ApprovalController::class, 'pendingRequests'])->name('requests.pending')->middleware('permission:approve deny catering requests');
@@ -251,7 +266,7 @@ Route::middleware(['auth', 'check_role_or_permission:Inventory Supervisor'])->pr
 // ============================================
 // CATERING INCHARGE ROUTES
 // ============================================
-Route::middleware(['auth', 'check_role_or_permission:Catering Incharge'])->prefix('catering-incharge')->name('catering-incharge.')->group(function () {
+Route::middleware(['auth'])->prefix('catering-incharge')->name('catering-incharge.')->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\CateringIncharge\DashboardController::class, 'index'])->name('dashboard');
     
     // Product Receipt Approvals (from Inventory Personnel)
@@ -286,6 +301,16 @@ Route::middleware(['auth', 'check_role_or_permission:Catering Incharge'])->prefi
     Route::put('/products/{product}', [App\Http\Controllers\InventoryPersonnel\ProductController::class, 'update'])->name('products.update')->middleware('permission:update products');
     Route::delete('/products/{product}', [App\Http\Controllers\InventoryPersonnel\ProductController::class, 'destroy'])->name('products.destroy')->middleware('permission:delete products');
     
+    // Catering Incharge Request Editing
+    Route::middleware(['auth', 'role:Catering Incharge'])->prefix('catering-incharge/requests')->name('catering-incharge.requests.')->group(function () {
+        Route::get('/{requestModel}/edit', [App\Http\Controllers\CateringIncharge\RequestApprovalController::class, 'edit'])->name('edit');
+        Route::put('/{requestModel}', [App\Http\Controllers\CateringIncharge\RequestApprovalController::class, 'update'])->name('update');
+    });
+
+    // Edit and update pending requests (Catering Incharge adjustment)
+    Route::get('/requests/{requestModel}/edit', [App\Http\Controllers\CateringIncharge\RequestApprovalController::class, 'edit'])->name('requests.edit')->middleware('permission:approve catering staff requests');
+    Route::put('/requests/{requestModel}', [App\Http\Controllers\CateringIncharge\RequestApprovalController::class, 'update'])->name('requests.update')->middleware('permission:approve catering staff requests');
+    
     // Settings
     Route::get('/settings', [App\Http\Controllers\CateringIncharge\SettingsController::class, 'index'])->name('settings');
     Route::put('/settings/profile', [App\Http\Controllers\CateringIncharge\SettingsController::class, 'updateProfile'])->name('settings.update-profile');
@@ -296,7 +321,7 @@ Route::middleware(['auth', 'check_role_or_permission:Catering Incharge'])->prefi
 // ============================================
 // CATERING STAFF ROUTES
 // ============================================
-Route::middleware(['auth', 'check_role_or_permission:Catering Staff'])->prefix('catering-staff')->name('catering-staff.')->group(function () {
+Route::middleware(['auth'])->prefix('catering-staff')->name('catering-staff.')->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\CateringStaff\DashboardController::class, 'index'])->name('dashboard');
     // Requests by Catering Staff
     Route::get('/requests', [App\Http\Controllers\CateringStaff\RequestController::class, 'index'])->name('requests.index')->middleware('permission:view own catering requests');
@@ -345,7 +370,7 @@ Route::middleware(['auth', 'check_role_or_permission:Catering Staff'])->prefix('
 // ============================================
 // RAMP DISPATCHER ROUTES
 // ============================================
-Route::middleware(['auth', 'check_role_or_permission:Ramp Dispatcher'])->prefix('ramp-dispatcher')->name('ramp-dispatcher.')->group(function () {
+Route::middleware(['auth'])->prefix('ramp-dispatcher')->name('ramp-dispatcher.')->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\RampDispatcher\DashboardController::class, 'index'])->name('dashboard');
     Route::post('/requests/{request}/dispatch', [App\Http\Controllers\RampDispatcher\DispatchController::class, 'markDispatched'])->name('requests.dispatch');
     Route::get('/dispatched', [App\Http\Controllers\RampDispatcher\DispatchController::class, 'dispatched'])->name('dispatched');
@@ -376,7 +401,7 @@ Route::middleware(['auth', 'check_role_or_permission:Ramp Dispatcher'])->prefix(
 // ============================================
 // FLIGHT DISPATCHER ROUTES
 // ============================================
-Route::middleware(['auth', 'check_role_or_permission:Flight Dispatcher'])->prefix('flight-dispatcher')->name('flight-dispatcher.')->group(function () {
+Route::middleware(['auth'])->prefix('flight-dispatcher')->name('flight-dispatcher.')->group(function () {
     // Dashboard
     Route::get('/dashboard', [App\Http\Controllers\FlightDispatcher\DashboardController::class, 'index'])->name('dashboard');
     
@@ -422,7 +447,7 @@ Route::middleware(['auth', 'check_role_or_permission:Flight Dispatcher'])->prefi
 // ============================================
 // SECURITY STAFF ROUTES
 // ============================================
-Route::middleware(['auth', 'check_role_or_permission:Security Staff'])->prefix('security-staff')->name('security-staff.')->group(function () {
+Route::middleware(['auth'])->prefix('security-staff')->name('security-staff.')->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\SecurityStaff\DashboardController::class, 'index'])->name('dashboard');
     Route::get('/requests/awaiting-authentication', [App\Http\Controllers\SecurityStaff\RequestController::class, 'index'])->name('requests.awaiting-authentication')->middleware('permission:authenticate requests');
     Route::get('/requests/{request}', [App\Http\Controllers\SecurityStaff\RequestController::class, 'show'])->name('requests.show')->middleware('permission:authenticate requests');
@@ -457,7 +482,7 @@ Route::middleware(['auth', 'check_role_or_permission:Security Staff'])->prefix('
 // ============================================
 // CABIN CREW ROUTES
 // ============================================
-Route::middleware(['auth', 'check_role_or_permission:Cabin Crew'])->prefix('cabin-crew')->name('cabin-crew.')->group(function () {
+Route::middleware(['auth'])->prefix('cabin-crew')->name('cabin-crew.')->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\CabinCrew\DashboardController::class, 'index'])->name('dashboard');
     
     // Mark requests as delivered
@@ -469,6 +494,8 @@ Route::middleware(['auth', 'check_role_or_permission:Cabin Crew'])->prefix('cabi
     Route::post('/requests/{request}/served', [App\Http\Controllers\CabinCrew\DeliveryController::class, 'submitServed'])->name('served.submit');
     
     // Product usage management
+        // Cabin Crew Service Report (PDF & On-Screen)
+        Route::get('/service-report', [App\Http\Controllers\CabinCrew\ServiceReportController::class, 'index'])->name('service-report');
     Route::get('/requests/{request}/products', [App\Http\Controllers\CabinCrew\ProductUsageController::class, 'viewProducts'])->name('products.view');
     Route::post('/items/{item}/mark-used', [App\Http\Controllers\CabinCrew\ProductUsageController::class, 'markAsUsed'])->name('items.mark-used');
     Route::post('/items/{item}/record-defect', [App\Http\Controllers\CabinCrew\ProductUsageController::class, 'recordDefect'])->name('items.record-defect');
@@ -511,7 +538,7 @@ Route::middleware(['auth', 'check_role_or_permission:Cabin Crew'])->prefix('cabi
 // ============================================
 // FLIGHT PURSER ROUTES
 // ============================================
-Route::middleware(['auth', 'check_role_or_permission:Flight Purser'])->prefix('flight-purser')->name('flight-purser.')->group(function () {
+Route::middleware(['auth'])->prefix('flight-purser')->name('flight-purser.')->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\FlightPurser\DashboardController::class, 'index'])->name('dashboard');
     
     // Load requests onto aircraft

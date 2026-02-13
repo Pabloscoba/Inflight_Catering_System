@@ -52,7 +52,7 @@ class DispatchController extends Controller
         $validated = $request->validate([
             'flight_id' => 'required|exists:flights,id',
             'request_id' => 'nullable|exists:requests,id',
-            'fuel_status' => 'required|in:pending,confirmed,insufficient',
+            'fuel_status' => 'nullable|string',
             'fuel_notes' => 'nullable|string',
             'crew_readiness' => 'required|in:pending,confirmed,not_ready',
             'crew_notes' => 'nullable|string',
@@ -69,7 +69,7 @@ class DispatchController extends Controller
 
         // Set confirmation timestamps
         if ($validated['fuel_status'] === 'confirmed') {
-            $validated['fuel_confirmed_at'] = now();
+            //$validated['fuel_confirmed_at'] = now();
         }
         if ($validated['crew_readiness'] === 'confirmed') {
             $validated['crew_confirmed_at'] = now();

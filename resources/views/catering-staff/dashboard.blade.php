@@ -586,7 +586,7 @@ tr:hover {
                     <th style="padding:14px 20px;text-align:left;font-weight:600;color:#374151;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;">SKU</th>
                     <th style="padding:14px 20px;text-align:left;font-weight:600;color:#374151;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;">Category</th>
                     <th style="padding:14px 20px;text-align:center;font-weight:600;color:#374151;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;">Mini Stock</th>
-                    <th style="padding:14px 20px;text-align:center;font-weight:600;color:#374151;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;">Workflow Stock</th>
+                    <!--th style="padding:14px 20px;text-align:center;font-weight:600;color:#374151;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;"--></th>
                     <th style="padding:14px 20px;text-align:center;font-weight:600;color:#374151;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;">Total Available</th>
                     <th style="padding:14px 20px;text-align:center;font-weight:600;color:#374151;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;">Reorder Level</th>
                     <th style="padding:14px 20px;text-align:center;font-weight:600;color:#374151;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;">Status</th>
@@ -614,7 +614,7 @@ tr:hover {
                         <span style="color:#d1d5db;font-size:14px;">—</span>
                         @endif
                     </td>
-                    <td style="padding:16px 20px;text-align:center;">
+                    <!--td style="padding:16px 20px;text-align:center;">
                         @if($stock->workflow_stock > 0)
                         <div style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg, #d1fae5, #a7f3d0);padding:8px 12px;border-radius:8px;border:1px solid #6ee7b7;">
                             <div style="width:8px;height:8px;border-radius:50%;background:#10b981;"></div>
@@ -623,7 +623,7 @@ tr:hover {
                         @else
                         <span style="color:#d1d5db;font-size:14px;">—</span>
                         @endif
-                    </td>
+                    </td-->
                     <td style="padding:16px 20px;text-align:center;">
                         <div style="background:#f9fafb;padding:10px 16px;border-radius:10px;border:2px solid #e5e7eb;">
                             <div style="font-weight:700;color:#1f2937;font-size:20px;">{{ $stock->total_available }}</div>

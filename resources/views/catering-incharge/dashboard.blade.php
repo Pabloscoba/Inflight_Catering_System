@@ -84,7 +84,7 @@
             📦 Approve Receipts
         </a>
         <a href="{{ route('catering-incharge.requests.pending') }}" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 18px 24px; border-radius: 12px; text-decoration: none; font-weight: 600; text-align: center; box-shadow: 0 4px 12px rgba(240, 147, 251, 0.3); transition: all 0.3s ease; display: block;">
-            📋 Initial Approval
+            📋 Pending Approval
         </a>
         <a href="{{ route('catering-incharge.requests.pending-final') }}" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 18px 24px; border-radius: 12px; text-decoration: none; font-weight: 600; text-align: center; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3); transition: all 0.3s ease; display: block; position: relative;">
             🔒 Final Approval

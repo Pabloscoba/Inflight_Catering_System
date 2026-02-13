@@ -196,7 +196,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label>Initial Stock Quantity <span class="required">*</span></label>
+                            <label>Quantity <span class="required">*</span></label>
                             <input type="number" name="quantity_in_stock" value="{{ old('quantity_in_stock', 0) }}" min="0" required>
                             <div class="help-text">This quantity will be added to main stock after supervisor approval</div>
                             @error('quantity_in_stock')

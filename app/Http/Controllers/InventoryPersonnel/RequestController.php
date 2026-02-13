@@ -89,4 +89,37 @@ class RequestController extends Controller
 
         return view('inventory-personnel.requests.issued', compact('requests'));
     }
+
+    /**
+     * Edit a pending request (Inventory Personnel adjustment)
+     */
+    public function edit(RequestModel $requestModel)
+    {
+        if ($requestModel->status !== 'forwarded' && $requestModel->status !== 'pending_inventory') {
+            return back()->with('error', 'Only pending/forwarded requests can be edited.');
+        }
+        $requestModel->load(['items.product.category']);
+        return view('inventory-personnel.requests.edit', compact('requestModel'));
+    }
+
+    /**
+     * Update a pending request (Inventory Personnel adjustment)
+     */
+    public function update(Request $request, RequestModel $requestModel)
+    {
+        if ($requestModel->status !== 'forwarded' && $requestModel->status !== 'pending_inventory') {
+            return back()->with('error', 'Only pending/forwarded requests can be updated.');
+        }
+        $validated = $request->validate([
+            'items' => 'required|array',
+            'items.*.quantity' => 'required|integer|min:1',
+        ]);
+        foreach ($validated['items'] as $itemId => $itemData) {
+            $item = $requestModel->items->where('id', $itemId)->first();
+            if ($item) {
+                $item->update(['quantity_requested' => $itemData['quantity']]);
+            }
+        }
+        return redirect()->route('inventory-personnel.requests.edit', $requestModel)->with('success', 'Request updated successfully!');
+    }
 }

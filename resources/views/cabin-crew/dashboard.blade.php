@@ -469,9 +469,13 @@
                 <p style="margin:0;font-size:14px;opacity:0.9;">Create comprehensive report of today's service activities</p>
             </div>
             <div>
-                <button onclick="window.print()" style="background:rgba(255,255,255,0.25);color:white;border:none;padding:12px 24px;border-radius:8px;font-weight:600;font-size:14px;cursor:pointer;backdrop-filter:blur(10px);">
-                    📄 Generate Report
-                </button>
+                <form method="get" action="{{ route('cabin-crew.service-report') }}" style="display:flex;gap:10px;align-items:center;">
+                    <input type="date" name="start_date" value="{{ request('start_date') }}" style="padding:8px 12px;border-radius:6px;border:1px solid #ccc;font-size:14px;color:#222;background:#fff;">
+                    <span style="color:#222;font-weight:600;">to</span>
+                    <input type="date" name="end_date" value="{{ request('end_date') }}" style="padding:8px 12px;border-radius:6px;border:1px solid #ccc;font-size:14px;color:#222;background:#fff;">
+                    <button type="submit" style="background:rgba(255,255,255,0.15);color:white;border:none;padding:10px 18px;border-radius:8px;font-weight:600;font-size:14px;cursor:pointer;">📄 View Report</button>
+                    <button type="submit" name="pdf" value="1" style="background:rgba(255,255,255,0.25);color:white;border:none;padding:10px 18px;border-radius:8px;font-weight:600;font-size:14px;cursor:pointer;">🖨️ Export PDF</button>
+                </form>
             </div>
         </div>
         
@@ -515,7 +519,8 @@
                     <th style="padding:14px 16px;text-align:left;font-size:13px;font-weight:600;color:#4a5568;border-bottom:2px solid #e2e8f0;">Request ID</th>
                     <th style="padding:14px 16px;text-align:left;font-size:13px;font-weight:600;color:#4a5568;border-bottom:2px solid #e2e8f0;">Flight</th>
                     <th style="padding:14px 16px;text-align:left;font-size:13px;font-weight:600;color:#4a5568;border-bottom:2px solid #e2e8f0;">Items Count</th>
-                    <th style="padding:14px 16px;text-align:left;font-size:13px;font-weight:600;color:#4a5568;border-bottom:2px solid #e2e8f0;">Delivered At</th>
+                    <th style="padding:14px 16px;text-align:left;font-size:13px;font-weight:600;color:#4a5568;border-bottom:2px solid #e2e8f0;">Delivered/Served At</th>
+                    <th style="padding:14px 16px;text-align:left;font-size:13px;font-weight:600;color:#4a5568;border-bottom:2px solid #e2e8f0;">Cabin Crew</th>
                     <th style="padding:14px 16px;text-align:center;font-size:13px;font-weight:600;color:#4a5568;border-bottom:2px solid #e2e8f0;">Status</th>
                 </tr>
             </thead>
@@ -533,7 +538,22 @@
                         {{ $request->items->count() }} items
                     </td>
                     <td style="padding:16px;color:#718096;font-size:13px;">
-                        {{ $request->delivered_at ? \Carbon\Carbon::parse($request->delivered_at)->format('M d, H:i') : 'N/A' }}
+                        @if($request->served_at)
+                            {{ \Carbon\Carbon::parse($request->served_at)->format('M d, H:i') }}
+                        @elseif($request->delivered_at)
+                            {{ \Carbon\Carbon::parse($request->delivered_at)->format('M d, H:i') }}
+                        @else
+                            N/A
+                        @endif
+                    </td>
+                    <td style="padding:16px;color:#2d3748;font-size:13px;">
+                        @if($request->served_by && $request->cabinCrew)
+                            {{ $request->cabinCrew->name }}
+                        @elseif($request->delivered_by && $request->receiver)
+                            {{ $request->receiver->name }}
+                        @else
+                            N/A
+                        @endif
                     </td>
                     <td style="padding:16px;text-align:center;">
                         <span style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;padding:4px 12px;border-radius:12px;font-size:12px;font-weight:600;">

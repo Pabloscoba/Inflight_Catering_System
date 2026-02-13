@@ -56,7 +56,10 @@ class RequestController extends Controller
     // Show create request form
     public function create()
     {
-        $flights = Flight::where('status', 'scheduled')->orderBy('departure_time', 'asc')->get();
+        $flights = Flight::where('status', 'scheduled')
+            ->where('departure_time', '>', now())
+            ->orderBy('departure_time', 'asc')
+            ->get();
         $products = Product::where('is_active', true)->where('quantity_in_stock', '>', 0)->orderBy('name')->get();
 
         return view('admin.requests.create', compact('flights', 'products'));
@@ -72,6 +75,14 @@ class RequestController extends Controller
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.quantity' => 'required|integer|min:1',
         ]);
+        
+        // Validate flight is still in the future
+        $flight = Flight::findOrFail($request->flight_id);
+        if ($flight->departure_time <= now()) {
+            return back()->withErrors([
+                'flight_id' => 'Cannot create request for a flight that has already departed or is departing now.'
+            ])->withInput();
+        }
 
         $newRequest = DB::transaction(function () use ($request) {
             // Create request

@@ -66,6 +66,9 @@
                         <td style="padding: 14px; font-size: 14px; color: #6c757d;">{{ $request->notes ?? '-' }}</td>
                         <td style="padding: 14px;">
                             <div style="display: flex; gap: 8px;">
+                                <a href="{{ route('catering-incharge.requests.edit', $request) }}" style="background: #2563eb; color: white; border: none; padding: 6px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none; transition: all 0.2s;" onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">
+                                    ✎ Edit
+                                </a>
                                 <button onclick="showApproveConfirmation({{ $request->id }}, '{{ $request->flight->flight_number }}')" style="background: #28a745; color: white; border: none; padding: 6px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#218838'" onmouseout="this.style.background='#28a745'">
                                     ✓ Approve
                                 </button>

@@ -13,8 +13,8 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        // Get stock statistics (active products only)
-        $totalProducts = Product::where('is_active', true)->count();
+        // Get stock statistics (all products - active and inactive)
+        $totalProducts = Product::count();
         $lowStockProducts = Product::where('is_active', true)
             ->whereColumn('quantity_in_stock', '<', 'reorder_level')
             ->where('quantity_in_stock', '>', 0)
@@ -81,10 +81,9 @@ class DashboardController extends Controller
             ->orderBy('quantity_in_stock', 'desc')
             ->paginate(15);
 
-        // Recently added products (last 10)
+        // Recently added products (last 10) - all products regardless of active status
         $recentProducts = Product::with('category')
-            ->where('is_active', true)
-            ->latest()
+            ->latest('created_at')
             ->limit(10)
             ->get();
 

@@ -152,7 +152,7 @@
                                     <form method="POST" action="{{ route('admin.users.destroy', $user) }}" onsubmit="return confirm('Delete this user permanently?');" style="display: inline;">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm">🗑️ Delete</button>
+                                        <!--button type="submit" class="btn btn-danger btn-sm">🗑️ Delete</button-->
                                     </form>
                                     @endif
                                 </div>

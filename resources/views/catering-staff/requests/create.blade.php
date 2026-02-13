@@ -26,7 +26,7 @@
                 <label for="flight_id" style="display:block;font-weight:600;margin-bottom:6px;">Flight *</label>
                 <select name="flight_id" id="flight_id" class="form-control" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #e5e7eb;background:white;font-size:14px;">
                     <option value="">-- Select Flight --</option>
-                    @foreach(App\Models\Flight::where('status', 'scheduled')->orderBy('departure_time')->get() as $flight)
+                    @foreach($flights as $flight)
                         <option value="{{ $flight->id }}" data-departure="{{ optional($flight->departure_time)->format('Y-m-d\TH:i') }}" {{ old('flight_id') == $flight->id ? 'selected' : '' }}>
                             {{ $flight->flight_number }} — {{ $flight->origin }}→{{ $flight->destination }} @if($flight->departure_time) — {{ $flight->departure_time->format('Y-m-d H:i') }}@endif
                         </option>

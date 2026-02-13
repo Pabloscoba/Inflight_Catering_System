@@ -19,6 +19,7 @@ class ApprovalController extends Controller
     {
         $product->update([
             'status' => 'approved',
+            'is_active' => true,
             'approved_by' => auth()->id(),
             'approved_at' => now(),
         ]);

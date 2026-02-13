@@ -47,7 +47,14 @@ class RequestController extends Controller
             ->orderBy('quantity_in_stock', 'desc') // Show in-stock items first
             ->orderBy('name')
             ->get();
-        return view('catering-staff.requests.create', compact('products'));
+        
+        // Get only future flights that are scheduled
+        $flights = \App\Models\Flight::where('status', 'scheduled')
+            ->where('departure_time', '>', now())
+            ->orderBy('departure_time', 'asc')
+            ->get();
+        
+        return view('catering-staff.requests.create', compact('products', 'flights'));
     }
 
     public function store(Request $request)
@@ -61,6 +68,15 @@ class RequestController extends Controller
             'items.*.meal_type' => 'nullable|in:breakfast,lunch,dinner,snack,VIP_meal,special_meal,non_meal',
             'items.*.quantity' => 'required|integer|min:1',
         ]);
+        
+        // Validate flight is still in the future
+        $flight = Flight::find($data['flight_id']);
+        if ($flight && $flight->departure_time <= now()) {
+            return back()->withErrors([
+                'flight_id' => 'Cannot create request for a flight that has already departed or is departing now.'
+            ])->withInput();
+        }
+        
         // Validate product availability from MAIN STOCK (inventory)
         // Catering Staff requests from main inventory, not catering stock
         foreach ($data['items'] as $item) {
@@ -104,6 +120,31 @@ class RequestController extends Controller
             
             // All requests start at pending_catering_incharge (NEW WORKFLOW)
             $initialStatus = 'pending_catering_incharge';
+            
+            // Prevent duplicate pending requests for the same user and flight
+            $existing = RequestModel::where('requester_id', auth()->id())
+                ->where('flight_id', $data['flight_id'])
+                ->where('status', 'pending_catering_incharge')
+                ->first();
+            if ($existing) {
+                // Update items in the existing request instead of creating a new request
+                foreach ($data['items'] as $it) {
+                    $item = $existing->items()->where('product_id', $it['product_id'])->first();
+                    if ($item) {
+                        $item->update([
+                            'quantity_requested' => $it['quantity'],
+                            'meal_type' => $it['meal_type'] ?? null,
+                        ]);
+                    } else {
+                        $existing->items()->create([
+                            'product_id' => $it['product_id'],
+                            'meal_type' => $it['meal_type'] ?? null,
+                            'quantity_requested' => $it['quantity'],
+                        ]);
+                    }
+                }
+                return redirect()->route('catering-staff.requests.index')->with('success', 'Request updated successfully.');
+            }
             
             $req = RequestModel::create([
                 'flight_id' => $data['flight_id'],

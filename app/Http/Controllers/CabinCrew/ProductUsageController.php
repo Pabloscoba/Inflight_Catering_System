@@ -9,6 +9,8 @@ use App\Models\AdditionalProductRequest;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
+use Barryvdh\DomPDF\Facade\Pdf;
+
 class ProductUsageController extends Controller
 {
     /**
@@ -76,6 +78,27 @@ class ProductUsageController extends Controller
             'quantity_remaining' => $quantityRemaining,
             'usage_notes' => $request->usage_notes,
         ]);
+
+        // If all items are used, mark request as served/delivered and set timestamp
+        $requestModel = $item->request;
+        $allUsed = $requestModel->items->every(function($itm) {
+            return ($itm->quantity_used ?? 0) + ($itm->quantity_defect ?? 0) >= ($itm->quantity_approved ?? $itm->quantity_requested);
+        });
+        if ($allUsed) {
+            if ($requestModel->request_type === 'meal') {
+                $requestModel->update([
+                    'status' => 'served',
+                    'served_at' => now(),
+                    'served_by' => auth()->id(),
+                ]);
+            } else {
+                $requestModel->update([
+                    'status' => 'delivered',
+                    'delivered_at' => now(),
+                    'delivered_by' => auth()->id(),
+                ]);
+            }
+        }
 
         return back()->with('success', 'Product usage recorded successfully!');
     }
@@ -159,6 +182,18 @@ class ProductUsageController extends Controller
             return $item->quantity_approved ?? $item->quantity_requested;
         });
         
+        // If PDF requested, generate PDF using dompdf
+        if (request()->has('pdf')) {
+            $pdf = Pdf::loadView('cabin-crew.products.report', [
+                'request' => $request,
+                'totalUsed' => $totalUsed,
+                'totalDefect' => $totalDefect,
+                'totalRemaining' => $totalRemaining,
+                'totalApproved' => $totalApproved,
+            ])->setPaper('a4', 'portrait');
+            $filename = 'Product-Usage-Report-Request-' . $request->id . '.pdf';
+            return $pdf->download($filename);
+        }
         return view('cabin-crew.products.report', compact(
             'request',
             'totalUsed',

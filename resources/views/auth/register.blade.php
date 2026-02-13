@@ -56,9 +56,16 @@
         }
         
         .logo-container {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
-            border: 2px solid rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 15px;
+        }
+        
+        .logo-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
         
         .aircraft-bg {
@@ -93,10 +100,8 @@
         <div class="relative z-10 w-full max-w-md px-6 fade-in-up">
             <!-- Logo/Brand Section -->
             <div class="text-center mb-8">
-                <div class="inline-flex items-center justify-center w-20 h-20 rounded-full logo-container mb-4">
-                    <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
-                    </svg>
+                <div class="inline-flex items-center justify-center w-24 h-24 rounded-2xl logo-container mb-4">
+                    <img src="{{ asset('images/ATCL LOGO.jpg') }}" alt="Air Tanzania Logo" class="logo-img">
                 </div>
                 <h1 class="text-3xl font-bold text-white mb-2">Create Account</h1>
                 <p class="text-blue-100 text-sm">Contact your administrator for registration</p>

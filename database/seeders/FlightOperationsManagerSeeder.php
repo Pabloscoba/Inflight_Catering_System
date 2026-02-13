@@ -13,7 +13,7 @@ class FlightOperationsManagerSeeder extends Seeder
     /**
      * Run the database seeder.
      */
-    public function run(): void
+   /* public function run(): void
     {
         // ============================================
         // FLIGHT OPERATIONS MANAGER PERMISSIONS
@@ -58,5 +58,5 @@ class FlightOperationsManagerSeeder extends Seeder
 
         echo "✅ Flight Operations Manager role created with " . count($flightOperationsPermissions) . " permissions\n";
         echo "✅ Test user created: flightops@inflightcatering.com (password: password)\n";
-    }
+    }*/
 }

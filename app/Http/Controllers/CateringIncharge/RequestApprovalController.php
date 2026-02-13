@@ -140,4 +140,37 @@ class RequestApprovalController extends Controller
 
         return view('catering-incharge.requests.approved', compact('requests'));
     }
+
+    /**
+     * Edit a pending request (Catering Incharge adjustment)
+     */
+    public function edit(RequestModel $requestModel)
+    {
+        if ($requestModel->status !== 'pending_catering_incharge') {
+            return back()->with('error', 'Only pending requests can be edited.');
+        }
+        $requestModel->load(['items.product.category']);
+        return view('catering-incharge.requests.edit', compact('requestModel'));
+    }
+
+    /**
+     * Update a pending request (Catering Incharge adjustment)
+     */
+    public function update(Request $request, RequestModel $requestModel)
+    {
+        if ($requestModel->status !== 'pending_catering_incharge') {
+            return back()->with('error', 'Only pending requests can be updated.');
+        }
+        $validated = $request->validate([
+            'items' => 'required|array',
+            'items.*.quantity' => 'required|integer|min:1',
+        ]);
+        foreach ($validated['items'] as $itemId => $itemData) {
+            $item = $requestModel->items->where('id', $itemId)->first();
+            if ($item) {
+                $item->update(['quantity' => $itemData['quantity']]);
+            }
+        }
+        return redirect()->route('catering-incharge.requests.edit', $requestModel)->with('success', 'Request updated successfully!');
+    }
 }
