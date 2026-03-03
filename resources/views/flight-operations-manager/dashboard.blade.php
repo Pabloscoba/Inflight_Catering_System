@@ -60,7 +60,7 @@
         </div>
 
         <!-- Flights with Requests -->
-        <div style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius:12px; padding:20px; color:white; box-shadow:0 4px 12px rgba(16,185,129,0.3);">
+        <div style="background:linear-gradient(135deg, #10b981 0%, #1e3a8a 100%); border-radius:12px; padding:20px; color:white; box-shadow:0 4px 12px rgba(16,185,129,0.3);">
             <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
                 <div style="background:rgba(255,255,255,0.2); padding:10px; border-radius:10px;">
                     <svg style="width:24px; height:24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">

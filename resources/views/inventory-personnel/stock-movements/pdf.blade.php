@@ -16,10 +16,10 @@
             text-align: center; 
             margin-bottom: 30px; 
             padding-bottom: 15px; 
-            border-bottom: 3px solid #0b1a68; 
+            border-bottom: 3px solid #1e3a8a; 
         }
         .header h1 { 
-            color: #0b1a68; 
+            color: #1e3a8a; 
             font-size: 26px; 
             margin-bottom: 8px;
             font-weight: 700;
@@ -40,10 +40,10 @@
             padding: 12px;
             border-radius: 6px;
             margin-bottom: 20px;
-            border-left: 4px solid #0b1a68;
+            border-left: 4px solid #1e3a8a;
         }
         .filters-applied strong {
-            color: #0b1a68;
+            color: #1e3a8a;
             font-size: 11px;
         }
         table { 
@@ -53,7 +53,7 @@
             background: white;
         }
         thead { 
-            background: #0b1a68; 
+            background: #1e3a8a; 
             color: white;
         }
         th { 
@@ -89,7 +89,7 @@
         .badge-transfer { background: #dbeafe; color: #1e40af; }
         .badge-pending { background: #fef3c7; color: #92400e; }
         .badge-approved { background: #d1fae5; color: #065f46; }
-        .qty-positive { color: #059669; font-weight: 600; }
+        .qty-positive { color: #1e3a8a; font-weight: 600; }
         .qty-negative { color: #dc2626; font-weight: 600; }
         .footer { 
             text-align: center; 
@@ -110,7 +110,7 @@
             background: #f8fafc;
             padding: 12px;
             border-radius: 6px;
-            border-left: 4px solid #0b1a68;
+            border-left: 4px solid #1e3a8a;
         }
         .summary-card h3 {
             font-size: 10px;
@@ -121,7 +121,7 @@
         .summary-card .value {
             font-size: 20px;
             font-weight: 700;
-            color: #0b1a68;
+            color: #1e3a8a;
         }
         @media print {
             body { padding: 10px; }

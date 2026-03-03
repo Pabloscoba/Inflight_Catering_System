@@ -53,7 +53,7 @@
     @if($requestModel->approved_by)
     <div style="margin-top:16px;padding-top:16px;border-top:1px solid #f3f4f6;">
         <div style="display:flex;align-items:center;gap:12px;">
-            <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#10b981 0%,#059669 100%);display:flex;align-items:center;justify-content:center;">
+            <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#10b981 0%,#1e3a8a 100%);display:flex;align-items:center;justify-content:center;">
                 <svg style="width:20px;height:20px;color:white;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                 </svg>
@@ -224,7 +224,7 @@
                         <div style="font-size:11px;color:#9ca3af;margin-top:2px;">units</div>
                     </td>
                     <td style="padding:16px 20px;text-align:center;">
-                        <div style="font-size:18px;font-weight:700;color:{{ $cateringAvailable > 0 ? '#059669' : '#dc2626' }};">{{ $cateringAvailable }}</div>
+                        <div style="font-size:18px;font-weight:700;color:{{ $cateringAvailable > 0 ? '#1e3a8a' : '#dc2626' }};">{{ $cateringAvailable }}</div>
                         <div style="font-size:11px;color:#9ca3af;margin-top:2px;">in catering</div>
                     </td>
                     @endif
@@ -262,7 +262,7 @@
                 <div style="font-size:13px;color:#6b7280;">Verify the quantities above match what you actually received</div>
             </div>
             <button type="submit" 
-                    style="background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:white;padding:14px 32px;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(16,185,129,0.4);transition:all 0.2s;"
+                    style="background:linear-gradient(135deg,#10b981 0%,#1e3a8a 100%);color:white;padding:14px 32px;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(16,185,129,0.4);transition:all 0.2s;"
                     onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 16px rgba(16,185,129,0.5)'"
                     onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 12px rgba(16,185,129,0.4)'">
                 ✓ Confirm Receipt & Send for Final Approval

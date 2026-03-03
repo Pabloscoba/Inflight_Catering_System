@@ -20,7 +20,7 @@
         </div>
 
         <div style="background:white;border-radius:16px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.08);display:flex;gap:16px;align-items:center;">
-            <div style="width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,#10b981 0%,#059669 100%);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <div style="width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,#10b981 0%,#1e3a8a 100%);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                 <span style="font-size:28px;">✅</span>
             </div>
             <div style="flex:1;">
@@ -91,7 +91,7 @@
                             <input type="text" name="verification_notes" placeholder="Additional notes about this return" style="width:100%;padding:10px;border:2px solid #e2e8f0;border-radius:8px;font-size:14px;">
                         </div>
                         <div style="display:flex;gap:8px;">
-                            <button type="button" onclick="showAuthReturnConfirmation({{ $return->id }})" style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:white;padding:10px 20px;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">
+                            <button type="button" onclick="showAuthReturnConfirmation({{ $return->id }})" style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#10b981 0%,#1e3a8a 100%);color:white;padding:10px 20px;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">
                                 <svg style="width:18px;height:18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                 </svg>
@@ -184,7 +184,7 @@ function showAuthReturnConfirmation(returnId) {
         </div>
         <div style="display:flex;gap:12px;justify-content:flex-end;">
             <button onclick="closeAuthReturnModal()" style="background:#6c757d;color:white;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">Cancel</button>
-            <button onclick="submitAuthReturnForm(${returnId})" style="background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:white;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">✓ Authenticate</button>
+            <button onclick="submitAuthReturnForm(${returnId})" style="background:linear-gradient(135deg,#10b981 0%,#1e3a8a 100%);color:white;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">✓ Authenticate</button>
         </div>
     `;
     

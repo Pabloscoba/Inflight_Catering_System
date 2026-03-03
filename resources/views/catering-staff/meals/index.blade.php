@@ -107,7 +107,7 @@
                             'dinner' => ['bg' => '#e0e7ff', 'text' => '#4f46e5'],
                             'snack' => ['bg' => '#fce7f3', 'text' => '#db2777'],
                             'VIP_meal' => ['bg' => '#f3e8ff', 'text' => '#7c3aed'],
-                            'special_meal' => ['bg' => '#d1fae5', 'text' => '#059669'],
+                            'special_meal' => ['bg' => '#d1fae5', 'text' => '#1e3a8a'],
                         ];
                         $color = $mealTypeColors[$meal->meal_type] ?? ['bg' => '#e5e7eb', 'text' => '#6b7280'];
                     @endphp
@@ -120,7 +120,7 @@
                         $status = $meal->status ?? 'approved';
                         $statusConfig = [
                             'pending' => ['bg' => '#fef3c7', 'text' => '#d97706', 'label' => '⏳ Pending Approval'],
-                            'approved' => ['bg' => '#d1fae5', 'text' => '#059669', 'label' => '✓ Approved'],
+                            'approved' => ['bg' => '#d1fae5', 'text' => '#1e3a8a', 'label' => '✓ Approved'],
                             'rejected' => ['bg' => '#fee2e2', 'text' => '#dc2626', 'label' => '✗ Rejected'],
                         ];
                         $statusStyle = $statusConfig[$status] ?? $statusConfig['approved'];

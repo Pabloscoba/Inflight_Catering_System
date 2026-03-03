@@ -14,6 +14,14 @@ export default {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
+            colors: {
+                'atcl': {
+                    'blue': '#1e3a8a',
+                    'grey-dark': '#4b5563',
+                    'grey-light': '#f3f4f6',
+                    'white': '#f9fafb',
+                },
+            },
         },
     },
 

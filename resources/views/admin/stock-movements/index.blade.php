@@ -6,9 +6,9 @@
 @section('content')
 <style>
     .btn { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: 500; text-decoration: none; display: inline-block; transition: all 0.2s; }
-    .btn-primary { background: #0b1a68; color: white; }
+    .btn-primary { background: #1e3a8a; color: white; }
     .btn-primary:hover { background: #091352; }
-    .btn-success { background: #059669; color: white; }
+    .btn-success { background: #1e3a8a; color: white; }
     .btn-success:hover { background: #047857; }
     .btn-warning { background: #d97706; color: white; }
     .btn-warning:hover { background: #b45309; }
@@ -30,10 +30,10 @@
     .badge-issued { background: #fef3c7; color: #92400e; }
     .badge-returned { background: #dbeafe; color: #1e40af; }
     .alert { padding: 14px 18px; border-radius: 8px; margin-bottom: 20px; }
-    .alert-success { background: #d1fae5; color: #065f46; border-left: 4px solid #059669; }
+    .alert-success { background: #d1fae5; color: #065f46; border-left: 4px solid #1e3a8a; }
     .pagination { display: flex; gap: 8px; justify-content: center; padding: 20px; }
     .pagination a, .pagination span { padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 6px; text-decoration: none; color: #475569; }
-    .pagination .active { background: #0b1a68; color: white; border-color: #0b1a68; }
+    .pagination .active { background: #1e3a8a; color: white; border-color: #1e3a8a; }
     .empty-state { text-align: center; padding: 60px 20px; color: #64748b; }
     .action-buttons { display: flex; gap: 10px; margin-bottom: 20px; }
 </style>
@@ -122,7 +122,7 @@
                                         @if($movement->type == 'issued')
                                             <span style="color: #dc2626; font-weight: 600;">-{{ $movement->quantity }}</span>
                                         @else
-                                            <span style="color: #059669; font-weight: 600;">+{{ $movement->quantity }}</span>
+                                            <span style="color: #1e3a8a; font-weight: 600;">+{{ $movement->quantity }}</span>
                                         @endif
                                     </td>
                                     <td>{{ $movement->reference_number ?? '-' }}</td>

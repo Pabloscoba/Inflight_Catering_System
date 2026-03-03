@@ -145,7 +145,7 @@
                             @endif
                         </span>
                         @if($return->quantity_verified)
-                        <span style="background:#e3f2fd;color:#0d47a1;padding:4px 10px;border-radius:6px;font-weight:600;">
+                        <span style="background:#e3f2fd;color:#1e3a8a;padding:4px 10px;border-radius:6px;font-weight:600;">
                             📦 Verified: {{ $return->quantity_verified }}
                         </span>
                         @endif
@@ -167,7 +167,7 @@
                     </div>
                     <div style="font-size:11px;color:#9ca3af;">{{ $return->verified_at->diffForHumans() }}</div>
                     @if($return->stock_adjusted)
-                    <div style="margin-top:4px;font-size:10px;color:#059669;font-weight:600;">
+                    <div style="margin-top:4px;font-size:10px;color:#1e3a8a;font-weight:600;">
                         📈 Stock Updated
                     </div>
                     @endif

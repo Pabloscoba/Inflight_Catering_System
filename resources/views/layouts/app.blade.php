@@ -20,23 +20,23 @@
         a { text-decoration: none; cursor: pointer; }
         
         /* Sidebar */
-        .sidebar { width: 240px; background: #0b1a68; border-right: 1px solid #1a2980; overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column; }
+        .sidebar { width: 240px; background: #1e3a8a; border-right: 1px solid #1e40af; overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column; }
         .sidebar::-webkit-scrollbar { width: 6px; }
-        .sidebar::-webkit-scrollbar-track { background: #0b1a68; }
-        .sidebar::-webkit-scrollbar-thumb { background: #1a2980; border-radius: 3px; }
-        .sidebar .logo-row { height: 64px; display: flex; align-items: center; justify-content: center; background: #0b1a68; color: #fff; border-bottom: 1px solid #1a2980; position: sticky; top: 0; z-index: 10; }
-        .sidebar .profile { padding: 0.8rem 1rem; border-bottom: 1px solid #1a2980; background: #0b1a68; }
+        .sidebar::-webkit-scrollbar-track { background: #1e3a8a; }
+        .sidebar::-webkit-scrollbar-thumb { background: #1e40af; border-radius: 3px; }
+        .sidebar .logo-row { height: 64px; display: flex; align-items: center; justify-content: center; background: #1e3a8a; color: #fff; border-bottom: 1px solid #1e40af; position: sticky; top: 0; z-index: 10; }
+        .sidebar .profile { padding: 0.8rem 1rem; border-bottom: 1px solid #1e40af; background: #1e3a8a; }
         .sidebar-link { display: flex; align-items: center; gap: .75rem; padding: 12px 15px; margin-bottom: 8px; color: #fff; border-radius: 6px; transition: all 0.15s ease; cursor: pointer; background: transparent; border: none; width: 100%; text-align: left; font-size: 14px; }
-        .sidebar-link:hover { background: #1a2980; color: #fff; cursor: pointer; }
-        .sidebar-link.active { background: #1a2980; color: #fff; border-right: 4px solid #4dabf7; }
-        .sidebar-submenu { padding-left: 30px; max-height: 0; overflow: hidden; transition: max-height 0.3s ease; background: #0b1a68; }
-        .sidebar-submenu a { display: block; padding: 10px 15px; font-size: 13px; color: #a8b8ff; border-radius: 6px; }
-        .sidebar-submenu a:hover { color: #fff; background: #1a2980; }
-        .sidebar-submenu a.active { color: #fff; background: #1a2980; }
+        .sidebar-link:hover { background: #1e40af; color: #fff; cursor: pointer; }
+        .sidebar-link.active { background: #1e40af; color: #fff; border-right: 4px solid #f3f4f6; }
+        .sidebar-submenu { padding-left: 30px; max-height: 0; overflow: hidden; transition: max-height 0.3s ease; background: #1e3a8a; }
+        .sidebar-submenu a { display: block; padding: 10px 15px; font-size: 13px; color: #d1d5db; border-radius: 6px; }
+        .sidebar-submenu a:hover { color: #fff; background: #1e40af; }
+        .sidebar-submenu a.active { color: #fff; background: #1e40af; }
         
         /* Main content */
         .main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
-        .topbar { height: 60px; background: #fff; border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; flex-shrink: 0; }
+        .topbar { height: 60px; background: #f9fafb; border-bottom: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; flex-shrink: 0; }
         .content-wrap { flex: 1; padding: 24px; overflow-y: auto; overflow-x: hidden; }
         
         /* Helpers */
@@ -69,8 +69,24 @@
         
         /* Logout Button */
         .logout-btn { width: 100%; padding: 12px 15px; background: #dc2626; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 10px; transition: all 0.2s; }
-        .logout-btn:hover { background: #b91c1c; transform: translateY(-1px); box-shadow: 0 4px 8px rgba(220, 38, 38, 0.3); }
+        .logout-btn:hover { background: #b91c1c; transform: translateY(-1px); box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); }
         .logout-btn:active { transform: translateY(0); }
+
+        /* Global Standardization Classes */
+        .btn-atcl { height: 44px; padding: 0 24px; border-radius: 8px; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s ease; border: none; cursor: pointer; text-decoration: none; }
+        .btn-atcl-primary { background: #1e3a8a; color: #ffffff; }
+        .btn-atcl-primary:hover { background: #1e40af; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(30, 58, 138, 0.2); }
+        .btn-atcl-secondary { background: #f3f4f6; color: #374151; border: 1px solid #e5e7eb; }
+        .btn-atcl-secondary:hover { background: #e5e7eb; color: #1f2937; }
+        .btn-atcl-danger { background: #fee2e2; color: #dc2626; }
+        .btn-atcl-danger:hover { background: #fecaca; color: #b91c1c; }
+
+        .input-atcl { width: 100%; height: 44px; padding: 0 16px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 14px; transition: all 0.2s ease; background: #ffffff; color: #1f2937; }
+        .input-atcl:focus { outline: none; border-color: #1e3a8a; box-shadow: 0 0 0 4px rgba(30, 58, 138, 0.1); }
+        .label-atcl { display: block; font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 8px; }
+
+        .card-atcl { background: #ffffff; border-radius: 16px; padding: 28px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); border: 1px solid #f3f4f6; }
+        .card-atcl-header { font-size: 18px; font-weight: 700; color: #111827; margin-bottom: 24px; display: flex; align-items: center; gap: 12px; border-bottom: 2px solid #f9fafb; padding-bottom: 16px; }
     </style>
 </head>
 <body>
@@ -94,7 +110,7 @@
                     </div>
                     <div class="flex-1 min-w-0">
                         <p class="text-sm font-semibold truncate" style="color: #ffffff;">{{ Auth::user()->name }}</p>
-                        <p class="text-xs" style="color: #a8b8ff;">{{ Auth::user()->roles->first()->name ?? 'User' }}</p>
+                        <p class="text-xs" style="color: #d1d5db;">{{ Auth::user()->roles->first()->name ?? 'User' }}</p>
                     </div>
                 </div>
             </div>
@@ -329,7 +345,7 @@
             </nav>
 
             <!-- Logout Button - Fixed at bottom -->
-            <div style="padding: 15px; border-top: 1px solid #1a2980; background: #0b1a68;">
+            <div style="padding: 15px; border-top: 1px solid #1e40af; background: #1e3a8a;">
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit" class="logout-btn">

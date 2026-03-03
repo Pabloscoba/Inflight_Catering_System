@@ -283,7 +283,7 @@
                     <form method="POST" action="{{ route('flight-dispatcher.requests.clear-departure', $request) }}" style="margin:0" id="clear-form-{{ $request->id }}">
                         @csrf
                         <textarea name="clearance_notes" placeholder="Clearance notes (optional)" style="width:100%;padding:8px;border:1px solid #e5e7eb;border-radius:6px;font-size:12px;margin-bottom:10px;resize:vertical" rows="2"></textarea>
-                        <button type="button" onclick="showClearConfirmation({{ $request->id }}, '{{ $request->flight->flight_number }}')" style="width:100%;background:#10b981;color:white;padding:10px;border-radius:8px;border:none;font-weight:600;font-size:13px;cursor:pointer;transition:background 0.2s" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">
+                        <button type="button" onclick="showClearConfirmation({{ $request->id }}, '{{ $request->flight->flight_number }}')" style="width:100%;background:#10b981;color:white;padding:10px;border-radius:8px;border:none;font-weight:600;font-size:13px;cursor:pointer;transition:background 0.2s" onmouseover="this.style.background='#1e3a8a'" onmouseout="this.style.background='#10b981'">
                             ✅ Clear for Departure →
                         </button>
                     </form>

@@ -87,7 +87,7 @@
                         </td>
                         <td style="padding: 14px; text-align: center;">
                             <div style="display: flex; gap: 8px; justify-content: center;">
-                                <button onclick="document.getElementById('approve-{{ $request->id }}').style.display='flex'" style="background: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">
+                                <button onclick="document.getElementById('approve-{{ $request->id }}').style.display='flex'" style="background: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#1e3a8a'" onmouseout="this.style.background='#10b981'">
                                     ✓ Final Approve
                                 </button>
                                 <button onclick="document.getElementById('reject-{{ $request->id }}').style.display='flex'" style="background: #dc3545; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#c82333'" onmouseout="this.style.background='#dc3545'">
@@ -99,7 +99,7 @@
                             <div id="approve-{{ $request->id }}" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; animation: fadeIn 0.2s;" onclick="this.style.display='none'">
                                 <div style="background: white; padding: 28px; border-radius: 16px; max-width: 520px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.3);" onclick="event.stopPropagation()">
                                     <div style="display: flex; align-items: center; margin-bottom: 20px;">
-                                        <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #10b981, #059669); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-right: 16px;">
+                                        <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #10b981, #1e3a8a); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-right: 16px;">
                                             <svg style="width: 28px; height: 28px; color: white;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                             </svg>
@@ -114,7 +114,7 @@
                                         @csrf
                                         <div style="display: flex; gap: 12px;">
                                             <button type="button" onclick="document.getElementById('approve-{{ $request->id }}').style.display='none'" style="flex: 1; background: #e2e8f0; color: #475569; border: none; padding: 12px 24px; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#cbd5e1'" onmouseout="this.style.background='#e2e8f0'">Cancel</button>
-                                            <button type="submit" style="flex: 1; background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 12px 24px; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(16, 185, 129, 0.4)'" onmouseout="this.style.transform=''; this.style.boxShadow='0 4px 12px rgba(16, 185, 129, 0.3)'">✓ Final Approve</button>
+                                            <button type="submit" style="flex: 1; background: linear-gradient(135deg, #10b981, #1e3a8a); color: white; border: none; padding: 12px 24px; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(16, 185, 129, 0.4)'" onmouseout="this.style.transform=''; this.style.boxShadow='0 4px 12px rgba(16, 185, 129, 0.3)'">✓ Final Approve</button>
                                         </div>
                                     </form>
                                 </div>

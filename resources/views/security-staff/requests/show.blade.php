@@ -153,7 +153,7 @@
     <h3 style="font-size:18px;font-weight:700;color:#1a1a1a;margin:0 0 16px 0;">🔐 Security Authentication</h3>
     <p style="font-size:14px;color:#6b7280;margin-bottom:24px;">Authenticate this request to issue stock from main inventory and forward to Catering Incharge.</p>
     
-    <button type="button" onclick="showAuthenticateConfirmation({{ $request->id }}, {{ $request->items->sum('quantity_requested') }})" style="background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:white;padding:14px 32px;border-radius:8px;border:none;font-size:15px;font-weight:700;display:inline-flex;align-items:center;gap:10px;cursor:pointer;box-shadow:0 4px 12px rgba(16,185,129,0.25);transition:all 0.2s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 16px rgba(16,185,129,0.35)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 12px rgba(16,185,129,0.25)'">
+    <button type="button" onclick="showAuthenticateConfirmation({{ $request->id }}, {{ $request->items->sum('quantity_requested') }})" style="background:linear-gradient(135deg,#10b981 0%,#1e3a8a 100%);color:white;padding:14px 32px;border-radius:8px;border:none;font-size:15px;font-weight:700;display:inline-flex;align-items:center;gap:10px;cursor:pointer;box-shadow:0 4px 12px rgba(16,185,129,0.25);transition:all 0.2s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 16px rgba(16,185,129,0.35)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 12px rgba(16,185,129,0.25)'">
         <svg style="width:20px;height:20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
         </svg>
@@ -179,7 +179,7 @@ function showAuthenticateConfirmation(requestId, totalUnits) {
         </div>
         <div style="display:flex;gap:12px;justify-content:flex-end;">
             <button onclick="closeAuthModal()" style="background:#6c757d;color:white;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">Cancel</button>
-            <button onclick="submitAuthForm(${requestId})" style="background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:white;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">✓ Authenticate</button>
+            <button onclick="submitAuthForm(${requestId})" style="background:linear-gradient(135deg,#10b981 0%,#1e3a8a 100%);color:white;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">✓ Authenticate</button>
         </div>
     `;
     

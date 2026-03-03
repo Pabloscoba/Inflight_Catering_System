@@ -3,66 +3,13 @@
 @section('title', 'Products Management')
 
 @section('content')
-<style>
-    body { background: #f5f5f5; }
-        
-        .container { max-width: 1600px; margin: 0 auto; padding: 40px 20px; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        .header h1 { font-size: 28px; font-weight: 700; color: #000; }
-        .header-actions { display: flex; gap: 12px; }
-        .btn { padding: 10px 20px; border-radius: 6px; font-size: 14px; font-weight: 500; text-decoration: none; border: none; cursor: pointer; display: inline-block; }
-        .btn-primary { background: #0066cc; color: #fff; }
-        .btn-primary:hover { background: #0052a3; }
-        .btn-secondary { background: #6c757d; color: #fff; }
-        .btn-secondary:hover { background: #5a6268; }
-        .btn-danger { background: #dc3545; color: #fff; }
-        .btn-sm { padding: 6px 12px; font-size: 13px; }
-        
-        .filters { background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin-bottom: 24px; display: flex; gap: 12px; flex-wrap: wrap; align-items: end; }
-        .filter-group { display: flex; flex-direction: column; gap: 6px; }
-        .filter-group label { font-size: 13px; font-weight: 600; color: #495057; }
-        .filters input, .filters select { padding: 10px 14px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
-        .filters input { min-width: 250px; }
-        .filters select { min-width: 150px; }
-        .filters input:focus, .filters select:focus { outline: none; border-color: #0066cc; }
-        
-        .card { background: #fff; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; }
-        .table-container { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; }
-        thead { background: #f8f9fa; border-bottom: 2px solid #dee2e6; }
-        th { padding: 14px 16px; text-align: left; font-size: 13px; font-weight: 600; color: #495057; text-transform: uppercase; white-space: nowrap; }
-        td { padding: 14px 16px; border-bottom: 1px solid #e9ecef; font-size: 14px; color: #495057; }
-        tbody tr:hover { background: #f8f9fa; }
-        
-        .product-info h3 { font-size: 15px; font-weight: 600; color: #000; margin-bottom: 4px; }
-        .product-info p { font-size: 12px; color: #6c757d; }
-        
-        .badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
-        .badge-success { background: #d4edda; color: #155724; }
-        .badge-warning { background: #fff3cd; color: #856404; }
-        .badge-danger { background: #f8d7da; color: #721c24; }
-        .badge-secondary { background: #e9ecef; color: #495057; }
-        
-        .stock-indicator { display: flex; align-items: center; gap: 6px; }
-        .stock-dot { width: 8px; height: 8px; border-radius: 50%; }
-        .stock-good { background: #28a745; }
-        .stock-low { background: #ffc107; }
-        .stock-out { background: #dc3545; }
-        
-        .actions { display: flex; gap: 8px; }
-        .pagination { display: flex; justify-content: center; align-items: center; gap: 8px; padding: 20px; }
-        .pagination a, .pagination span { padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #495057; font-size: 14px; }
-        .pagination a:hover { background: #e9ecef; }
-        .pagination .active { background: #0066cc; color: #fff; border-color: #0066cc; }
-        
-        .empty-state { text-align: center; padding: 60px 20px; color: #6c757d; }
-        .alert { padding: 12px 20px; border-radius: 6px; margin-bottom: 20px; font-size: 14px; }
-        .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-    </style>
-</head>
-<body>
-    <div class="container">
+@section('content')
+<div style="margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center;">
+    <div>
+        <h1 style="font-size: 28px; font-weight: 700; color: #111827; margin: 0;">Products Management</h1>
+        <p style="color: #6b7280; font-size: 14px; margin-top: 4px;">Monitor and manage system-wide inventory</p>
+    </div>
+    <div style="display: flex; gap: 12px;">
         @php
             $backRoute = 'inventory-personnel.dashboard';
             $createRoute = 'inventory-personnel.products.create';
@@ -77,15 +24,13 @@
                 $backRoute = 'ramp-dispatcher.dashboard';
             }
         @endphp
-        <div class="header">
-            <h1>Products Management</h1>
-            <div class="header-actions">
-                @can('create products')
-                <a href="{{ route($createRoute) }}" class="btn btn-primary">+ Add New Product</a>
-                @endcan
-                <a href="{{ route($backRoute) }}" class="btn btn-secondary">← Back to Dashboard</a>
-            </div>
-        </div>
+        @can('create products')
+        <a href="{{ route($createRoute) }}" class="btn-atcl btn-atcl-primary">+ Add New Product</a>
+        @endcan
+        <a href="{{ route($backRoute) }}" class="btn-atcl btn-atcl-secondary">← Back to Dashboard</a>
+    </div>
+</div>
+</head>
         
         @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
@@ -96,74 +41,62 @@
         @endif
         
         <!-- Stock Summary Cards -->
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 30px;">
-            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 24px; border-radius: 12px; color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-                <div style="font-size: 14px; opacity: 0.9; margin-bottom: 8px;">Total Products</div>
-                <div style="font-size: 32px; font-weight: 700;">{{ $products->total() }}</div>
-            </div>
-            <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 24px; border-radius: 12px; color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-                <div style="font-size: 14px; opacity: 0.9; margin-bottom: 8px;">In Stock</div>
-                <div style="font-size: 32px; font-weight: 700;">{{ $products->filter(fn($p) => $p->quantity_in_stock > $p->reorder_level)->count() }}</div>
-                <div style="font-size: 12px; opacity: 0.8; margin-top: 4px;">✓ Ready to use</div>
-            </div>
-            <div style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); padding: 24px; border-radius: 12px; color: #000; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-                <div style="font-size: 14px; opacity: 0.8; margin-bottom: 8px;">Low Stock</div>
-                <div style="font-size: 32px; font-weight: 700;">{{ $products->filter(fn($p) => $p->quantity_in_stock <= $p->reorder_level && $p->quantity_in_stock > 0)->count() }}</div>
-                <div style="font-size: 12px; opacity: 0.7; margin-top: 4px;">⚠️ Need restocking</div>
-            </div>
-            <div style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); padding: 24px; border-radius: 12px; color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-                <div style="font-size: 14px; opacity: 0.9; margin-bottom: 8px;">Out of Stock</div>
-                <div style="font-size: 32px; font-weight: 700;">{{ $products->filter(fn($p) => $p->quantity_in_stock == 0)->count() }}</div>
-                <div style="font-size: 12px; opacity: 0.8; margin-top: 4px;">❌ Urgent action needed</div>
-            </div>
-        </div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; margin-bottom: 30px;">
+    <div class="card-atcl" style="padding: 24px; display: flex; flex-direction: column; gap: 8px;">
+        <div style="font-size: 14px; color: #6b7280; font-weight: 500;">Total Products</div>
+        <div style="font-size: 32px; font-weight: 700; color: #1e3a8a;">{{ $products->total() }}</div>
+    </div>
+    <div class="card-atcl" style="padding: 24px; display: flex; flex-direction: column; gap: 8px;">
+        <div style="font-size: 14px; color: #6b7280; font-weight: 500;">In Stock</div>
+        <div style="font-size: 32px; font-weight: 700; color: #059669;">{{ $products->filter(fn($p) => $p->quantity_in_stock > $p->reorder_level)->count() }}</div>
+        <div style="font-size: 12px; color: #059669; opacity: 0.8;">✓ Ready to use</div>
+    </div>
+    <div class="card-atcl" style="padding: 24px; display: flex; flex-direction: column; gap: 8px;">
+        <div style="font-size: 14px; color: #6b7280; font-weight: 500;">Low Stock</div>
+        <div style="font-size: 32px; font-weight: 700; color: #d97706;">{{ $products->filter(fn($p) => $p->quantity_in_stock <= $p->reorder_level && $p->quantity_in_stock > 0)->count() }}</div>
+        <div style="font-size: 12px; color: #d97706; opacity: 0.8;">⚠️ Need restocking</div>
+    </div>
+    <div class="card-atcl" style="padding: 24px; display: flex; flex-direction: column; gap: 8px;">
+        <div style="font-size: 14px; color: #6b7280; font-weight: 500;">Out of Stock</div>
+        <div style="font-size: 32px; font-weight: 700; color: #dc2626;">{{ $products->filter(fn($p) => $p->quantity_in_stock == 0)->count() }}</div>
+        <div style="font-size: 12px; color: #dc2626; opacity: 0.8;">❌ Urgent action needed</div>
+    </div>
+</div>
         
-        <form method="GET" action="{{ route('inventory-personnel.products.index') }}" class="filters">
-            <div class="filter-group">
-                <label>Search</label>
-                <input type="text" name="search" placeholder="Product name, SKU..." value="{{ request('search') }}">
-            </div>
-            <div class="filter-group">
-                <label>Category</label>
-                <select name="category">
-                    <option value="">All Categories</option>
-                    @foreach($categories as $category)
-                    <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
-                        {{ $category->name }}
-                    </option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="filter-group">
-                <label>Stock Status</label>
-                <select name="stock_status">
-                    <option value="">All Stock</option>
-                    <option value="in_stock" {{ request('stock_status') == 'in_stock' ? 'selected' : '' }}>In Stock</option>
-                    <option value="low_stock" {{ request('stock_status') == 'low_stock' ? 'selected' : '' }}>Low Stock</option>
-                    <option value="out_of_stock" {{ request('stock_status') == 'out_of_stock' ? 'selected' : '' }}>Out of Stock</option>
-                </select>
-            </div>
-            <div class="filter-group">
-                <label>Status</label>
-                <select name="is_active">
-                    <option value="">All Status</option>
-                    <option value="1" {{ request('is_active') == '1' ? 'selected' : '' }}>Active</option>
-                    <option value="0" {{ request('is_active') == '0' ? 'selected' : '' }}>Inactive</option>
-                </select>
-            </div>
-            <div class="filter-group">
-                <label>&nbsp;</label>
-                <button type="submit" class="btn btn-primary">Apply Filters</button>
-            </div>
-            @if(request()->hasAny(['search', 'category', 'stock_status', 'is_active']))
-            <div class="filter-group">
-                <label>&nbsp;</label>
-                <a href="{{ route('inventory-personnel.products.index') }}" class="btn btn-secondary">Clear</a>
-            </div>
-            @endif
-        </form>
+        <form method="GET" action="{{ route('inventory-personnel.products.index') }}" class="card-atcl" style="padding: 20px; margin-bottom: 24px; display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-end;">
+    <div style="flex: 1; min-width: 250px;">
+        <label class="label-atcl">Search Products</label>
+        <input type="text" name="search" class="input-atcl" placeholder="Product name, SKU..." value="{{ request('search') }}">
+    </div>
+    <div style="flex: 1; min-width: 150px;">
+        <label class="label-atcl">Category</label>
+        <select name="category" class="input-atcl">
+            <option value="">All Categories</option>
+            @foreach($categories as $category)
+            <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
+                {{ $category->name }}
+            </option>
+            @endforeach
+        </select>
+    </div>
+    <div style="flex: 1; min-width: 150px;">
+        <label class="label-atcl">Stock Status</label>
+        <select name="stock_status" class="input-atcl">
+            <option value="">All Stock</option>
+            <option value="in_stock" {{ request('stock_status') == 'in_stock' ? 'selected' : '' }}>In Stock</option>
+            <option value="low_stock" {{ request('stock_status') == 'low_stock' ? 'selected' : '' }}>Low Stock</option>
+            <option value="out_of_stock" {{ request('stock_status') == 'out_of_stock' ? 'selected' : '' }}>Out of Stock</option>
+        </select>
+    </div>
+    <div style="display: flex; gap: 8px;">
+        <button type="submit" class="btn-atcl btn-atcl-primary" style="height: 44px;">Apply Filters</button>
+        @if(request()->hasAny(['search', 'category', 'stock_status', 'is_active']))
+        <a href="{{ route('inventory-personnel.products.index') }}" class="btn-atcl btn-atcl-secondary" style="height: 44px; display: flex; align-items: center;">Clear</a>
+        @endif
+    </div>
+</form>
         
-        <div class="card">
+        <div class="card-atcl" style="overflow: hidden;">
             @if($products->count() > 0)
             <div class="table-container">
                 <table>
@@ -178,63 +111,51 @@
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody style="background: white;">
                         @foreach($products as $product)
-                        <tr>
-                            <td>
-                                <div class="product-info">
-                                    <h3>{{ $product->name }}</h3>
-                                    <p>{{ Str::limit($product->description, 50) }}</p>
-                                </div>
+                        <tr style="border-bottom: 1px solid #f3f4f6; transition: background 0.2s;" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='white'">
+                            <td style="padding: 16px;">
+                                <div style="font-weight: 600; color: #111827; margin-bottom: 4px;">{{ $product->name }}</div>
+                                <div style="font-size: 12px; color: #6b7280;">{{ $product->sku }}</div>
                             </td>
-                            <td>
-                                <span class="badge badge-secondary">{{ $product->category->name }}</span>
+                            <td style="padding: 16px;">
+                                <span style="display: inline-block; padding: 4px 10px; border-radius: 9999px; font-size: 11px; font-weight: 600; text-transform: uppercase; background: #f3f4f6; color: #4b5563;">{{ $product->category->name }}</span>
                             </td>
-                            <td>{{ $product->sku }}</td>
-                            <td>TZS{{ number_format($product->unit_price, 2) }} / {{ $product->unit_of_measure }}</td>
-                            <td>
+                            <td style="padding: 16px; color: #4b5563;">{{ $product->sku }}</td>
+                            <td style="padding: 16px; font-weight: 500; color: #111827;">TZS {{ number_format($product->unit_price, 2) }}</td>
+                            <td style="padding: 16px;">
                                 <div style="display: flex; flex-direction: column; gap: 4px;">
-                                    <div class="stock-indicator">
-                                        <span class="stock-dot {{ $product->isOutOfStock() ? 'stock-out' : ($product->isLowStock() ? 'stock-low' : 'stock-good') }}"></span>
-                                        <strong style="font-size: 16px; {{ $product->isOutOfStock() ? 'color: #dc3545;' : ($product->isLowStock() ? 'color: #ffc107;' : 'color: #28a745;') }}">
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <div style="width: 8px; height: 8px; border-radius: 50%; background: {{ $product->quantity_in_stock <= 0 ? '#ef4444' : ($product->quantity_in_stock <= $product->reorder_level ? '#f59e0b' : '#10b981') }}"></div>
+                                        <strong style="font-size: 16px; color: {{ $product->quantity_in_stock <= 0 ? '#ef4444' : ($product->quantity_in_stock <= $product->reorder_level ? '#d97706' : '#059669') }}">
                                             {{ $product->quantity_in_stock }}
                                         </strong>
-                                        <span style="color: #6c757d;">{{ $product->unit_of_measure }}</span>
+                                        <span style="color: #6b7280; font-size: 13px;">{{ $product->unit_of_measure }}</span>
                                     </div>
-                                    @if($product->isOutOfStock())
-                                        <span class="badge badge-danger" style="width: fit-content;">OUT OF STOCK</span>
-                                    @elseif($product->isLowStock())
-                                        <span class="badge badge-warning" style="width: fit-content;">LOW STOCK (Reorder: {{ $product->reorder_level }})</span>
-                                    @else
-                                        <span class="badge badge-success" style="width: fit-content;">IN STOCK</span>
+                                    @if($product->quantity_in_stock <= 0)
+                                        <span style="font-size: 11px; font-weight: 700; color: #ef4444; text-transform: uppercase;">OUT OF STOCK</span>
+                                    @elseif($product->quantity_in_stock <= $product->reorder_level)
+                                        <span style="font-size: 11px; font-weight: 700; color: #d97706; text-transform: uppercase;">LOW STOCK</span>
                                     @endif
-                                    <small style="color: #6c757d;">Inventory: {{ $product->quantity_in_stock }}</small>
                                 </div>
                             </td>
-                            <td>
+                            <td style="padding: 16px;">
                                 <div style="display: flex; flex-direction: column; gap: 6px;">
-                                    <span class="badge {{ $product->is_active ? 'badge-success' : 'badge-danger' }}">
+                                    <span style="display: inline-block; padding: 4px 10px; border-radius: 9999px; font-size: 11px; font-weight: 600; text-transform: uppercase; background: {{ $product->is_active ? '#d1fae5' : '#fee2e2' }}; color: {{ $product->is_active ? '#065f46' : '#991b1b' }}; width: fit-content;">
                                         {{ $product->is_active ? 'Active' : 'Inactive' }}
                                     </span>
-                                    @if($product->status === 'pending')
-                                        <span class="badge badge-warning">⏳ Pending Approval</span>
-                                    @elseif($product->status === 'approved')
-                                        <span class="badge badge-success">✓ Approved</span>
-                                    @elseif($product->status === 'rejected')
-                                        <span class="badge badge-danger">✗ Rejected</span>
-                                    @endif
                                 </div>
                             </td>
-                            <td>
-                                <div class="actions">
+                            <td style="padding: 16px;">
+                                <div style="display: flex; gap: 8px;">
                                     @if($product->status === 'approved' && $product->is_active && $product->quantity_in_stock == 0)
-                                        <a href="{{ route('inventory-personnel.products.add-stock', $product) }}" class="btn btn-sm" style="background: #059669; color: white;" title="Add initial stock to main inventory">📦 Add Stock</a>
+                                        <a href="{{ route('inventory-personnel.products.add-stock', $product) }}" class="btn-atcl btn-atcl-primary" style="height: 32px; padding: 0 12px; font-size: 12px;" title="Add initial stock">📦 Stock</a>
                                     @endif
-                                    <a href="{{ route('inventory-personnel.products.edit', $product) }}" class="btn btn-primary btn-sm">Edit</a>
+                                    <a href="{{ route('inventory-personnel.products.edit', $product) }}" class="btn-atcl btn-atcl-primary" style="height: 32px; padding: 0 12px; font-size: 12px;">Edit</a>
                                     <form method="POST" action="{{ route('inventory-personnel.products.destroy', $product) }}" onsubmit="return confirm('Delete this product?');" style="display: inline;">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                        <button type="submit" class="btn-atcl btn-atcl-danger" style="height: 32px; padding: 0 12px; font-size: 12px;">Delete</button>
                                     </form>
                                 </div>
                             </td>

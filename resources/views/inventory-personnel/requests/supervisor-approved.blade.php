@@ -139,7 +139,7 @@
                         <td style="padding: 18px 20px;">
                             @if($req->approver)
                             <div style="display: flex; align-items: center; gap: 10px;">
-                                <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #10b981 0%, #059669 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 16px;">
+                                <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #10b981 0%, #1e3a8a 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 16px;">
                                     {{ strtoupper(substr($req->approver->name, 0, 1)) }}
                                 </div>
                                 <div>

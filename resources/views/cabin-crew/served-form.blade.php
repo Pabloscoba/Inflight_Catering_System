@@ -36,7 +36,7 @@
     .notes-textarea:focus { outline: none; border-color: #3b82f6; background: #eff6ff; }
     .actions-bar { display: flex; justify-content: space-between; align-items: center; padding-top: 24px; border-top: 2px solid #e5e7eb; }
     .btn { padding: 14px 28px; border-radius: 10px; font-size: 15px; font-weight: 600; border: none; cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; gap: 10px; }
-    .btn-primary { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
+    .btn-primary { background: linear-gradient(135deg, #10b981 0%, #1e3a8a 100%); color: white; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
     .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4); }
     .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
     .btn-secondary { background: white; color: #6b7280; border: 2px solid #e5e7eb; }

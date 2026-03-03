@@ -10,7 +10,7 @@
     .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: #334155; }
     .form-group label span { color: #dc2626; }
     .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; font-family: inherit; }
-    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #0b1a68; box-shadow: 0 0 0 3px rgba(11,26,104,0.1); }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #1e3a8a; box-shadow: 0 0 0 3px rgba(11,26,104,0.1); }
     .form-group textarea { resize: vertical; min-height: 80px; }
     .error { color: #dc2626; font-size: 13px; margin-top: 6px; }
     .form-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0; }

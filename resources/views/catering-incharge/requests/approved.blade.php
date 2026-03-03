@@ -22,7 +22,7 @@
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:24px;margin-bottom:32px;">
     <div style="background:white;border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
         <div style="display:flex;align-items:center;gap:16px;">
-            <div style="width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,#10b981 0%,#059669 100%);display:flex;align-items:center;justify-content:center;">
+            <div style="width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,#10b981 0%,#1e3a8a 100%);display:flex;align-items:center;justify-content:center;">
                 <svg style="width:32px;height:32px;color:white;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>

@@ -11,7 +11,7 @@
     .form-group label { font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 6px; }
     .form-control { padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
     .btn { padding: 10px 20px; border-radius: 6px; border: none; cursor: pointer; font-weight: 500; text-decoration: none; display: inline-block; transition: all 0.2s; }
-    .btn-primary { background: #0b1a68; color: white; }
+    .btn-primary { background: #1e3a8a; color: white; }
     .btn-primary:hover { background: #091352; }
     .btn-secondary { background: #64748b; color: white; }
     .btn-danger { background: #dc2626; color: white; }
@@ -29,7 +29,7 @@
     .empty-state { text-align: center; padding: 60px 20px; color: #64748b; }
     .empty-state svg { width: 64px; height: 64px; margin-bottom: 16px; opacity: 0.5; }
     .alert { padding: 14px 18px; border-radius: 8px; margin-bottom: 20px; }
-    .alert-success { background: #d1fae5; color: #065f46; border-left: 4px solid #059669; }
+    .alert-success { background: #d1fae5; color: #065f46; border-left: 4px solid #1e3a8a; }
     .actions { display: flex; gap: 8px; }
     .model-badge { padding: 4px 10px; background: #f1f5f9; border-radius: 4px; font-size: 12px; color: #475569; font-family: monospace; }
 </style>

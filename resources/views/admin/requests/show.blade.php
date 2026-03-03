@@ -561,13 +561,13 @@
                                 </td>
                                 @if($request->isApproved() || $request->isRejected())
                                     <td>
-                                        <strong style="color: {{ $item->quantity_approved > 0 ? '#059669' : '#64748b' }};">
+                                        <strong style="color: {{ $item->quantity_approved > 0 ? '#1e3a8a' : '#64748b' }};">
                                             {{ $item->quantity_approved ?? 0 }}
                                         </strong>
                                     </td>
                                     <td>
                                         @if($item->isFullyApproved())
-                                            <span style="color: #059669; font-weight: 500;">✓ Fully Approved</span>
+                                            <span style="color: #1e3a8a; font-weight: 500;">✓ Fully Approved</span>
                                         @elseif($item->isPartiallyApproved())
                                             <span style="color: #f59e0b; font-weight: 500;">⚠ Partial ({{ $item->getApprovalPercentage() }}%)</span>
                                         @else

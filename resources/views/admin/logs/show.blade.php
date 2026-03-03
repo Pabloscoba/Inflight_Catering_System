@@ -29,7 +29,7 @@
     .change-label { font-size: 12px; color: #64748b; margin-bottom: 4px; }
     .change-value { padding: 8px 12px; background: white; border-radius: 4px; font-family: monospace; font-size: 13px; }
     .change-old .change-value { border-left: 3px solid #dc2626; }
-    .change-new .change-value { border-left: 3px solid #059669; }
+    .change-new .change-value { border-left: 3px solid #1e3a8a; }
     .no-changes { text-align: center; padding: 40px; color: #94a3b8; }
 </style>
 

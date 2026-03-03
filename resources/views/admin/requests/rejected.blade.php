@@ -6,7 +6,7 @@
 @section('content')
 <style>
     .btn { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: 500; text-decoration: none; display: inline-block; transition: all 0.2s; }
-    .btn-primary { background: #0b1a68; color: white; }
+    .btn-primary { background: #1e3a8a; color: white; }
     .btn-primary:hover { background: #091352; }
     .btn-sm { padding: 6px 12px; font-size: 13px; }
     .btn-secondary { background: #e2e8f0; color: #475569; }
@@ -19,7 +19,7 @@
     .badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-block; }
     .badge-danger { background: #fee2e2; color: #991b1b; }
     .alert { padding: 14px 18px; border-radius: 8px; margin-bottom: 20px; }
-    .alert-success { background: #d1fae5; color: #065f46; border-left: 4px solid #059669; }
+    .alert-success { background: #d1fae5; color: #065f46; border-left: 4px solid #1e3a8a; }
     .empty-state { text-align: center; padding: 60px 20px; color: #64748b; }
     .empty-state svg { width: 64px; height: 64px; margin-bottom: 16px; opacity: 0.5; }
     .empty-state h3 { margin-bottom: 8px; color: #475569; }

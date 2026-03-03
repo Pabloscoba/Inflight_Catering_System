@@ -199,7 +199,7 @@
                             </a>
                             @if($request->status === 'catering_approved')
                             <button type="button" onclick="showRampConfirmation({{ $request->id }})" 
-                                   style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:white;padding:8px 16px;border-radius:8px;border:none;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;">
+                                   style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#10b981 0%,#1e3a8a 100%);color:white;padding:8px 16px;border-radius:8px;border:none;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;">
                                 <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                 </svg>
@@ -297,7 +297,7 @@
                     <td style="padding:16px 20px;text-align:center;">
                         <div style="display:flex;gap:8px;justify-content:center;">
                             <a href="{{ route('catering-staff.requests.show', $request) }}" 
-                               style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:white;padding:8px 16px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:600;">
+                               style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#10b981 0%,#1e3a8a 100%);color:white;padding:8px 16px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:600;">
                                 <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                 </svg>
@@ -527,9 +527,9 @@ tr:hover {
 </div>
 
 @if($unifiedLowStockCount == 0 && $unifiedStock->count() > 0)
-<div style="background:#d1fae5;border-left:4px solid #059669;border-radius:12px;padding:18px 20px;margin-top:32px;box-shadow:0 2px 8px rgba(5,150,105,0.15);">
+<div style="background:#d1fae5;border-left:4px solid #1e3a8a;border-radius:12px;padding:18px 20px;margin-top:32px;box-shadow:0 2px 8px rgba(5,150,105,0.15);">
     <div style="display:flex;align-items:center;gap:10px;">
-        <svg style="width:22px;height:22px;color:#059669;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg style="width:22px;height:22px;color:#1e3a8a;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
         </svg>
         <div>
@@ -571,7 +571,7 @@ tr:hover {
                 <span style="font-size:11px;color:#6b7280;">(From Inventory)</span>
             </div>
             <div style="display:flex;align-items:center;gap:8px;">
-                <div style="width:10px;height:10px;border-radius:50%;background:linear-gradient(135deg, #10b981 0%, #059669 100%);"></div>
+                <div style="width:10px;height:10px;border-radius:50%;background:linear-gradient(135deg, #10b981 0%, #1e3a8a 100%);"></div>
                 <span style="font-size:12px;color:#374151;font-weight:600;">Workflow Stock</span>
                 <span style="font-size:11px;color:#6b7280;">(Security → Catering Incharge)</span>
             </div>
@@ -720,7 +720,7 @@ tr:hover {
                     $used = $stock->total_received - $stock->total_available;
                 @endphp
                 
-                <div style="background:white;border-radius:10px;padding:20px;margin-bottom:12px;border-left:4px solid {{ $isOutOfStock ? '#dc2626' : ($isLow ? '#f59e0b' : '#059669') }};box-shadow:0 1px 3px rgba(0,0,0,0.1);">
+                <div style="background:white;border-radius:10px;padding:20px;margin-bottom:12px;border-left:4px solid {{ $isOutOfStock ? '#dc2626' : ($isLow ? '#f59e0b' : '#1e3a8a') }};box-shadow:0 1px 3px rgba(0,0,0,0.1);">
                     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;">
                         <!-- Product Info -->
                         <div>
@@ -742,7 +742,7 @@ tr:hover {
                                 </div>
                                 <div>
                                     <div style="font-size:11px;color:#6b7280;margin-bottom:2px;">Available</div>
-                                    <div style="font-size:20px;font-weight:700;color:{{ $isOutOfStock ? '#dc2626' : ($isLow ? '#f59e0b' : '#059669') }};">{{ $stock->total_available }}</div>
+                                    <div style="font-size:20px;font-weight:700;color:{{ $isOutOfStock ? '#dc2626' : ($isLow ? '#f59e0b' : '#1e3a8a') }};">{{ $stock->total_available }}</div>
                                 </div>
                                 <div>
                                     <div style="font-size:11px;color:#6b7280;margin-bottom:2px;">Used</div>
@@ -779,7 +779,7 @@ tr:hover {
                     <!-- Progress Bar -->
                     <div style="margin-top:12px;">
                         <div style="width:100%;height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden;">
-                            <div style="width:{{ min($percentage, 100) }}%;height:100%;background:{{ $isOutOfStock ? '#dc2626' : ($isLow ? '#f59e0b' : '#059669') }};transition:width 0.3s;"></div>
+                            <div style="width:{{ min($percentage, 100) }}%;height:100%;background:{{ $isOutOfStock ? '#dc2626' : ($isLow ? '#f59e0b' : '#1e3a8a') }};transition:width 0.3s;"></div>
                         </div>
                         <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:10px;color:#9ca3af;">
                             <span>0</span>
@@ -820,7 +820,7 @@ function showRampConfirmation(requestId) {
         </div>
         <div style="display:flex;gap:12px;justify-content:flex-end;">
             <button onclick="closeRampModal()" style="background:#6c757d;color:white;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">Cancel</button>
-            <button onclick="submitRampForm(${requestId})" style="background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:white;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">Send to Ramp</button>
+            <button onclick="submitRampForm(${requestId})" style="background:linear-gradient(135deg,#10b981 0%,#1e3a8a 100%);color:white;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">Send to Ramp</button>
         </div>
     `;
     

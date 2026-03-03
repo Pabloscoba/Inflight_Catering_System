@@ -31,7 +31,7 @@
     .time-ago { font-size: 13px; color: #6b7280; }
     .action-buttons { display: flex; gap: 8px; }
     .btn-approve { display: inline-flex; align-items: center; gap: 6px; padding: 10px 16px; background: #10b981; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; }
-    .btn-approve:hover { background: #059669; }
+    .btn-approve:hover { background: #1e3a8a; }
     .btn-reject { display: inline-flex; align-items: center; gap: 6px; padding: 10px 16px; background: #ef4444; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; }
     .btn-reject:hover { background: #dc2626; }
     .btn-icon { width: 16px; height: 16px; }

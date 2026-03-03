@@ -133,7 +133,7 @@
                             ⚠️ In {{ round($hoursUntilDeparture) }}h
                         </div>
                         @elseif($hoursUntilDeparture > 0)
-                        <div style="font-size:11px;color:#059669;margin-top:4px;">
+                        <div style="font-size:11px;color:#1e3a8a;margin-top:4px;">
                             In {{ \Carbon\Carbon::parse($request->flight->departure_time)->diffForHumans() }}
                         </div>
                         @endif
@@ -159,7 +159,7 @@
                     </td>
                     <td style="padding:16px 20px;text-align:center;">
                         <button type="button" onclick="showDispatchConfirmation({{ $request->id }}, '{{ $request->flight->flight_number }}', {{ $request->items->count() }})" 
-                               style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:white;padding:10px 18px;border-radius:8px;border:none;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;">
+                               style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#10b981 0%,#1e3a8a 100%);color:white;padding:10px 18px;border-radius:8px;border:none;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;">
                             <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                             </svg>
@@ -243,7 +243,7 @@
                             ⏰ In {{ round($hoursUntil) }}h
                         </div>
                         @elseif($hoursUntil > 0)
-                        <div style="font-size:11px;color:#059669;margin-top:4px;">
+                        <div style="font-size:11px;color:#1e3a8a;margin-top:4px;">
                             {{ \Carbon\Carbon::parse($flight->departure_time)->diffForHumans() }}
                         </div>
                         @endif
@@ -324,7 +324,7 @@ function showDispatchConfirmation(requestId, flightNumber, itemsCount) {
         </div>
         <div style="display:flex;gap:12px;justify-content:flex-end;">
             <button onclick="closeDispatchModal()" style="background:#6c757d;color:white;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">Cancel</button>
-            <button onclick="submitDispatchForm(${requestId})" style="background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:white;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">Send</button>
+            <button onclick="submitDispatchForm(${requestId})" style="background:linear-gradient(135deg,#10b981 0%,#1e3a8a 100%);color:white;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">Send</button>
         </div>
     `;
     

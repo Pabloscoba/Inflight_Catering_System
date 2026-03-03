@@ -8,7 +8,7 @@
     .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
     .header h1 { font-size: 28px; color: #1e293b; }
     .btn { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: 500; text-decoration: none; display: inline-block; transition: all 0.2s; }
-    .btn-primary { background: #0b1a68; color: white; }
+    .btn-primary { background: #1e3a8a; color: white; }
     .btn-primary:hover { background: #091352; }
     .btn-secondary { background: #e2e8f0; color: #475569; }
     .btn-danger { background: #dc2626; color: white; }
@@ -31,7 +31,7 @@
     
     .form-actions { display: flex; gap: 12px; margin-top: 30px; }
     .stock-warning { color: #dc2626; font-size: 13px; margin-top: 4px; font-weight: 500; }
-    .stock-ok { color: #059669; font-size: 13px; margin-top: 4px; }
+    .stock-ok { color: #1e3a8a; font-size: 13px; margin-top: 4px; }
     .divider { height: 1px; background: #e2e8f0; margin: 30px 0; }
 </style>
 
@@ -100,7 +100,7 @@
                                     <td>{{ $item->product->category->name }}</td>
                                     <td>{{ $item->quantity_requested }}</td>
                                     <td>
-                                        <strong style="color: {{ $item->product->quantity_in_stock >= $item->quantity_requested ? '#059669' : '#dc2626' }};">
+                                        <strong style="color: {{ $item->product->quantity_in_stock >= $item->quantity_requested ? '#1e3a8a' : '#dc2626' }};">
                                             {{ $item->product->quantity_in_stock }}
                                         </strong>
                                     </td>

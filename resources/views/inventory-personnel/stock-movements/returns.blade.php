@@ -4,106 +4,118 @@
 @section('page-description', 'Process items returned from flight operations')
 
 @section('content')
-<style>
-    .card { background: white; border-radius: 12px; padding: 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-    .form-group { margin-bottom: 20px; }
-    .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: #334155; }
-    .form-group label span { color: #dc2626; }
-    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; font-family: inherit; }
-    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #0b1a68; box-shadow: 0 0 0 3px rgba(11,26,104,0.1); }
-    .form-group textarea { resize: vertical; min-height: 80px; }
-    .error { color: #dc2626; font-size: 13px; margin-top: 6px; }
-    .radio-group { display: flex; gap: 20px; }
-    .radio-option { display: flex; align-items: center; gap: 8px; padding: 12px 20px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
-    .radio-option:hover { border-color: #cbd5e1; }
-    .radio-option input[type="radio"] { width: auto; margin: 0; }
-    .radio-option input[type="radio"]:checked + label { font-weight: 600; }
-    .radio-option.checked { border-color: #0b1a68; background: #f0f4ff; }
-    .form-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0; }
-    .btn { padding: 12px 24px; border-radius: 8px; border: none; cursor: pointer; font-weight: 500; text-decoration: none; display: inline-block; transition: all 0.2s; font-size: 14px; }
-    .btn-primary { background: #0891b2; color: white; }
-    .btn-primary:hover { background: #0e7490; }
-    .btn-secondary { background: #e2e8f0; color: #475569; }
-    .btn-secondary:hover { background: #cbd5e1; }
-    .info-box { background: #dbeafe; border-left: 4px solid #0891b2; padding: 14px 18px; border-radius: 8px; margin-bottom: 20px; color: #0c4a6e; font-size: 14px; }
-</style>
+@section('content')
+    <div style="margin-bottom: 24px;">
+        <h1 style="font-size: 28px; font-weight: 700; color: #111827; margin: 0;">Record Stock Returns</h1>
+        <p style="color: #6b7280; font-size: 14px; margin-top: 4px;">Process and restock items returned from flight
+            operations</p>
+    </div>
 
-<div class="info-box">
-                💡 Items in good condition will be added back to inventory. Damaged items will be recorded but not restocked.
+    <div
+        style="background: #eff6ff; border-left: 4px solid #3b82f6; padding: 16px; border-radius: 12px; margin-bottom: 24px; color: #1e40af; display: flex; align-items: flex-start; gap: 12px;">
+        <span style="font-size: 20px;">💡</span>
+        <p style="margin: 0; font-size: 14px; line-height: 1.5;">Items marked in <strong>Good Condition</strong> will be
+            automatically added back to the Main Inventory stock. Damaged items will be recorded for auditing purposes but
+            <strong>will not</strong> be restocked.</p>
+    </div>
+
+    <div class="card-atcl" style="padding: 32px; max-width: 800px;">
+        <form method="POST" action="{{ route('inventory-personnel.stock-movements.store-returns') }}">
+            @csrf
+
+            <div style="margin-bottom: 24px;">
+                <label class="label-atcl">Product <span style="color: #dc2626;">*</span></label>
+                <select name="product_id" class="input-atcl" required>
+                    <option value="">Select a product to return</option>
+                    @foreach($products as $product)
+                        <option value="{{ $product->id }}" {{ old('product_id') == $product->id ? 'selected' : '' }}>
+                            {{ $product->name }} (Main Store: {{ $product->quantity_in_stock }} {{ $product->unit_of_measure }})
+                        </option>
+                    @endforeach
+                </select>
+                @error('product_id')
+                    <div style="color: #dc2626; font-size: 13px; margin-top: 6px;">{{ $message }}</div>
+                @enderror
             </div>
 
-            <div class="card">
-                <form method="POST" action="{{ route('inventory-personnel.stock-movements.store-returns') }}">
-                    @csrf
+            <div style="margin-bottom: 24px;">
+                <label class="label-atcl">Returned Quantity <span style="color: #dc2626;">*</span></label>
+                <input type="number" name="quantity" class="input-atcl" value="{{ old('quantity') }}" min="1" required
+                    placeholder="Enter quantity returned">
+                @error('quantity')
+                    <div style="color: #dc2626; font-size: 13px; margin-top: 6px;">{{ $message }}</div>
+                @enderror
+            </div>
 
-                    <div class="form-group">
-                        <label>Product <span>*</span></label>
-                        <select name="product_id" required>
-                            <option value="">Select a product</option>
-                            @foreach($products as $product)
-                                <option value="{{ $product->id }}" {{ old('product_id') == $product->id ? 'selected' : '' }}>
-                                    {{ $product->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('product_id')
-                            <div class="error">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="form-group">
-                        <label>Quantity <span>*</span></label>
-                        <input type="number" name="quantity" value="{{ old('quantity') }}" min="1" required placeholder="Enter quantity returned">
-                        @error('quantity')
-                            <div class="error">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="form-group">
-                        <label>Condition <span>*</span></label>
-                        <div class="radio-group">
-                            <label class="radio-option" onclick="this.classList.add('checked'); this.nextElementSibling.classList.remove('checked');">
-                                <input type="radio" name="condition" value="good" {{ old('condition') == 'good' ? 'checked' : '' }} required>
-                                <span>✓ Good (Restock)</span>
-                            </label>
-                            <label class="radio-option" onclick="this.classList.add('checked'); this.previousElementSibling.classList.remove('checked');">
-                                <input type="radio" name="condition" value="damaged" {{ old('condition') == 'damaged' ? 'checked' : '' }} required>
-                                <span>✗ Damaged (No Restock)</span>
-                            </label>
+            <div style="margin-bottom: 24px;">
+                <label class="label-atcl" style="margin-bottom: 12px;">Item Condition <span
+                        style="color: #dc2626;">*</span></label>
+                <div style="display: flex; gap: 16px;">
+                    <label style="flex: 1; position: relative;">
+                        <input type="radio" name="condition" value="good" {{ old('condition') == 'good' ? 'checked' : '' }}
+                            required style="position: absolute; opacity: 0; width: 0; height: 0;">
+                        <div class="condition-btn"
+                            style="padding: 12px; border: 2px solid #e5e7eb; border-radius: 12px; cursor: pointer; text-align: center; transition: all 0.2s; display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                            <span style="font-size: 20px;">✅</span>
+                            <span style="font-weight: 600; font-size: 14px;">Good / Re-stock</span>
                         </div>
-                        @error('condition')
-                            <div class="error">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="form-group">
-                        <label>Reference Number <span>*</span></label>
-                        <input type="text" name="reference_number" value="{{ old('reference_number') }}" required placeholder="Flight number, return note, etc.">
-                        @error('reference_number')
-                            <div class="error">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="form-group">
-                        <label>Movement Date <span>*</span></label>
-                        <input type="date" name="movement_date" value="{{ old('movement_date', date('Y-m-d')) }}" required>
-                        @error('movement_date')
-                            <div class="error">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="form-group">
-                        <label>Notes</label>
-                        <textarea name="notes" placeholder="Additional notes about this transaction">{{ old('notes') }}</textarea>
-                        @error('notes')
-                            <div class="error">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="form-actions">
-                        <a href="{{ route('inventory-personnel.stock-movements.index') }}" class="btn btn-secondary">Cancel</a>
-                        <button type="submit" class="btn btn-primary">Record Returns</button>
-                    </div>
-                </form>
+                    </label>
+                    <label style="flex: 1; position: relative;">
+                        <input type="radio" name="condition" value="damaged" {{ old('condition') == 'damaged' ? 'checked' : '' }} required style="position: absolute; opacity: 0; width: 0; height: 0;">
+                        <div class="condition-btn"
+                            style="padding: 12px; border: 2px solid #e5e7eb; border-radius: 12px; cursor: pointer; text-align: center; transition: all 0.2s; display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                            <span style="font-size: 20px;">❌</span>
+                            <span style="font-weight: 600; font-size: 14px;">Damaged / Waste</span>
+                        </div>
+                    </label>
+                </div>
+                <style>
+                    input[type="radio"]:checked+.condition-btn {
+                        border-color: #1e3a8a !important;
+                        background-color: #eff6ff !important;
+                        color: #1e3a8a !important;
+                    }
+                </style>
+                @error('condition')
+                    <div style="color: #dc2626; font-size: 13px; margin-top: 6px;">{{ $message }}</div>
+                @enderror
             </div>
+
+            <div style="margin-bottom: 24px;">
+                <label class="label-atcl">Reference Number (Flight/Return Note) <span
+                        style="color: #dc2626;">*</span></label>
+                <input type="text" name="reference_number" class="input-atcl" value="{{ old('reference_number') }}" required
+                    placeholder="e.g., AT202 Return, RET-789, etc.">
+                @error('reference_number')
+                    <div style="color: #dc2626; font-size: 13px; margin-top: 6px;">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div style="margin-bottom: 24px;">
+                <label class="label-atcl">Movement Date <span style="color: #dc2626;">*</span></label>
+                <input type="date" name="movement_date" class="input-atcl" value="{{ old('movement_date', date('Y-m-d')) }}"
+                    required>
+                @error('movement_date')
+                    <div style="color: #dc2626; font-size: 13px; margin-top: 6px;">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div style="margin-bottom: 32px;">
+                <label class="label-atcl">Additional Notes</label>
+                <textarea name="notes" class="input-atcl" style="min-height: 100px;"
+                    placeholder="Describe any details or reasons for the return...">{{ old('notes') }}</textarea>
+                @error('notes')
+                    <div style="color: #dc2626; font-size: 13px; margin-top: 6px;">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div
+                style="display: flex; gap: 16px; align-items: center; justify-content: flex-end; padding-top: 24px; border-top: 1px solid #f3f4f6;">
+                <a href="{{ route('inventory-personnel.stock-movements.index') }}"
+                    class="btn-atcl btn-atcl-secondary">Cancel</a>
+                <button type="submit" class="btn-atcl btn-atcl-primary"
+                    style="min-width: 200px; background: #0891b2; border-color: #0891b2;">Process Return</button>
+            </div>
+        </form>
+    </div>
 @endsection

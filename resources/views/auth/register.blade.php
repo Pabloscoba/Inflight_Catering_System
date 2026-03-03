@@ -40,12 +40,12 @@
         .input-field:focus {
             background: rgba(255, 255, 255, 1);
             border-color: rgba(13, 71, 161, 0.8);
-            box-shadow: 0 0 0 3px rgba(13, 71, 161, 0.1);
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
             outline: none;
         }
         
         .btn-primary {
-            background: linear-gradient(135deg, #0d47a1 0%, #1976d2 100%);
+            background: linear-gradient(135deg, #1e3a8a 0%, #1976d2 100%);
             transition: all 0.3s ease;
         }
         

@@ -100,7 +100,7 @@
                             <div style="font-size:12px;color:#9ca3af;">{{ $return->returned_at->diffForHumans() }}</div>
                         </td>
                         <td style="padding:16px 20px;text-align:center;">
-                            <button type="button" onclick="showReceiveReturnConfirmation({{ $return->id }})" style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:white;padding:8px 16px;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">
+                            <button type="button" onclick="showReceiveReturnConfirmation({{ $return->id }})" style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#10b981 0%,#1e3a8a 100%);color:white;padding:8px 16px;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">
                                 <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
                                 </svg>
@@ -204,7 +204,7 @@ function showReceiveReturnConfirmation(returnId) {
         </div>
         <div style="display:flex;gap:12px;justify-content:flex-end;">
             <button onclick="closeReceiveReturnModal()" style="background:#6c757d;color:white;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">Cancel</button>
-            <button onclick="submitReceiveReturnForm(${returnId})" style="background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:white;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">Receive & Forward</button>
+            <button onclick="submitReceiveReturnForm(${returnId})" style="background:linear-gradient(135deg,#10b981 0%,#1e3a8a 100%);color:white;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">Receive & Forward</button>
         </div>
     `;
     
@@ -240,7 +240,7 @@ function showBulkReceiveConfirmation(count) {
         </div>
         <div style="display:flex;gap:12px;justify-content:flex-end;">
             <button onclick="closeBulkReceiveModal()" style="background:#6c757d;color:white;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">Cancel</button>
-            <button onclick="submitBulkReceiveConfirm()" style="background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:white;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">Receive All</button>
+            <button onclick="submitBulkReceiveConfirm()" style="background:linear-gradient(135deg,#10b981 0%,#1e3a8a 100%);color:white;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">Receive All</button>
         </div>
     `;
     

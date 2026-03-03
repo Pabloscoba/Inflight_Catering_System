@@ -11,9 +11,9 @@
     .form-group { margin-bottom: 24px; }
     .form-group label { display: block; font-weight: 600; color: #374151; margin-bottom: 8px; font-size: 14px; }
     .form-group input, .form-group select { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; }
-    .form-group input:focus, .form-group select:focus { outline: none; border-color: #0b1a68; box-shadow: 0 0 0 3px rgba(11,26,104,0.1); }
+    .form-group input:focus, .form-group select:focus { outline: none; border-color: #1e3a8a; box-shadow: 0 0 0 3px rgba(11,26,104,0.1); }
     .btn { padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; }
-    .btn-primary { background: #0b1a68; color: white; }
+    .btn-primary { background: #1e3a8a; color: white; }
     .btn-primary:hover { background: #091352; }
     .btn-secondary { background: #f3f4f6; color: #374151; }
     .btn-danger { background: #dc2626; color: white; }

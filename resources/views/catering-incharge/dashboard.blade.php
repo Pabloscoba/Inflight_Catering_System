@@ -92,7 +92,7 @@
             <span style="position: absolute; top: -8px; right: -8px; background: #dc2626; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; box-shadow: 0 2px 8px rgba(220, 38, 38, 0.5);">{{ $pendingItemReceipts }}</span>
             @endif
         </a>
-        <a href="{{ route('catering-incharge.requests.approved') }}" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 18px 24px; border-radius: 12px; text-decoration: none; font-weight: 600; text-align: center; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); transition: all 0.3s ease; display: block;">
+        <a href="{{ route('catering-incharge.requests.approved') }}" style="background: linear-gradient(135deg, #10b981 0%, #1e3a8a 100%); color: white; padding: 18px 24px; border-radius: 12px; text-decoration: none; font-weight: 600; text-align: center; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); transition: all 0.3s ease; display: block;">
             ✅ View Approved
         </a>
         <a href="{{ route('catering-incharge.receipts.stock-overview') }}" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; padding: 18px 24px; border-radius: 12px; text-decoration: none; font-weight: 600; text-align: center; box-shadow: 0 4px 12px rgba(79, 172, 254, 0.3); transition: all 0.3s ease; display: block;">
@@ -471,7 +471,7 @@
                             ✈️ Loaded
                         </span>
                         @elseif($req->status == 'delivered')
-                        <span style="background: #059669; color: white; padding: 6px 12px; border-radius: 10px; font-size: 12px; font-weight: 600;">
+                        <span style="background: #1e3a8a; color: white; padding: 6px 12px; border-radius: 10px; font-size: 12px; font-weight: 600;">
                             📦 Delivered
                         </span>
                         @endif

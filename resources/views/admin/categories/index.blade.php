@@ -26,7 +26,7 @@
         .category-card { background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 24px; transition: box-shadow 0.2s; }
         .category-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         .category-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 16px; }
-        .category-name { font-size: 20px; font-weight: 600; color: #0b1a68; margin-bottom: 4px; }
+        .category-name { font-size: 20px; font-weight: 600; color: #1e3a8a; margin-bottom: 4px; }
         .category-badge { padding: 4px 10px; background: #e3f2fd; color: #0066cc; border-radius: 12px; font-size: 12px; font-weight: 600; }
         .category-description { color: #6c757d; font-size: 14px; line-height: 1.5; margin-bottom: 16px; }
         .category-actions { display: flex; gap: 8px; padding-top: 16px; border-top: 1px solid #e9ecef; }

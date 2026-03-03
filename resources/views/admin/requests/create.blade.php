@@ -84,7 +84,7 @@
                         <span style="padding: 6px 16px; background: {{ $flight->getStatusBackground() }}; color: {{ $flight->getStatusColor() }}; border-radius: 16px; font-size: 13px; font-weight: 600; display: inline-block; margin-bottom: 12px;">
                             {{ ucfirst($flight->status) }}
                         </span>
-                        <button onclick="selectFlightQuick({{ $flight->id }}, '{{ $flight->flight_number }}', '{{ $flight->origin }}', '{{ $flight->destination }}', '{{ $flight->departure_time->format('d M Y H:i') }}')" style="background: #0b1a68; color: white; padding: 10px 20px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; margin-left: auto;">
+                        <button onclick="selectFlightQuick({{ $flight->id }}, '{{ $flight->flight_number }}', '{{ $flight->origin }}', '{{ $flight->destination }}', '{{ $flight->departure_time->format('d M Y H:i') }}')" style="background: #1e3a8a; color: white; padding: 10px 20px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; margin-left: auto;">
                             <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                             </svg>
@@ -159,7 +159,7 @@
             </svg>
             <h3 style="font-size: 16px; font-weight: 600; color: #6b7280; margin-bottom: 8px;">No Available Flights</h3>
             <p style="color: #9ca3af; font-size: 14px; margin-bottom: 16px;">There are no flights scheduled. Please create flights first.</p>
-            <a href="{{ route('admin.flights.create') }}" style="background: #0b1a68; color: white; padding: 10px 20px; border-radius: 6px; text-decoration: none; display: inline-block; font-weight: 500;">
+            <a href="{{ route('admin.flights.create') }}" style="background: #1e3a8a; color: white; padding: 10px 20px; border-radius: 6px; text-decoration: none; display: inline-block; font-weight: 500;">
                 Create New Flight
             </a>
         </div>
@@ -274,7 +274,7 @@
 
         <!-- Submit -->
         <div style="display: flex; gap: 12px;">
-            <button type="submit" id="submitBtn" disabled style="background: #0b1a68; color: white; padding: 12px 32px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; font-size: 15px; opacity: 0.5;">
+            <button type="submit" id="submitBtn" disabled style="background: #1e3a8a; color: white; padding: 12px 32px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; font-size: 15px; opacity: 0.5;">
                 Submit Request
             </button>
             <a href="{{ route('admin.requests.index') }}" style="background: #f3f4f6; color: #374151; padding: 12px 32px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 15px;">
@@ -573,7 +573,7 @@
                 const infoDiv = document.getElementById('stockInfo');
                 
                 if (stock && this.value) {
-                    infoDiv.innerHTML = `<span style="color: #059669; font-weight: 500;">✓ Available stock: ${stock} units</span>`;
+                    infoDiv.innerHTML = `<span style="color: #1e3a8a; font-weight: 500;">✓ Available stock: ${stock} units</span>`;
                 } else {
                     infoDiv.innerHTML = '';
                 }

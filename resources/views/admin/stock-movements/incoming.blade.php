@@ -4,83 +4,77 @@
 @section('page-description', 'Add new inventory received from suppliers')
 
 @section('content')
-<style>
-    .card { background: white; border-radius: 12px; padding: 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-    .form-group { margin-bottom: 20px; }
-    .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: #334155; }
-    .form-group label span { color: #dc2626; }
-    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; font-family: inherit; }
-    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #0b1a68; box-shadow: 0 0 0 3px rgba(11,26,104,0.1); }
-    .form-group textarea { resize: vertical; min-height: 80px; }
-    .error { color: #dc2626; font-size: 13px; margin-top: 6px; }
-    .form-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0; }
-    .btn { padding: 12px 24px; border-radius: 8px; border: none; cursor: pointer; font-weight: 500; text-decoration: none; display: inline-block; transition: all 0.2s; font-size: 14px; }
-    .btn-primary { background: #059669; color: white; }
-    .btn-primary:hover { background: #047857; }
-    .btn-secondary { background: #e2e8f0; color: #475569; }
-    .btn-secondary:hover { background: #cbd5e1; }
-    .info-box { background: #dbeafe; border-left: 4px solid #0891b2; padding: 14px 18px; border-radius: 8px; margin-bottom: 20px; color: #0c4a6e; font-size: 14px; }
-</style>
+    <div class="card-atcl">
+        <div class="card-atcl-header">
+            <span>📥 Record Incoming Stock</span>
+        </div>
 
-<div class="info-box">
-                💡 This will increase the product stock quantity. Make sure to verify the received items before recording.
+        <div
+            style="background: #eff6ff; border-left: 4px solid #1e3a8a; padding: 16px; border-radius: 8px; margin-bottom: 24px; color: #1e3a8a; font-size: 14px; font-weight: 500;">
+            💡 This will increase the product stock quantity. Make sure to verify the received items before recording.
+        </div>
+
+        <form method="POST" action="{{ route('admin.stock-movements.store-incoming') }}">
+            @csrf
+
+            <div style="margin-bottom: 24px;">
+                <label class="label-atcl">Product <span style="color: #dc2626;">*</span></label>
+                <select name="product_id" required class="input-atcl">
+                    <option value="">Select a product</option>
+                    @foreach($products as $product)
+                        <option value="{{ $product->id }}" {{ old('product_id') == $product->id ? 'selected' : '' }}>
+                            {{ $product->name }} (Current Stock: {{ $product->quantity_in_stock }})
+                        </option>
+                    @endforeach
+                </select>
+                @error('product_id')
+                    <div style="color: #dc2626; font-size: 13px; margin-top: 6px;">{{ $message }}</div>
+                @enderror
             </div>
 
-            <div class="card">
-                <form method="POST" action="{{ route('admin.stock-movements.store-incoming') }}">
-                    @csrf
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px;">
+                <div>
+                    <label class="label-atcl">Quantity <span style="color: #dc2626;">*</span></label>
+                    <input type="number" name="quantity" value="{{ old('quantity') }}" min="1" required class="input-atcl"
+                        placeholder="Enter quantity received">
+                    @error('quantity')
+                        <div style="color: #dc2626; font-size: 13px; margin-top: 6px;">{{ $message }}</div>
+                    @enderror
+                </div>
 
-                    <div class="form-group">
-                        <label>Product <span>*</span></label>
-                        <select name="product_id" required>
-                            <option value="">Select a product</option>
-                            @foreach($products as $product)
-                                <option value="{{ $product->id }}" {{ old('product_id') == $product->id ? 'selected' : '' }}>
-                                    {{ $product->name }} (Current Stock: {{ $product->quantity_in_stock }})
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('product_id')
-                            <div class="error">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="form-group">
-                        <label>Quantity <span>*</span></label>
-                        <input type="number" name="quantity" value="{{ old('quantity') }}" min="1" required placeholder="Enter quantity received">
-                        @error('quantity')
-                            <div class="error">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="form-group">
-                        <label>Reference Number</label>
-                        <input type="text" name="reference_number" value="{{ old('reference_number') }}" placeholder="Invoice number, PO number, etc.">
-                        @error('reference_number')
-                            <div class="error">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="form-group">
-                        <label>Movement Date <span>*</span></label>
-                        <input type="date" name="movement_date" value="{{ old('movement_date', date('Y-m-d')) }}" required>
-                        @error('movement_date')
-                            <div class="error">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="form-group">
-                        <label>Notes</label>
-                        <textarea name="notes" placeholder="Additional notes about this transaction">{{ old('notes') }}</textarea>
-                        @error('notes')
-                            <div class="error">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="form-actions">
-                        <a href="{{ route('admin.stock-movements.index') }}" class="btn btn-secondary">Cancel</a>
-                        <button type="submit" class="btn btn-primary">Record Incoming Stock</button>
-                    </div>
-                </form>
+                <div>
+                    <label class="label-atcl">Movement Date <span style="color: #dc2626;">*</span></label>
+                    <input type="date" name="movement_date" value="{{ old('movement_date', date('Y-m-d')) }}" required
+                        class="input-atcl">
+                    @error('movement_date')
+                        <div style="color: #dc2626; font-size: 13px; margin-top: 6px;">{{ $message }}</div>
+                    @enderror
+                </div>
             </div>
+
+            <div style="margin-bottom: 24px;">
+                <label class="label-atcl">Reference Number</label>
+                <input type="text" name="reference_number" value="{{ old('reference_number') }}" class="input-atcl"
+                    placeholder="Invoice number, PO number, etc.">
+                @error('reference_number')
+                    <div style="color: #dc2626; font-size: 13px; margin-top: 6px;">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div style="margin-bottom: 24px;">
+                <label class="label-atcl">Notes</label>
+                <textarea name="notes" class="input-atcl" style="height: 100px; padding-top: 12px; resize: vertical;"
+                    placeholder="Additional notes about this transaction">{{ old('notes') }}</textarea>
+                @error('notes')
+                    <div style="color: #dc2626; font-size: 13px; margin-top: 6px;">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div
+                style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 32px; padding-top: 24px; border-top: 1px solid #f3f4f6;">
+                <a href="{{ route('admin.stock-movements.index') }}" class="btn-atcl btn-atcl-secondary">Cancel</a>
+                <button type="submit" class="btn-atcl btn-atcl-primary">Record Incoming Stock</button>
+            </div>
+        </form>
+    </div>
 @endsection

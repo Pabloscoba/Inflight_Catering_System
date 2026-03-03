@@ -7,8 +7,8 @@
 <!-- Stats Cards -->
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; margin-bottom: 32px;">
     <!-- Total Users -->
-    <div style="background: white; border-radius: 16px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); display: flex; gap: 20px; align-items: center; transition: all 0.3s;">
-        <div style="width: 64px; height: 64px; border-radius: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+    <div class="card-atcl" style="display: flex; gap: 20px; align-items: center; transition: all 0.3s; padding: 24px;">
+        <div style="width: 64px; height: 64px; border-radius: 12px; background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
             <svg style="width: 32px; height: 32px; color: white;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
             </svg>
@@ -20,8 +20,8 @@
     </div>
 
     <!-- Total Products -->
-    <div style="background: white; border-radius: 16px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); display: flex; gap: 20px; align-items: center; transition: all 0.3s;">
-        <div style="width: 64px; height: 64px; border-radius: 12px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+    <div class="card-atcl" style="display: flex; gap: 20px; align-items: center; transition: all 0.3s; padding: 24px;">
+        <div style="width: 64px; height: 64px; border-radius: 12px; background: linear-gradient(135deg, #4b5563 0%, #6b7280 100%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
             <svg style="width: 32px; height: 32px; color: white;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
             </svg>
@@ -33,8 +33,8 @@
     </div>
 
     <!-- Total Requests -->
-    <div style="background: white; border-radius: 16px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); display: flex; gap: 20px; align-items: center; transition: all 0.3s;">
-        <div style="width: 64px; height: 64px; border-radius: 12px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+    <div class="card-atcl" style="display: flex; gap: 20px; align-items: center; transition: all 0.3s; padding: 24px;">
+        <div style="width: 64px; height: 64px; border-radius: 12px; background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 100%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
             <svg style="width: 32px; height: 32px; color: white;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
             </svg>
@@ -46,8 +46,8 @@
     </div>
 
     <!-- Pending Requests -->
-    <div style="background: white; border-radius: 16px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); display: flex; gap: 20px; align-items: center; transition: all 0.3s;">
-        <div style="width: 64px; height: 64px; border-radius: 12px; background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+    <div class="card-atcl" style="display: flex; gap: 20px; align-items: center; transition: all 0.3s; padding: 24px;">
+        <div style="width: 64px; height: 64px; border-radius: 12px; background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
             <svg style="width: 32px; height: 32px; color: white;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
@@ -59,8 +59,8 @@
     </div>
 
     <!-- Flights -->
-    <div style="background: white; border-radius: 16px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); display: flex; gap: 20px; align-items: center; transition: all 0.3s;">
-        <div style="width: 64px; height: 64px; border-radius: 12px; background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+    <div class="card-atcl" style="display: flex; gap: 20px; align-items: center; transition: all 0.3s; padding: 24px;">
+        <div style="width: 64px; height: 64px; border-radius: 12px; background: linear-gradient(135deg, #6b7280 0%, #9ca3af 100%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
             <svg style="width: 32px; height: 32px; color: #1a1a1a;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
             </svg>
@@ -72,8 +72,8 @@
     </div>
 
     <!-- Completed Requests -->
-    <div style="background: white; border-radius: 16px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); display: flex; gap: 20px; align-items: center; transition: all 0.3s;">
-        <div style="width: 64px; height: 64px; border-radius: 12px; background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+    <div class="card-atcl" style="display: flex; gap: 20px; align-items: center; transition: all 0.3s; padding: 24px;">
+        <div style="width: 64px; height: 64px; border-radius: 12px; background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
             <svg style="width: 32px; height: 32px; color: white;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
@@ -88,14 +88,14 @@
 <!-- Charts Section -->
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 24px; margin-bottom: 32px;">
     <!-- Request Status Distribution -->
-    <div style="background: white; border-radius: 16px; padding: 28px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
-            <div style="width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center;">
+    <div class="card-atcl" style="padding: 28px;">
+        <div class="card-atcl-header">
+            <div style="width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%); display: flex; align-items: center; justify-content: center;">
                 <svg style="width: 20px; height: 20px; color: white;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                 </svg>
             </div>
-            <h3 style="font-size: 18px; font-weight: 700; color: #1a1a1a; margin: 0;">Request Status Distribution</h3>
+            <h3 style="margin: 0;">Request Status Distribution</h3>
         </div>
         @forelse($requestsByStatus as $status => $count)
             <div style="margin-bottom: 16px;">
@@ -104,7 +104,7 @@
                     <span style="font-size: 14px; font-weight: 700; color: #1a1a1a;">{{ $count }} ({{ $totalRequests > 0 ? round(($count / $totalRequests * 100), 1) : 0 }}%)</span>
                 </div>
                 <div style="width: 100%; height: 8px; background: #e5e7eb; border-radius: 4px; overflow: hidden;">
-                    <div style="width: {{ $totalRequests > 0 ? ($count / $totalRequests * 100) : 0 }}%; height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 4px; transition: width 0.3s;"></div>
+                    <div style="width: {{ $totalRequests > 0 ? ($count / $totalRequests * 100) : 0 }}%; height: 100%; background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%); border-radius: 4px; transition: width 0.3s;"></div>
                 </div>
             </div>
         @empty
@@ -118,23 +118,23 @@
     </div>
 
     <!-- By Department -->
-    <div style="background: white; border-radius: 16px; padding: 28px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
+    <div class="card-atcl" style="padding: 28px;">
+        <div class="card-atcl-header">
             <div style="width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); display: flex; align-items: center; justify-content: center;">
                 <svg style="width: 20px; height: 20px; color: white;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                 </svg>
             </div>
-            <h3 style="font-size: 18px; font-weight: 700; color: #1a1a1a; margin: 0;">By Department</h3>
+            <h3 style="margin: 0;">By Department</h3>
         </div>
         @php
             $maxCount = max(array_values($requestsByDepartment)) ?: 1;
             $colors = [
-                'Catering Staff' => 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                'Inventory' => 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-                'Security' => 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-                'Ramp Operations' => 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
-                'Flight Operations' => 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+                'Catering Staff' => 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%)',
+                'Inventory' => 'linear-gradient(135deg, #4b5563 0%, #6b7280 100%)',
+                'Security' => 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)',
+                'Ramp Operations' => 'linear-gradient(135deg, #4b5563 0%, #9ca3af 100%)',
+                'Flight Operations' => 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)',
             ];
         @endphp
         @foreach($requestsByDepartment as $dept => $count)
@@ -154,14 +154,14 @@
 <!-- Activity Lists -->
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 24px;">
     <!-- Latest Requests -->
-    <div style="background: white; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); overflow: hidden;">
-        <div style="padding: 24px 28px; border-bottom: 2px solid #f3f4f6; display: flex; align-items: center; gap: 12px;">
+    <div class="card-atcl" style="padding: 0; overflow: hidden;">
+        <div class="card-atcl-header" style="padding: 24px 28px; margin-bottom: 0;">
             <div style="width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); display: flex; align-items: center; justify-content: center;">
                 <svg style="width: 20px; height: 20px; color: white;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
                 </svg>
             </div>
-            <h3 style="font-size: 18px; font-weight: 700; color: #1a1a1a; margin: 0;">Latest Requests</h3>
+            <h3 style="margin: 0;">Latest Requests</h3>
         </div>
         <div style="padding: 12px 0;">
             @forelse($latestRequests as $request)
@@ -240,16 +240,16 @@
                                 $statusColors = [
                                     'pending_inventory' => ['bg' => '#fef3c7', 'text' => '#d97706', 'icon' => '📋'],
                                     'pending_supervisor' => ['bg' => '#fef3c7', 'text' => '#d97706', 'icon' => '👨‍💼'],
-                                    'supervisor_approved' => ['bg' => '#d1fae5', 'text' => '#059669', 'icon' => '✅'],
-                                    'sent_to_security' => ['bg' => '#dbeafe', 'text' => '#2563eb', 'icon' => '🔒'],
-                                    'security_approved' => ['bg' => '#d1fae5', 'text' => '#059669', 'icon' => '🔒'],
-                                    'catering_approved' => ['bg' => '#d1fae5', 'text' => '#059669', 'icon' => '🍽️'],
-                                    'ready_for_dispatch' => ['bg' => '#e0e7ff', 'text' => '#4f46e5', 'icon' => '📦'],
-                                    'dispatched' => ['bg' => '#e0e7ff', 'text' => '#4f46e5', 'icon' => '🚚'],
-                                    'loaded' => ['bg' => '#dbeafe', 'text' => '#2563eb', 'icon' => '✈️'],
-                                    'flight_received' => ['bg' => '#bfdbfe', 'text' => '#1e40af', 'icon' => '✅'],
-                                    'delivered' => ['bg' => '#d1fae5', 'text' => '#059669', 'icon' => '🎉'],
-                                    'served' => ['bg' => '#d1fae5', 'text' => '#059669', 'icon' => '✅'],
+                                    'supervisor_approved' => ['bg' => '#d1fae5', 'text' => '#1e3a8a', 'icon' => '✅'],
+                                    'sent_to_security' => ['bg' => '#f3f4f6', 'text' => '#4b5563', 'icon' => '🔒'],
+                                    'security_approved' => ['bg' => '#d1fae5', 'text' => '#1e3a8a', 'icon' => '🔒'],
+                                    'catering_approved' => ['bg' => '#d1fae5', 'text' => '#1e3a8a', 'icon' => '🍽️'],
+                                    'ready_for_dispatch' => ['bg' => '#f3f4f6', 'text' => '#1e3a8a', 'icon' => '📦'],
+                                    'dispatched' => ['bg' => '#f3f4f6', 'text' => '#1e3a8a', 'icon' => '🚚'],
+                                    'loaded' => ['bg' => '#f3f4f6', 'text' => '#1e3a8a', 'icon' => '✈️'],
+                                    'flight_received' => ['bg' => '#f3f4f6', 'text' => '#1e3a8a', 'icon' => '✅'],
+                                    'delivered' => ['bg' => '#d1fae5', 'text' => '#1e3a8a', 'icon' => '🎉'],
+                                    'served' => ['bg' => '#d1fae5', 'text' => '#1e3a8a', 'icon' => '✅'],
                                 ];
                                 $color = $statusColors[$request->status] ?? ['bg' => '#e0e7ff', 'text' => '#4f46e5', 'icon' => '❓'];
                                 
@@ -330,14 +330,14 @@
     </div>
 
     <!-- Latest Approvals -->
-    <div style="background: white; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); overflow: hidden;">
-        <div style="padding: 24px 28px; border-bottom: 2px solid #f3f4f6; display: flex; align-items: center; gap: 12px;">
+    <div class="card-atcl" style="padding: 0; overflow: hidden;">
+        <div class="card-atcl-header" style="padding: 24px 28px; margin-bottom: 0;">
             <div style="width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); display: flex; align-items: center; justify-content: center;">
                 <svg style="width: 20px; height: 20px; color: white;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
             </div>
-            <h3 style="font-size: 18px; font-weight: 700; color: #1a1a1a; margin: 0;">Latest Approvals</h3>
+            <h3 style="margin: 0;">Latest Approvals</h3>
         </div>
         <div style="padding: 12px 0;">
             @forelse($latestApprovals as $approval)
@@ -380,7 +380,7 @@
                                     Requested by: <span style="font-weight: 600;">{{ $approval->requester->name ?? 'Unknown' }}</span>
                                 </div>
                                 @if(count($approvals) > 0)
-                                    <div style="font-size: 12px; color: #059669; margin-top: 4px;">
+                                    <div style="font-size: 12px; color: #1e3a8a; margin-top: 4px;">
                                         <div style="font-weight: 600; margin-bottom: 2px;">✅ Approval Chain:</div>
                                         @foreach($approvals as $index => $approver)
                                             <div style="display: inline-flex; align-items: center; margin-right: 8px; margin-bottom: 2px;">
@@ -399,7 +399,7 @@
                         <span style="font-size: 12px; color: #9ca3af; white-space: nowrap;">{{ $approval->updated_at->diffForHumans() }}</span>
                     </div>
                     <div style="margin-left: 46px; display: flex; gap: 8px; align-items: center;">
-                        <span style="display: inline-block; padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; background: #d1fae5; color: #059669;">
+                        <span style="display: inline-block; padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; background: #d1fae5; color: #1e3a8a;">
                             {{ str_replace('_', ' ', ucwords($approval->status)) }}
                         </span>
                         @if($approval->items->count() > 0)
@@ -423,15 +423,15 @@
 
 <!-- Pending Stock Movements Approval - Full Width Section -->
 <div style="margin-top: 32px;">
-    <div style="background: white; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); overflow: hidden;">
-        <div style="padding: 24px 28px; border-bottom: 2px solid #f3f4f6; display: flex; align-items: center; justify-content: space-between;">
+    <div class="card-atcl" style="padding: 0; overflow: hidden;">
+        <div class="card-atcl-header" style="padding: 24px 28px; margin-bottom: 0; justify-content: space-between;">
             <div style="display: flex; align-items: center; gap: 12px;">
                 <div style="width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); display: flex; align-items: center; justify-content: center;">
                     <svg style="width: 20px; height: 20px; color: white;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                 </div>
-                <h3 style="font-size: 18px; font-weight: 700; color: #1a1a1a; margin: 0;">Pending Stock Movements Approval</h3>
+                <h3 style="margin: 0;">Pending Stock Movements Approval</h3>
             </div>
             <span style="background: #fef3c7; color: #b45309; padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 700;">
                 {{ $pendingStockMovements->count() }} Pending
@@ -489,7 +489,7 @@
                                 </td>
 
                                 <td style="padding: 14px 16px; text-align: center;">
-                                    <span style="font-weight: 700; color: {{ $stock->type === 'incoming' ? '#059669' : '#dc2626' }}; font-size: 15px;">
+                                    <span style="font-weight: 700; color: {{ $stock->type === 'incoming' ? '#1e3a8a' : '#dc2626' }}; font-size: 15px;">
                                         {{ $stock->type === 'incoming' ? '+' : '-' }}{{ abs($stock->quantity) }}
                                     </span>
                                 </td>
@@ -520,7 +520,7 @@
                                             @csrf
                                             <button type="submit" 
                                                     style="padding: 6px 12px; background: #10b981; color: white; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);"
-                                                    onmouseover="this.style.background='#059669'" 
+                                                    onmouseover="this.style.background='#1e3a8a'" 
                                                     onmouseout="this.style.background='#10b981'">
                                                 ✅ Approve
                                             </button>
@@ -548,14 +548,14 @@
 
 <!-- Recent Stock Movements - Full Width Section -->
 <div style="margin-top: 32px;">
-    <div style="background: white; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); overflow: hidden;">
-        <div style="padding: 24px 28px; border-bottom: 2px solid #f3f4f6; display: flex; align-items: center; gap: 12px;">
+    <div class="card-atcl" style="padding: 0; overflow: hidden;">
+        <div class="card-atcl-header" style="padding: 24px 28px; margin-bottom: 0;">
             <div style="width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); display: flex; align-items: center; justify-content: center;">
                 <svg style="width: 20px; height: 20px; color: white;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
                 </svg>
             </div>
-            <h3 style="font-size: 18px; font-weight: 700; color: #1a1a1a; margin: 0;">Recent Stock Movements</h3>
+            <h3 style="margin: 0;">Recent Stock Movements</h3>
         </div>
         <div style="padding: 20px; overflow-x: auto; width: 100%;">
             @if($recentStock->isEmpty())
@@ -649,7 +649,7 @@
 
                                 <!-- Quantity -->
                                 <td style="padding: 14px 16px; text-align: center;">
-                                    <span style="font-weight: 700; color: {{ $stock->type === 'incoming' ? '#059669' : '#dc2626' }}; font-size: 15px;">
+                                    <span style="font-weight: 700; color: {{ $stock->type === 'incoming' ? '#1e3a8a' : '#dc2626' }}; font-size: 15px;">
                                         {{ $stock->type === 'incoming' ? '+' : '-' }}{{ abs($stock->quantity) }}
                                     </span>
                                 </td>
@@ -667,7 +667,7 @@
                                 <!-- Approved By -->
                                 <td style="padding: 14px 16px;">
                                     @if($stock->approvedBy)
-                                        <div style="font-weight: 600; color: #059669;">✅ {{ $stock->approvedBy->name }}</div>
+                                        <div style="font-weight: 600; color: #1e3a8a;">✅ {{ $stock->approvedBy->name }}</div>
                                         <div style="font-size: 10px; color: #9ca3af; margin-top: 2px;">
                                             {{ $stock->approved_at ? $stock->approved_at->format('M d, H:i') : '' }}
                                         </div>

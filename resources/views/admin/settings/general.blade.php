@@ -346,7 +346,7 @@
             <div style="display: flex; gap: 12px; margin-top: 32px; padding-top: 24px; border-top: 1px solid #e5e7eb;">
                 <button 
                     type="submit"
-                    style="background: #0b1a68; color: white; padding: 12px 24px; border-radius: 6px; font-weight: 600; border: none; cursor: pointer;"
+                    style="background: #1e3a8a; color: white; padding: 12px 24px; border-radius: 6px; font-weight: 600; border: none; cursor: pointer;"
                 >
                     Save Changes
                 </button>

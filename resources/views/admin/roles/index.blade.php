@@ -15,7 +15,7 @@
         .roles-grid { display: grid; gap: 20px; }
         .role-card { background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 24px; }
         .role-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 2px solid #e9ecef; }
-        .role-name { font-size: 20px; font-weight: 600; color: #0b1a68; }
+        .role-name { font-size: 20px; font-weight: 600; color: #1e3a8a; }
         .role-badge { padding: 6px 12px; background: #e3f2fd; color: #0066cc; border-radius: 20px; font-size: 13px; font-weight: 500; }
         
         .permissions-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; }

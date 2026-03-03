@@ -172,7 +172,7 @@
                             <textarea name="clearance_notes" rows="4" placeholder="Add any final notes before clearing for departure..." style="width:100%;padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;resize:vertical"></textarea>
                         </div>
 
-                        <button type="button" onclick="showClearanceConfirmation('{{ $request->flight->flight_number }}')" style="width:100%;background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:white;padding:14px;border-radius:8px;border:none;font-weight:700;font-size:15px;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 12px rgba(16,185,129,0.3)" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 16px rgba(16,185,129,0.4)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 12px rgba(16,185,129,0.3)'">
+                        <button type="button" onclick="showClearanceConfirmation('{{ $request->flight->flight_number }}')" style="width:100%;background:linear-gradient(135deg,#10b981 0%,#1e3a8a 100%);color:white;padding:14px;border-radius:8px;border:none;font-weight:700;font-size:15px;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 12px rgba(16,185,129,0.3)" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 16px rgba(16,185,129,0.4)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 12px rgba(16,185,129,0.3)'">
                             ✅ Clear for Departure
                         </button>
                     </form>

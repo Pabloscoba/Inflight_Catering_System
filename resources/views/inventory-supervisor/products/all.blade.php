@@ -12,7 +12,7 @@
     /* Stats Cards */
     .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 32px; }
     .stat-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; padding: 24px; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-    .stat-card.success { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+    .stat-card.success { background: linear-gradient(135deg, #10b981 0%, #1e3a8a 100%); }
     .stat-card.warning { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
     .stat-card.danger { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
     .stat-card.info { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }

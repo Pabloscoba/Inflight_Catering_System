@@ -10,7 +10,7 @@
     .btn-back:hover { background: #5a6268; }
     
     .card { background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 30px; margin-bottom: 24px; }
-    .section-title { font-size: 18px; font-weight: 600; color: #0b1a68; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid #e9ecef; }
+    .section-title { font-size: 18px; font-weight: 600; color: #1e3a8a; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid #e9ecef; }
     
     .permissions-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
     .permission-checkbox { display: flex; align-items: center; padding: 12px 16px; background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px; cursor: pointer; transition: all 0.2s; }

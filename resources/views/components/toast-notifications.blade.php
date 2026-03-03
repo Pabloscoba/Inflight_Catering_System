@@ -22,7 +22,7 @@ const Toast = {
         
         // Toast styles
         const styles = {
-            success: { bg: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', icon: this.getIcon('success') },
+            success: { bg: 'linear-gradient(135deg, #10b981 0%, #1e3a8a 100%)', icon: this.getIcon('success') },
             error: { bg: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)', icon: this.getIcon('error') },
             warning: { bg: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', icon: this.getIcon('warning') },
             info: { bg: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)', icon: this.getIcon('info') }

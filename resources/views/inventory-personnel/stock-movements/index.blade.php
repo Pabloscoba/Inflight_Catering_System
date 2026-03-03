@@ -4,194 +4,158 @@
 @section('page-description', 'View all stock movements')
 
 @section('content')
-<style>
-    .print-header { display: none; }
-    @media print {
-        .print-header { 
-            display: block; 
-            text-align: center; 
-            margin-bottom: 30px; 
-            padding-bottom: 20px; 
-            border-bottom: 2px solid #0b1a68; 
-        }
-        .print-header h1 { 
-            color: #0b1a68; 
-            margin: 10px 0; 
-            font-size: 24px; 
-        }
-        .print-header p { 
-            color: #64748b; 
-            margin: 5px 0; 
-        }
-    }
-    .btn { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: 500; text-decoration: none; display: inline-block; transition: all 0.2s; }
-    .btn-primary { background: #0b1a68; color: white; }
-    .btn-primary:hover { background: #091352; }
-    .btn-success { background: #059669; color: white; }
-    .btn-success:hover { background: #047857; }
-    .btn-warning { background: #d97706; color: white; }
-    .btn-warning:hover { background: #b45309; }
-    .btn-info { background: #0891b2; color: white; }
-    .btn-info:hover { background: #0e7490; }
-    .filters { background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-    .filter-row { display: flex; gap: 15px; flex-wrap: wrap; align-items: end; }
-    .filter-group { flex: 1; min-width: 200px; }
-    .filter-group label { display: block; margin-bottom: 6px; font-size: 14px; font-weight: 500; color: #475569; }
-    .filter-group input, .filter-group select { width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; }
-    .card { background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden; }
-    table { width: 100%; border-collapse: collapse; }
-    thead { background: #f8fafc; }
-    th { padding: 14px; text-align: left; font-weight: 600; color: #475569; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
-    td { padding: 14px; border-top: 1px solid #f1f5f9; color: #334155; }
-    tr:hover { background: #f8fafc; }
-    .badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-block; }
-    .badge-incoming { background: #d1fae5; color: #065f46; }
-    .badge-issued { background: #fef3c7; color: #92400e; }
-    .badge-returned { background: #dbeafe; color: #1e40af; }
-    .badge-in-stock { background: #d1fae5; color: #065f46; }
-    .badge-low-stock { background: #fef3c7; color: #92400e; }
-    .badge-out-stock { background: #fee2e2; color: #991b1b; }
-    .stock-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-    .stock-actions a { padding: 6px 12px; background: #f1f5f9; color: #475569; text-decoration: none; border-radius: 6px; font-size: 12px; font-weight: 500; transition: all 0.2s; }
-    .stock-actions a:hover { background: #e2e8f0; }
-    .alert { padding: 14px 18px; border-radius: 8px; margin-bottom: 20px; }
-    .alert-success { background: #d1fae5; color: #065f46; border-left: 4px solid #059669; }
-    .pagination { display: flex; gap: 8px; justify-content: center; padding: 20px; }
-    .pagination a, .pagination span { padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 6px; text-decoration: none; color: #475569; }
-    .pagination .active { background: #0b1a68; color: white; border-color: #0b1a68; }
-    .empty-state { text-align: center; padding: 60px 20px; color: #64748b; }
-    .action-buttons { display: flex; gap: 10px; margin-bottom: 20px; }
-    
-    /* Print styles */
-    @media print {
-        .btn, .action-buttons, .filters, .pagination, .alert { display: none !important; }
-        .card { box-shadow: none; border: 1px solid #e2e8f0; }
-        body { background: white; }
-        table { page-break-inside: auto; }
-        tr { page-break-inside: avoid; page-break-after: auto; }
-        thead { display: table-header-group; }
-        @page { margin: 1.5cm; }
-    }
-</style>
+@section('content')
+    <div style="margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h1 style="font-size: 28px; font-weight: 700; color: #111827; margin: 0;">Stock Movement History</h1>
+            <p style="color: #6b7280; font-size: 14px; margin-top: 4px;">Track all incoming and outgoing inventory changes
+            </p>
+        </div>
+        <div style="display: flex; gap: 12px;" class="no-print">
+            <a href="{{ route('inventory-personnel.stock-movements.incoming') }}" class="btn-atcl btn-atcl-primary">Add
+                Incoming Stock</a>
+            <button onclick="window.print()" class="btn-atcl btn-atcl-secondary">Print Report</button>
+        </div>
+    </div>
 
-<!-- Print Header (only visible when printing) -->
-<div class="print-header">
-    <h1>🏢 INFLIGHT CATERING SYSTEM</h1>
-    <h2 style="margin: 15px 0 5px 0; color: #334155;">Stock Movement Report</h2>
-    <p>Generated on: {{ now()->format('F d, Y h:i A') }}</p>
-    <p>Generated by: {{ auth()->user()->name }}</p>
-    @if(request('type'))
-        <p><strong>Filtered by Type:</strong> {{ ucfirst(str_replace('_', ' ', request('type'))) }}</p>
-    @endif
-    @if(request('product_id'))
-        <p><strong>Filtered by Product:</strong> {{ $products->find(request('product_id'))->name ?? 'Unknown' }}</p>
-    @endif
-</div>
+    <style>
+        @media print {
+            .no-print {
+                display: none !important;
+            }
 
-@if(session('success'))
-                <div class="alert alert-success">{{ session('success') }}</div>
+            .card-atcl {
+                box-shadow: none !important;
+                border: 1px solid #e5e7eb !important;
+            }
+
+            body {
+                background: white !important;
+            }
+        }
+    </style>
+
+    @if(session('success'))
+        <div
+            style="background: #d1fae5; color: #065f46; padding: 16px; border-radius: 12px; margin-bottom: 24px; border-left: 4px solid #059669; font-weight: 500;">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    <div class="card-atcl no-print" style="padding: 24px; margin-bottom: 24px;">
+        <form method="GET" action="{{ route('inventory-personnel.stock-movements.index') }}">
+            <div
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; align-items: end;">
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <label class="label-atcl">Search Reference</label>
+                    <input type="text" name="search" class="input-atcl" value="{{ request('search') }}"
+                        placeholder="Reference, notes...">
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <label class="label-atcl">Movement Type</label>
+                    <select name="type" class="input-atcl">
+                        <option value="">All Types</option>
+                        <option value="incoming" {{ request('type') == 'incoming' ? 'selected' : '' }}>Incoming</option>
+                        <option value="issued" {{ request('type') == 'issued' ? 'selected' : '' }}>Issued</option>
+                        <option value="returned" {{ request('type') == 'returned' ? 'selected' : '' }}>Returned</option>
+                    </select>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <label class="label-atcl">Product</label>
+                    <select name="product_id" class="input-atcl">
+                        <option value="">All Products</option>
+                        @foreach($products as $product)
+                            <option value="{{ $product->id }}" {{ request('product_id') == $product->id ? 'selected' : '' }}>
+                                {{ $product->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <div style="display: flex; gap: 12px;">
+                    <button type="submit" class="btn-atcl btn-atcl-primary" style="flex: 1;">Apply Filter</button>
+                    <a href="{{ route('inventory-personnel.stock-movements.index') }}" class="btn-atcl btn-atcl-secondary"
+                        style="display: flex; align-items: center; justify-content: center; width: 80px;">Clear</a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="card-atcl" style="overflow-x: auto;">
+        @if($movements->count() > 0)
+            <table style="width: 100%; border-collapse: collapse; min-width: 900px;">
+                <thead>
+                    <tr style="background: #f9fafb; border-bottom: 2px solid #f3f4f6;">
+                        <th style="padding: 16px; text-align: left; font-size: 13px; font-weight: 700; color: #1e3a8a;">Date
+                        </th>
+                        <th style="padding: 16px; text-align: left; font-size: 13px; font-weight: 700; color: #1e3a8a;">Type
+                        </th>
+                        <th style="padding: 16px; text-align: left; font-size: 13px; font-weight: 700; color: #1e3a8a;">Product
+                        </th>
+                        <th style="padding: 16px; text-align: left; font-size: 13px; font-weight: 700; color: #1e3a8a;">Quantity
+                        </th>
+                        <th style="padding: 16px; text-align: left; font-size: 13px; font-weight: 700; color: #1e3a8a;">
+                            Reference</th>
+                        <th style="padding: 16px; text-align: left; font-size: 13px; font-weight: 700; color: #1e3a8a;">
+                            Performed By</th>
+                        <th style="padding: 16px; text-align: left; font-size: 13px; font-weight: 700; color: #1e3a8a;">Notes
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($movements as $movement)
+                        <tr style="border-bottom: 1px solid #f3f4f6;">
+                            <td style="padding: 16px; font-size: 14px; color: #6b7280; white-space: nowrap;">
+                                {{ \Carbon\Carbon::parse($movement->movement_date)->format('M d, Y') }}
+                            </td>
+                            <td style="padding: 16px;">
+                                @if($movement->type == 'incoming')
+                                    <span
+                                        style="display: inline-block; padding: 4px 12px; border-radius: 9999px; font-size: 11px; font-weight: 700; text-transform: uppercase; background: #d1fae5; color: #065f46;">Incoming</span>
+                                @elseif($movement->type == 'issued')
+                                    <span
+                                        style="display: inline-block; padding: 4px 12px; border-radius: 9999px; font-size: 11px; font-weight: 700; text-transform: uppercase; background: #fef3c7; color: #92400e;">Issued</span>
+                                @else
+                                    <span
+                                        style="display: inline-block; padding: 4px 12px; border-radius: 9999px; font-size: 11px; font-weight: 700; text-transform: uppercase; background: #dbeafe; color: #1e40af;">Returned</span>
+                                @endif
+                            </td>
+                            <td style="padding: 16px; vertical-align: middle;">
+                                <div style="font-weight: 700; color: #111827; font-size: 14px;">{{ $movement->product->name }}</div>
+                                <div style="font-size: 12px; color: #6b7280;">{{ $movement->product->sku }}</div>
+                            </td>
+                            <td style="padding: 16px; font-weight: 700; font-size: 15px;">
+                                @if($movement->type == 'issued' || $movement->type == 'transfer_to_catering' || $movement->type == 'outgoing')
+                                    <span style="color: #dc2626;">-{{ $movement->quantity }}</span>
+                                @else
+                                    <span style="color: #059669;">+{{ $movement->quantity }}</span>
+                                @endif
+                                <span
+                                    style="font-size: 12px; color: #6b7280; font-weight: normal; margin-left: 4px;">{{ $movement->product->unit_of_measure }}</span>
+                            </td>
+                            <td style="padding: 16px; font-size: 14px; color: #374151;">{{ $movement->reference_number ?? '-' }}
+                            </td>
+                            <td style="padding: 16px; font-size: 14px; color: #374151;">{{ $movement->user->name }}</td>
+                            <td style="padding: 16px; font-size: 13px; color: #6b7280; max-width: 250px;">
+                                {{ $movement->notes ?? '-' }}
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+
+            @if($movements->hasPages())
+                <div style="padding: 24px; border-top: 1px solid #f3f4f6;" class="no-print">
+                    {{ $movements->links() }}
+                </div>
             @endif
-
-            <!-- Filters -->
-            <div class="filters">
-                <form method="GET" action="{{ route('inventory-personnel.stock-movements.index') }}">
-                    <div class="filter-row">
-                        <div class="filter-group">
-                            <label>Search Reference</label>
-                            <input type="text" name="search" value="{{ request('search') }}" placeholder="Invoice, Flight number...">
-                        </div>
-                        <div class="filter-group">
-                            <label>Movement Type</label>
-                            <select name="type">
-                                <option value="">All Types</option>
-                                <option value="incoming" {{ request('type') == 'incoming' ? 'selected' : '' }}>Incoming</option>
-                                <option value="issued" {{ request('type') == 'issued' ? 'selected' : '' }}>Issued</option>
-                                <option value="returned" {{ request('type') == 'returned' ? 'selected' : '' }}>Returned</option>
-
-                            </select>
-                        </div>
-                        <div class="filter-group">
-                            <label>Product</label>
-                            <select name="product_id">
-                                <option value="">All Products</option>
-                                @foreach($products as $product)
-                                    <option value="{{ $product->id }}" {{ request('product_id') == $product->id ? 'selected' : '' }}>
-                                        {{ $product->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="filter-group" style="flex: 0;">
-                            <button type="submit" class="btn btn-primary">Apply</button>
-                        </div>
-                        <div class="filter-group" style="flex: 0;">
-                            <a href="{{ route('inventory-personnel.stock-movements.index') }}" class="btn" style="background: #e2e8f0; color: #475569;">Clear</a>
-                        </div>
-                    </div>
-                </form>
+        @else
+            <div class="empty-state">
+                <svg width="64" height="64" fill="#cbd5e1" viewBox="0 0 24 24" style="margin: 0 auto 20px;">
+                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z" />
+                </svg>
+                <h3 style="margin-bottom: 8px; color: #475569;">No stock movements found</h3>
+                <p>Start recording incoming stock, issues, or returns.</p>
             </div>
-
-            <!-- Table -->
-            <div class="card">
-                @if($movements->count() > 0)
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Type</th>
-                                <th>Product</th>
-                                <th>Quantity</th>
-                                <th>Reference</th>
-                                <th>Performed By</th>
-                                <th>Notes</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($movements as $movement)
-                                <tr>
-                                    <td>{{ $movement->movement_date->format('d M Y') }}</td>
-                                    <td>
-                                        @if($movement->type == 'incoming')
-                                            <span class="badge badge-incoming">Incoming</span>
-                                        @elseif($movement->type == 'issued')
-                                            <span class="badge badge-issued">Issued</span>
-
-                                        @else
-                                            <span class="badge badge-returned">Returned</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        <strong>{{ $movement->product->name }}</strong><br>
-                                        <small style="color: #94a3b8;">SKU: {{ $movement->product->sku }}</small>
-                                    </td>
-                                    <td>
-                                        @if($movement->type == 'issued' || $movement->type == 'transfer_to_catering')
-                                            <span style="color: #dc2626; font-weight: 600;">-{{ $movement->quantity }}</span>
-                                        @else
-                                            <span style="color: #059669; font-weight: 600;">+{{ $movement->quantity }}</span>
-                                        @endif
-                                    </td>
-                                    <td>{{ $movement->reference_number ?? '-' }}</td>
-                                    <td>{{ $movement->user->name }}</td>
-                                    <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                                        {{ $movement->notes ?? '-' }}
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                    
-                    <div class="pagination">
-                        {{ $movements->links() }}
-                    </div>
-                @else
-                    <div class="empty-state">
-                        <svg width="64" height="64" fill="#cbd5e1" viewBox="0 0 24 24" style="margin: 0 auto 20px;">
-                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/>
-                        </svg>
-                        <h3 style="margin-bottom: 8px; color: #475569;">No stock movements found</h3>
-                        <p>Start recording incoming stock, issues, or returns.</p>
-                    </div>
-                @endif
-            </div>
+        @endif
+    </div>
 @endsection

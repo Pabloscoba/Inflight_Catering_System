@@ -6,7 +6,7 @@
 @section('content')
 <style>
     .btn { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: 500; text-decoration: none; display: inline-block; transition: all 0.2s; }
-    .btn-primary { background: #0b1a68; color: white; }
+    .btn-primary { background: #1e3a8a; color: white; }
     .btn-primary:hover { background: #091352; }
     .btn-sm { padding: 6px 12px; font-size: 13px; }
     .btn-secondary { background: #e2e8f0; color: #475569; }
@@ -24,11 +24,11 @@
     tr:hover { background: #f8fafc; }
     .badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-block; }
     .alert { padding: 14px 18px; border-radius: 8px; margin-bottom: 20px; }
-    .alert-success { background: #d1fae5; color: #065f46; border-left: 4px solid #059669; }
+    .alert-success { background: #d1fae5; color: #065f46; border-left: 4px solid #1e3a8a; }
     .alert-danger { background: #fee2e2; color: #991b1b; border-left: 4px solid #dc2626; }
     .pagination { display: flex; gap: 8px; justify-content: center; padding: 20px; }
     .pagination a, .pagination span { padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 6px; text-decoration: none; color: #475569; }
-    .pagination .active { background: #0b1a68; color: white; }
+    .pagination .active { background: #1e3a8a; color: white; }
     .empty-state { text-align: center; padding: 60px 20px; color: #64748b; }
     .actions { display: flex; gap: 8px; }
 </style>

@@ -105,7 +105,7 @@ function addReturnItem() {
                 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
                     <label style="background:white;border:2px solid #e2e8f0;border-radius:8px;padding:12px;cursor:pointer;display:flex;align-items:center;gap:8px;">
                         <input type="radio" name="returns[${itemIndex}][condition]" value="good" required>
-                        <span style="font-size:14px;font-weight:600;color:#059669;">✅ Good</span>
+                        <span style="font-size:14px;font-weight:600;color:#1e3a8a;">✅ Good</span>
                     </label>
                     <label style="background:white;border:2px solid #e2e8f0;border-radius:8px;padding:12px;cursor:pointer;display:flex;align-items:center;gap:8px;">
                         <input type="radio" name="returns[${itemIndex}][condition]" value="damaged" required>

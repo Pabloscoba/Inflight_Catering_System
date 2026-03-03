@@ -6,7 +6,7 @@
 @section('content')
 <style>
     .btn { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: 500; text-decoration: none; display: inline-block; transition: all 0.2s; }
-    .btn-primary { background: #0b1a68; color: white; }
+    .btn-primary { background: #1e3a8a; color: white; }
     .btn-primary:hover { background: #091352; }
     .btn-sm { padding: 6px 12px; font-size: 13px; }
     .btn-secondary { background: #e2e8f0; color: #475569; }
@@ -20,7 +20,7 @@
     .badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-block; background: #fef3c7; color: #92400e; }
     .alert { padding: 14px 18px; border-radius: 8px; margin-bottom: 20px; }
     .alert-info { background: #dbeafe; color: #1e3a8a; border-left: 4px solid #3b82f6; }
-    .alert-success { background: #d1fae5; color: #065f46; border-left: 4px solid #059669; }
+    .alert-success { background: #d1fae5; color: #065f46; border-left: 4px solid #1e3a8a; }
     .empty-state { text-align: center; padding: 60px 20px; color: #64748b; }
     .actions { display: flex; gap: 8px; }
     .priority-indicator { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; }

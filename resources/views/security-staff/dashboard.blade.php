@@ -61,7 +61,7 @@
 
 <!-- Quick Actions -->
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 32px;">
-    <a href="{{ route('security-staff.requests.awaiting-authentication') }}" style="display: flex; align-items: center; gap: 14px; padding: 18px 22px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 14px; color: white; text-decoration: none; font-weight: 600; font-size: 15px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25); transition: all 0.3s ease;">
+    <a href="{{ route('security-staff.requests.awaiting-authentication') }}" style="display: flex; align-items: center; gap: 14px; padding: 18px 22px; background: linear-gradient(135deg, #10b981 0%, #1e3a8a 100%); border-radius: 14px; color: white; text-decoration: none; font-weight: 600; font-size: 15px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25); transition: all 0.3s ease;">
         <svg style="width: 26px; height: 26px; flex-shrink: 0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
         </svg>
@@ -122,7 +122,7 @@
                     <td style="padding:16px 20px;">
                         <div style="font-weight:600;color:#1f2937;font-size:14px;">{{ \Carbon\Carbon::parse($request->flight->departure_time)->format('M d, Y') }}</div>
                         <div style="font-size:12px;color:#6b7280;margin-top:2px;">{{ \Carbon\Carbon::parse($request->flight->departure_time)->format('H:i A') }}</div>
-                        <div style="font-size:10px;margin-top:2px;color:{{ $request->flight->departure_time < now()->addHours(6) ? '#dc2626' : '#059669' }};font-weight:600;">
+                        <div style="font-size:10px;margin-top:2px;color:{{ $request->flight->departure_time < now()->addHours(6) ? '#dc2626' : '#1e3a8a' }};font-weight:600;">
                             {{ \Carbon\Carbon::parse($request->flight->departure_time)->diffForHumans() }}
                         </div>
                     </td>
@@ -142,7 +142,7 @@
                             $totalChecks = count($docChecks);
                             $passedChecks = collect($docChecks)->filter()->count();
                         @endphp
-                        <div style="font-size:10px;margin-top:4px;color:{{ $passedChecks == $totalChecks ? '#059669' : '#dc2626' }};font-weight:600;">
+                        <div style="font-size:10px;margin-top:4px;color:{{ $passedChecks == $totalChecks ? '#1e3a8a' : '#dc2626' }};font-weight:600;">
                             Checks: {{ $passedChecks }}/{{ $totalChecks }} ✓
                         </div>
                     </td>
@@ -401,7 +401,7 @@
                             ✈️ Loaded
                         </span>
                         @elseif($req->status == 'delivered')
-                        <span style="background:#059669;color:white;padding:6px 12px;border-radius:10px;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:6px;">
+                        <span style="background:#1e3a8a;color:white;padding:6px 12px;border-radius:10px;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:6px;">
                             📦 Delivered
                         </span>
                         @elseif($req->status == 'served')
